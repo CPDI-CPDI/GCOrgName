@@ -165,8 +165,21 @@
         "Start Date":"2025-03-14 11:31:00 a.m.",
         "End Date":null,
         "minID":"m0024",
-        "notes":null,
+        "notes":"Title changed\/deleted",
         "Titre":"Ministre des Relations Couronne-Autochtones et des Affaires du Nord"
+    },
+    {
+        "Precedence":13.0,
+        "Honorific Title":"Hon.",
+        "First Name":"Gary",
+        "Last Name":"Anandasangaree",
+        "Title":"Attorney General of Canada",
+        "Province \/ Territory":null,
+        "Start Date":"2025-03-14 11:31:00 a.m.",
+        "End Date":null,
+        "minID":"New Title",
+        "notes":null,
+        "Titre":"Procureur général du Canada"
     },
     {
         "Precedence":14.0,
@@ -176,7 +189,7 @@
         "Title":"Chief government whip",
         "Province \/ Territory":null,
         "Start Date":"2025-03-14 11:31:00 a.m.",
-        "End Date":null,
+        "End Date":"2025-03-23 11:59:59 p.m.",
         "minID":"m0023",
         "notes":null,
         "Titre":"Whip en chef du gouvernement"
@@ -282,8 +295,21 @@
         "Start Date":"2025-03-14 11:31:00 a.m.",
         "End Date":null,
         "minID":"m0032",
-        "notes":null,
+        "notes":"Title changed\/deleted",
         "Titre":"Ministre des Institutions démocratiques"
+    },
+    {
+        "Precedence":22.0,
+        "Honorific Title":"Hon.",
+        "First Name":"Arielle",
+        "Last Name":"Kayabaga",
+        "Title":"Leader of the Government in the House of Commons",
+        "Province \/ Territory":null,
+        "Start Date":"2025-03-14 11:31:00 a.m.",
+        "End Date":"2025-03-23 11:59:59 p.m.",
+        "minID":"New Title",
+        "notes":null,
+        "Titre":"Leader du gouvernement à la Chambre des communes"
     },
     {
         "Precedence":23.0,
@@ -317,19 +343,6 @@
         "First Name":null,
         "Last Name":null,
         "Title":"Associate Minister of Health",
-        "Province \/ Territory":null,
-        "Start Date":null,
-        "End Date":null,
-        "minID":null,
-        "notes":"Title changed\/deleted",
-        "Titre":null
-    },
-    {
-        "Precedence":null,
-        "Honorific Title":null,
-        "First Name":null,
-        "Last Name":null,
-        "Title":"Leader of the Government in the House of Commons",
         "Province \/ Territory":null,
         "Start Date":null,
         "End Date":null,
