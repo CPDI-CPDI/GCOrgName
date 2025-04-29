@@ -1,0 +1,42 @@
+name: daily-update
+
+on:
+  schedule:
+    - cron: '0 16 * * *'  # 11 AM Toronto/New York time (EST/EDT auto handled)
+  workflow_dispatch:      # Allow manual trigger too
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    name: Run Daily Script
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'   # latest public version of Python
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests  # install 'requests' only, 'os' is built-in
+
+      - name: Execute Script
+        run: |
+          python Resources/retrieve-datasets.py   # <--- UPDATE THIS PATH!
+
+      - name: Create GitHub Issue if Failed
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "Daily Update Failed",
+              body: "The daily scheduled script run failed. Please check the workflow logs for details.",
+              labels: ["bug", "auto-generated"]
+            })
