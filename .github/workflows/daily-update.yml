@@ -27,6 +27,14 @@ jobs:
         run: |
           python Resources/retrieve_datasets.py   # <--- UPDATE THIS PATH!
 
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff-index --quiet HEAD || git commit -m "Auto-update from daily script"
+          git push
+
       - name: Create GitHub Issue if Failed
         if: failure()
         uses: actions/github-script@v7
