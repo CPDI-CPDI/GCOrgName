@@ -25,7 +25,7 @@ jobs:
 
       - name: Execute Script
         run: |
-          python Resources/retrieve-datasets.py   # <--- UPDATE THIS PATH!
+          python Resources/retrieve_datasets.py   # <--- UPDATE THIS PATH!
 
       - name: Create GitHub Issue if Failed
         if: failure()
