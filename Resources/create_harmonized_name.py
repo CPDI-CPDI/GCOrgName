@@ -3,13 +3,13 @@ import pandas as pd
 
 # Path to the folder where the script is located
 script_folder = os.path.dirname(os.path.abspath(__file__))
-resources_folder = os.path.join(script_folder, 'Resources')
+tools_folder = os.path.join(script_folder, 'Tools')
 
 # Paths to the CSV files
-manual_org_file = os.path.join(resources_folder, 'Manual org ID link.csv')
-applied_en_file = os.path.join(resources_folder, 'applied_en.csv')
-infobase_en_file = os.path.join(resources_folder, 'infobase_en.csv')
-infobase_fr_file = os.path.join(resources_folder, 'infobase_fr.csv')
+manual_org_file = os.path.join(script_folder, 'Manual org ID link.csv')
+applied_en_file = os.path.join(script_folder, 'applied_en.csv')
+infobase_en_file = os.path.join(script_folder, 'infobase_en.csv')
+infobase_fr_file = os.path.join(script_folder, 'infobase_fr.csv')
 
 # Read the CSV files
 manual_org_df = pd.read_csv(manual_org_file)
@@ -67,7 +67,7 @@ joined_df = joined_df.drop(columns=['Legal title_x', 'Legal title_y'], errors='i
 joined_df = joined_df.sort_values(by='gc_orgID')
 
 # Save the final joined DataFrame to a new CSV file with UTF-8 encoding
-output_file = os.path.join(script_folder, 'create_harmonized_name.csv')
+output_file = os.path.join(tools_folder, 'create_harmonized_name.csv')
 joined_df.to_csv(output_file, index=False, encoding='utf-8-sig')
 
 print(f"The final joined DataFrame has been saved to {output_file}")
