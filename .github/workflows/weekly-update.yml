@@ -1,4 +1,4 @@
-name: daily-update
+name: weekly-update
 
 on:
   schedule:
