@@ -2,7 +2,7 @@ name: daily-update
 
 on:
   schedule:
-    - cron: '0 16 * * *'  # 11 AM Toronto/New York time (EST/EDT auto handled)
+    - cron: '0 16 * * 2'  # Tuesday 11 AM Toronto/New York time (EST/EDT auto handled)
   workflow_dispatch:      # Allow manual trigger too
 
 jobs:
@@ -22,17 +22,39 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install requests  # install 'requests' only, 'os' is built-in
+          pip install pandas
+          pip install rapidfuzz
 
-      - name: Execute Script
+      - name: Execute Script 1 
         run: |
-          python Resources/retrieve_datasets.py   # <--- UPDATE THIS PATH!
+          python Resources/retrieve_datasets.py 
+
+      - name: Execute Script 2 
+        run: |
+          python Resources/rg_download.py 
+
+      - name: Execute Script 3 
+        run: |
+          python Resources/rg_fuzzy.py
+
+      - name: Execute Script 4 
+        run: |
+          python Resources/lead_ministries_retrieve.py
+
+      - name: Execute Script 5
+        run: |
+          python Resources/lead_fix.py 
+
+      - name: Execute Script Last 
+        run: |
+          python Resources/rg_final_match.py 
 
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff-index --quiet HEAD || git commit -m "Auto-update from daily script"
+          git diff-index --quiet HEAD || git commit -m "Auto-update from weekly scripts"
           git push
 
       - name: Create GitHub Issue if Failed
