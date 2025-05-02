@@ -45,9 +45,37 @@ jobs:
         run: |
           python Resources/lead_fix.py 
 
-      - name: Execute Script Last 
+      - name: Execute Script 6 
         run: |
           python Resources/rg_final_match.py 
+
+      - name: Execute Script 7
+        run: |
+          python Scraping/scrapeAllFAA.py 
+
+      - name: Execute Script 8
+        run: |
+          python Scraping/combine_FAA_names.py 
+
+      - name: Execute Script 9
+        run: |
+          python Resources/create_harmonized_name.py 
+
+      - name: Execute Script 10
+        run: |
+          python Resources/create_concordance.py 
+
+      - name: Execute Script 11
+        run: |
+          python Resources/create_gc_org_info.py 
+
+      - name: Execute Script 12
+        run: |
+          python Resources/compare_manuals.py 
+
+      - name: Execute Script 13
+        run: |
+          python Resources/compare_org_concord.py 
 
       - name: Commit and push changes
         run: |
