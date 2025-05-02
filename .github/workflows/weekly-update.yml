@@ -63,19 +63,19 @@ jobs:
 
       - name: Execute Script 10
         run: |
-          python Resources/create_concordance.py 
+          python create_concordance.py 
 
       - name: Execute Script 11
         run: |
-          python Resources/create_gc_org_info.py 
+          python create_gc_org_info.py 
 
       - name: Execute Script 12
         run: |
-          python Resources/compare_manuals.py 
+          python Tools/compare_manuals.py 
 
       - name: Execute Script 13
         run: |
-          python Resources/compare_org_concord.py 
+          python Tools/compare_org_concord.py 
 
       - name: Commit and push changes
         run: |
@@ -94,7 +94,7 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: "Daily Update Failed",
-              body: "The daily scheduled script run failed. Please check the workflow logs for details.",
+              title: "Weekly Update Failed",
+              body: "The weekly scheduled script run failed. Please check the workflow logs for details.",
               labels: ["bug", "auto-generated"]
             })
