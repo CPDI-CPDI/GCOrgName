@@ -46,7 +46,7 @@
 2266,National Film Board,Office national du film,NFB,ONF,223,39,National Film Board of Canada,nfb-onf,NFB,NFB00,www.onf-nfb.gc.ca,www.onf-nfb.gc.ca
 2267,Parole Board of Canada,Commission des libérations conditionnelles du Canada,PBC,CLCC,227,57,Parole Board of Canada,pbc-clcc,NPB,NPB00,www.canada.ca/en/parole-board.html,www.canada.ca/fr/commission-liberations-conditionnelles.html
 2268,Northern Pipeline Agency Canada,Administration du pipe-line du Nord Canada,NPA,APN,235,66,Northern Pipeline Agency Canada,npa-apn,NPA,,https://northern-pipeline.canada.ca/home,https://pipe-line-nord.canada.ca/accueil
-2269,"Housing, Infrastructure and Communities Canada","Logement, Infrastructures et Collectivités Canada",HICC,LICC,237,,Office of Infrastructure of Canada,infc,HIC,INF00,https://housing-infrastructure.canada.ca/,https://housing-infrastructure.canada.ca/
+2269,"Housing, Infrastructure and Communities Canada","Logement, Infrastructures et Collectivités Canada",HICC,LICC,237,242,Office of Infrastructure of Canada,infc,HIC,INF00,https://housing-infrastructure.canada.ca/,https://housing-infrastructure.canada.ca/
 2270,Office of the Auditor General of Canada,Bureau du vérificateur général du Canada,OAG,BVG,238,2,Office of the Auditor General of Canada,oag-bvg,AUD,AUD00,www.oag-bvg.gc.ca,www.oag-bvg.gc.ca
 2271,Elections Canada,Élections Canada,elections,elections,239,15,Office of the Chief Electoral Officer,elections,CEO,CEO00,www.elections.ca,www.elections.ca
 2272,Office of the Commissioner for Federal Judicial Affairs Canada,Commissariat à la magistrature fédérale Canada,FJA,CMF,240,51,,fja-cmf,FJA,FJA00,www.fja-cmf.gc.ca,www.fja-cmf.gc.ca
@@ -75,7 +75,7 @@
 2295,Secretariat of the National Security and Intelligence Committee of Parliamentarians,Secrétariat du Comité des parlementaires sur la sécurité nationale et le renseignement,SNSICP,SCPSNR,345,192,Secretariat of the National Security and Intelligence Committee of Parliamentarians,snsicp-scpssnr,NSI,NSI00,https://www.nsicop-cpsnr.ca/index-en.html,https://www.nsicop-cpsnr.ca/index-fr.html
 2296,Leaders' Debates Commission,Commission des débats des chefs,,,350,193,,,LDC,LDC00,,
 2297,Administrative Tribunals Support Service of Canada,Service canadien d'appui aux tribunaux administratifs,ATSSC,SCDATA,539,170,Administrative Tribunals Support Service of Canada,atssc-scdata,ATS,ATS00,www.canada.ca/en/administrative-tribunals-support-service.html,www.canada.ca/fr/service-canadien-appui-tribunaux-administratifs.html
-2298,Pacific Economic Development Canada,Développement économique Canada pour le Pacifique,PacifiCan,PacifiCan,560,44,Pacific Economic Development Canada (PacifiCan),pacifican,PED,,https://www.canada.ca/en/pacific-economic-development.html,https://www.canada.ca/fr/developpement-economique-pacifique.html
+2298,Pacific Economic Development Canada,Développement économique Canada pour le Pacifique,PacifiCan,PacifiCan,560,240,Pacific Economic Development Canada (PacifiCan),pacifican,PED,,https://www.canada.ca/en/pacific-economic-development.html,https://www.canada.ca/fr/developpement-economique-pacifique.html
 2299,Federal Economic Development Agency for Northern Ontario,Agence fédérale de développement économique pour le Nord de l'Ontario,FedNor,FedNor,561,200,Federal Economic Development Agency for Northern Ontario,fednor,NOR,,http://fednor.gc.ca/eic/site/fednor-fednor.nsf/eng/home,http://fednor.gc.ca/eic/site/fednor-fednor.nsf/fra/accueil
 2300,Canada Border Services Agency,Agence des services frontaliers du Canada,CBSA,ASFC,26,85,Canada Border Services Agency,cbsa-asfc,BSF,BSF00,www.cbsa.gc.ca,www.asfc.gc.ca
 2301,Canada Emission Reduction Incentives Agency,Agence canadienne pour l'incitation à la réduction des émissions,,,32,,,ceria-acire,RED,,,
@@ -97,7 +97,7 @@
 2317,Invest in Canada Hub,Investir au Canada,,,347,180,Invest in Canada,iic-iac,ICH,,,
 2318,Polar Knowledge Canada,Savoir polaire Canada,POLAR,POLAIRE,552,171,Polar Knowledge Canada,polar-polaire,CHR,CHR00,www.canada.ca/en/polar-knowledge.html,www.canada.ca/fr/savoir-polaire.html
 2319,Accessibility Standards Canada,Normes d'accessibilité Canada,ASC,NAC,558,199,Canadian Accessibility Standards Development Organization,casdo-ocena,CAQ,CAQ00,https://accessible.canada.ca/,https://accessibilite.canada.ca/
-2396,Canadian Radio-television and Telecommunications Commission,Conseil de la radiodiffusion et des télécommunications canadiennes,,,93,16,Canadian Radio-television and Telecommunications Commission,crtc,RTC,RTC00,www.crtc.gc.ca,www.crtc.gc.ca
+2396,Canadian Radio-television and Telecommunications Commission,Conseil de la radiodiffusion et des télécommunications canadiennes,CRTC,CRTC,93,16,Canadian Radio-television and Telecommunications Commission,crtc,RTC,RTC00,www.crtc.gc.ca,www.crtc.gc.ca
 3399,African Development Bank,Banque africaine de développement,,,7,,,,,,www.afdb.org,www.afdb.org
 3400,Asian Development Bank,Banque asiatique de développement,,,8,,,,,,www.adb.org,www.adb.org
 3401,Caribbean Development Bank,Banque de développement des Caraïbes,,,103,,,,,,www.caribank.org,www.caribank.org
@@ -388,3 +388,4 @@
 3703,Canada Water Agency,Agence de l'eau du Canada,CWA,AEC,563,,,,CWA,,https://www.canada.ca/en/canada-water-agency.html,https://www.canada.ca/fr/agence-eau-canada.html
 3704,Treasury Board,Conseil du Trésor,TB,CT,,,,,TBD,,,
 3705,Federal Public Sector Labour Relations and Employment Board,Commission des relations de travail et de l'emploi dans le secteur public fédéral,,,,,,,,,,
+nan,,,,,,,,,,,,
