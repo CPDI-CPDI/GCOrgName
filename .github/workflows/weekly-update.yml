@@ -39,7 +39,7 @@ jobs:
 
       - name: Execute Script 4 
         run: |
-          python Resources/lead_ministries_retrieve.py
+          python Resources/lead_ministry_retrieve.py
 
       - name: Execute Script 5
         run: |
