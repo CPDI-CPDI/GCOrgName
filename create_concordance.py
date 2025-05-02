@@ -71,7 +71,7 @@ def load_dataframes(paths: Dict[str, str]) -> Dict[str, pd.DataFrame]:
         'infobase_fr_df': os.path.join(paths['resources'], 'infobase_fr.csv'),
         'final_rg_match_df': os.path.join(paths['resources'], 'rg_final.csv'),
         'manual_pop_phoenix_df': os.path.join(paths['resources'], 'manual pop phoenix.csv'),
-        'harmonized_names_df': os.path.join(paths['script'], 'create_harmonized_name.csv')
+        'harmonized_names_df': os.path.join(paths['resources'], 'create_harmonized_name.csv')
     }
     
     dfs = {}
