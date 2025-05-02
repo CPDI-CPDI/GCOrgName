@@ -8,7 +8,7 @@ def load_dataframes(script_folder):
         'combined_faa': 'Scraping/combined_FAA_names.csv',
         'applied_en': 'Resources/applied_en.csv',
         'infobase_en': 'Resources/infobase_en.csv',
-        'harmonized_names': 'create_harmonized_name.csv',
+        'harmonized_names': 'Resources/create_harmonized_name.csv',
         'manual_lead_department': 'Resources/lead_manual.csv'  # Changed from 'Resources/Manual_leadDepartmentPortfolio.csv'
     }
     
@@ -143,8 +143,8 @@ def main():
     # Documentation for each field
     documentation = {
         'gc_orgID': 'Source: create_harmonized_name.csv',
-        'harmonized_name': 'Source: create_harmonized_name.csv',
-        'nom_harmonisé': 'Source: create_harmonized_name.csv',
+        'harmonized_name': 'Source: Resources/create_harmonized_name.csv',
+        'nom_harmonisé': 'Source: Resources/create_harmonized_name.csv',
         'legal_title': 'Source: Resources/Manual org ID link.csv and Scraping/combined_FAA_names.csv',
         'appellation_légale': 'Not provided in the code, likely from a similar source',
         'preferred_name': 'Source: Resources/applied_en.csv',
