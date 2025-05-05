@@ -99,13 +99,6 @@ def main():
 
         #csv report on differences between final_rg and any file (including itself)
         return_data = [['' for _ in range(7)] for _ in range(400)]
-        return_data[0][0] = 'final_rg_match'
-        return_data[0][1] = 'manual_org_id_link'
-        return_data[0][2] = 'manual_pop_phoenix'
-        return_data[0][3] = 'manual_lead_department_portfolio'
-        return_data[0][4] = 'rg_final'
-        return_data[0][5] = 'FAA_combined'
-        return_data[0][6] = 'en_applied'
 
         base_set = set(dfs['en_applied']['Legal title'].dropna())
         name_columns_data = {}
@@ -123,7 +116,7 @@ def main():
         for name, arr in name_columns_data.items():
             temp_set = set()
             count_rows = 1
-            curr_row = 1
+            curr_row = 0
             for item in arr:
                 if item not in base_set:
                     return_data[curr_row][count_cols] += 'Not found in applied-en, '
@@ -137,7 +130,7 @@ def main():
                 count_rows += 1
             count_cols += 1
 
-        df_out = pd.DataFrame(dict(return_data))
+        df_out = pd.DataFrame(return_data, columns = ['final_rg_match','manual_org_id_link','manual_pop_phoenix','manual_lead_department_portfolio','rg_final','FAA_combined','en_applied'])
         df_out.to_csv('gc_org_info_report.csv', index=False)
         
     except KeyError as e:
