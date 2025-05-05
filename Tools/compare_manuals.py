@@ -124,14 +124,14 @@ def main():
                     return_data[curr_row][count_cols] += 'duplicated data in own list, '
                 else:
                     temp_set.add(item)
-                if return_data[count_rows][count_cols] is not '':
+                if not return_data[count_rows][count_cols] == '':
                     return_data[count_rows][count_cols] += 'Row ' + str(count_rows) + ' excluding blank cells.'
                     curr_row += 1
                 count_rows += 1
             count_cols += 1
 
         df_out = pd.DataFrame(return_data, columns = ['final_rg_match','manual_org_id_link','manual_pop_phoenix','manual_lead_department_portfolio','rg_final','FAA_combined','en_applied'])
-        df_out.to_csv('gc_org_info_report.csv', index=False)
+        df_out.to_csv('Tools/gc_org_info_report.csv', index=False)
         
     except KeyError as e:
         print(f"Error analyzing data: {e}")
