@@ -132,7 +132,7 @@ def main():
                 else:
                     temp_set.add(item)
                 if return_data[count_rows][count_cols] is not '':
-                    return_data[count_rows][count_cols] += 'Row ' + count_rows + ' excluding blank cells.'
+                    return_data[count_rows][count_cols] += 'Row ' + str(count_rows) + ' excluding blank cells.'
                     curr_row += 1
                 count_rows += 1
             count_cols += 1
