@@ -6,13 +6,15 @@ def main():
     # Define the paths to the CSV files
     script_folder = os.path.dirname(os.path.abspath(__file__))
     resources_folder = os.path.join(script_folder, '..', 'Resources')
+    scraping_folder = os.path.join(script_folder, '..', 'Scraping')
 
     final_rg_match_file = os.path.join(resources_folder, 'rg_final.csv')
     manual_org_id_link_file = os.path.join(resources_folder, 'Manual org ID link.csv')
     manual_pop_phoenix_file = os.path.join(resources_folder, 'manual pop phoenix.csv')
-    manual_lead_department_portfolio_file = os.path.join(
-        resources_folder, 'lead_manual.csv')
+    manual_lead_department_portfolio_file = os.path.join(resources_folder, 'lead_manual.csv')
     rg_final_file = os.path.join(resources_folder, 'rg_final.csv')
+    en_applied_file = os.path.join(resources_folder, 'applied_en.csv')
+    FAA_combined_file = os.path.join(scraping_folder, 'combined_FAA_names.csv')
 
     # Create a dictionary to store DataFrames and their IDs
     dfs = {}
@@ -24,7 +26,9 @@ def main():
         'manual_org_id_link': manual_org_id_link_file,
         'manual_pop_phoenix': manual_pop_phoenix_file,
         'manual_lead_department_portfolio': manual_lead_department_portfolio_file,
-        'rg_final': rg_final_file
+        'rg_final': rg_final_file,
+        'FAA_combined': FAA_combined_file
+        'en_applied': en_applied_file
     }
     
     # Try to read each file individually
@@ -92,6 +96,49 @@ def main():
                 print(f"  {name} ({name_col}): {len(has_id_and_name)} out of {len(df[df['gc_orgID'].notna()])} gc_orgIDs have legal names ({percentage:.1f}%)")
             else:
                 print(f"  {name} ({name_col}): 0 out of 0 gc_orgIDs have legal names (N/A)")
+
+        #csv report on differences between final_rg and any file (including itself)
+        return_data = [['' for _ in range(7)] for _ in range(400)]
+        return_data[0][0] = 'final_rg_match'
+        return_data[0][1] = 'manual_org_id_link'
+        return_data[0][2] = 'manual_pop_phoenix'
+        return_data[0][3] = 'manual_lead_department_portfolio'
+        return_data[0][4] = 'rg_final'
+        return_data[0][5] = 'FAA_combined'
+        return_data[0][6] = 'en_applied'
+
+        base_set = set(dfs['en_applied']['Legal Title'].dropna())
+        name_columns_data = {}
+        for key, df in dfs.items():
+            match = next(
+                (col for col in df.columns if 'name' in col.lower() or 'legal' in col.lower()),
+                None
+            )
+            if 'final_rg_match' in key:
+                match = 'MatchedName'
+            if match:
+                # Store the list of values from that column
+                name_columns_data[key] = df[match].dropna().tolist()
+        count_cols = 0
+        for name, arr in name_columns_data.items():
+            temp_set = set()
+            count_rows = 1
+            curr_row = 1
+            for item in arr:
+                if item not in base_set:
+                    return_data[curr_row][count_cols] += 'Not found in applied-en, '
+                if item in temp_set:
+                    return_data[curr_row][count_cols] += 'duplicated data in own list, '
+                else:
+                    temp_set.add(item)
+                if return_data[count_rows][count_cols] is not '':
+                    return_data[count_rows][count_cols] += 'Row ' + count_rows + ' excluding blank cells.'
+                    curr_row += 1
+                count_rows += 1
+            count_cols += 1
+
+        df_out = pd.DataFrame(dict(name_columns_data.dropna()))
+        df_out.to_csv('gc_org_info_report.csv', index=False)
         
     except KeyError as e:
         print(f"Error analyzing data: {e}")
