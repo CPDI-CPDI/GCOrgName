@@ -27,7 +27,7 @@ def main():
         'manual_pop_phoenix': manual_pop_phoenix_file,
         'manual_lead_department_portfolio': manual_lead_department_portfolio_file,
         'rg_final': rg_final_file,
-        'FAA_combined': FAA_combined_file
+        'FAA_combined': FAA_combined_file,
         'en_applied': en_applied_file
     }
     
