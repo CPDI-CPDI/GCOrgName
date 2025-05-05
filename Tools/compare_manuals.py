@@ -107,7 +107,7 @@ def main():
         return_data[0][5] = 'FAA_combined'
         return_data[0][6] = 'en_applied'
 
-        base_set = set(dfs['en_applied']['Legal Title'].dropna())
+        base_set = set(dfs['en_applied']['Legal title'].dropna())
         name_columns_data = {}
         for key, df in dfs.items():
             match = next(
