@@ -124,8 +124,8 @@ def main():
                     return_data[curr_row][count_cols] += 'duplicated data in own list, '
                 else:
                     temp_set.add(item)
-                if not return_data[count_rows][count_cols] == '':
-                    return_data[count_rows][count_cols] += 'Row ' + str(count_rows) + ' excluding blank cells.'
+                if not return_data[curr_row][count_cols] == '':
+                    return_data[curr_row][count_cols] += 'Row ' + str(count_rows) + ' excluding blank cells.'
                     curr_row += 1
                 count_rows += 1
             count_cols += 1
