@@ -137,7 +137,9 @@ def main():
                 count_rows += 1
             count_cols += 1
 
-        df_out = pd.DataFrame(dict(name_columns_data.dropna()))
+        df_out = pd.DataFrame(dict(name_columns_data))
+        df_out.replace('', pd.NA, inplace=True)
+        df_out = df_out.dropna(how='all') 
         df_out.to_csv('gc_org_info_report.csv', index=False)
         
     except KeyError as e:
