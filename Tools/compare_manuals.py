@@ -119,9 +119,9 @@ def main():
             curr_row = 0
             for item in arr:
                 if item not in base_set:
-                    return_data[curr_row][count_cols] += 'Not found in applied-en, '
+                    return_data[curr_row][count_cols] += 'Not found in Manual Org ID Link, '
                 if item in temp_set:
-                    return_data[curr_row][count_cols] += 'duplicated data in own list, '
+                    return_data[curr_row][count_cols] += 'Duplicated data in own list, '
                 else:
                     temp_set.add(item)
                 if not return_data[curr_row][count_cols] == '':
