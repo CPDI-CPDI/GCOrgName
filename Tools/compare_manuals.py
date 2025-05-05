@@ -100,7 +100,7 @@ def main():
         #csv report on differences between final_rg and any file (including itself)
         return_data = [['' for _ in range(7)] for _ in range(400)]
 
-        base_set = set(dfs['final_rg_match']['MatchedName'].dropna())
+        base_set = set(dfs['manual_org_id_link']['Organization Legal Name English'].dropna())
         name_columns_data = {}
         for key, df in dfs.items():
             match = next(
