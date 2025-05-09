@@ -122,9 +122,11 @@ def main():
         # Trim whitespace from English Name and French Name columns
         combined_df['English Name'] = combined_df['English Name'].str.replace('’', "'").str.strip()
         combined_df['French Name'] = combined_df['French Name'].str.replace('’', "'").str.strip()
+
+        combined_df['FAA'] = ['1.1' if x == 'i1' else x for x in combined_df['FAA']]
         
         # Define the priority order for the 'FAA' column
-        priority_order = {'1': 1, 'i1': 2, '2': 3, '4': 4, '3': 5, '5': 6}
+        priority_order = {'1': 1, '1.1': 2, '2': 3, '4': 4, '3': 5, '5': 6}
         
         # Map the priority order to a new column
         combined_df['priority'] = combined_df['FAA'].map(priority_order)
@@ -137,12 +139,12 @@ def main():
         
         # Drop the priority column as it's no longer needed
         combined_df = combined_df.drop(columns=['priority'])
+
+        # Sort the DataFrame based on the 'English Name' field alphabetically
+        combined_df = combined_df.sort_values(by='English Name')
         
         # Sort the DataFrame based on the 'FAA' field for readability
         combined_df = combined_df.sort_values(by='FAA')
-        
-        # Sort the DataFrame based on the 'English Name' field alphabetically
-        combined_df = combined_df.sort_values(by='English Name')
              
         # Save the combined DataFrame to a new CSV file with UTF-8 encoding
         output_file = os.path.join(script_folder, 'combined_FAA_names.csv')
