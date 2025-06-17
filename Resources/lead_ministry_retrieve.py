@@ -19,12 +19,12 @@ file_harmonized = os.path.join(output_dir, "lead_code_ministers.csv")
 file_manual = os.path.join(output_dir, "manual_minID.csv")
 
 # Download CSVs
-df_en = pd.read_csv(StringIO(requests.get(url_en_csv).text))
-df_fr = pd.read_csv(StringIO(requests.get(url_fr_csv).text))
+df_en = pd.read_csv(StringIO(requests.get(url_en_csv).text), encoding='utf-8')
+df_fr = pd.read_csv(StringIO(requests.get(url_fr_csv).text), encoding='utf-8')
 
 # Save base files
-df_en.to_csv(file_en, index=False)
-df_fr.to_csv(file_fr, index=False)
+df_en.to_csv(file_en, index=False, encoding='utf-8')
+df_fr.to_csv(file_fr, index=False, encoding='utf-8')
 
 # Load manual_minID
 df_manual = pd.read_csv(file_manual)
@@ -101,7 +101,7 @@ def assign_minID(row):
             parts = [p for p in kw.split(",")]
             if all(p.lower() in title for p in parts):
                 if df_manual.at[idx, new_date_col] == "":
-                    df_manual.at[idx, new_date_col] = row["Start Date"]
+                    df_manual.at[idx, new_date_col] = row["Title"]
                     df_h.at[row.name, "minID"] = mrow["minID"]
                     return
                 else:
