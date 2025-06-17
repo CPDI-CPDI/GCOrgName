@@ -1,71 +1,30 @@
-﻿Precedence,Honorific Title,First Name,Last Name,Title,Province / Territory,Start Date,End Date,minID,notes,Titre
-1.0,Right Hon.,Mark,Carney,Prime Minister,,2025-03-14 11:31:00 a.m.,,m0001,,Premier ministre
-2.0,Hon.,Dominic,LeBlanc,Minister of International Trade and Intergovernmental Affairs,,2025-03-14 11:31:00 a.m.,,m0013,Title changed/deleted,Ministre du Commerce international et des Affaires intergouvernementales
-2.0,Hon.,Shafqat,Ali,President of the Treasury Board,,2025-05-13 10:45:00 a.m.,,m0011,,Président du Conseil du Trésor
-3.0,Hon.,Rebecca,Alty,Minister of Crown-Indigenous Relations,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre des Relations Couronne-Autochtones
-3.0,Hon.,Mélanie,Joly,Minister of Foreign Affairs and International Development,,2025-03-14 11:31:00 a.m.,,m0005,Title changed/deleted,Ministre des Affaires étrangères et du Développement international
-4.0,Hon.,François-Philippe,Champagne,Minister of Finance,,2025-03-14 11:31:00 a.m.,,m0039,Title changed/deleted,Ministre des Finances
-4.0,Hon.,Anita,Anand,Minister of Foreign Affairs,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre des Affaires étrangères
-5.0,Hon.,Anita,Anand,"Minister of Innovation, Science and Industry",,2025-03-14 11:31:00 a.m.,,m0009,Title changed/deleted,"Ministre de l’Innovation, des Sciences et de l’Industrie"
-5.0,Hon.,Gary,Anandasangaree,Minister of Public Safety,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre de la Sécurité publique
-6.0,Hon.,François-Philippe,Champagne,Minister of Finance and National Revenue,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre des Finances et du Revenu national
-7.0,Hon.,Rebecca,Chartrand,Minister of Northern and Arctic Affairs,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre des Affaires du Nord et de l’Arctique
-8.0,Hon.,Julie,Dabrusin,Minister of Environment and Climate Change,,2025-05-13 10:45:00 a.m.,,m0016,,Ministre de l’Environnement et du Changement climatique
-9.0,Hon.,Sean,Fraser,Minister of Justice,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre de la Justice
-10.0,Hon.,Steven,Guilbeault,"Minister of Canadian Culture and Identity, Parks Canada",,2025-03-14 11:31:00 a.m.,,m0022,Title changed/deleted,"Ministre de la Culture et de l’Identité canadiennes, Parcs Canada"
-10.0,Hon.,Chrystia,Freeland,Minister of Transport and Internal Trade,,2025-05-13 10:45:00 a.m.,,m0015,,Ministre des Transports et du Commerce intérieur
-11.0,Hon.,Steven,Guilbeault,Minister of Canadian Identity and Culture,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre de l’Identité et de la Culture canadiennes
-12.0,Hon.,Mandy,Gull-Masty,Minister of Indigenous Services,,2025-05-13 10:45:00 a.m.,,m0008,,Ministre des Services aux Autochtones
-13.0,Hon.,Gary,Anandasangaree,Minister of Crown-Indigenous Relations and Northern Affairs,,2025-03-14 11:31:00 a.m.,2025-05-13 10:44:59 a.m.,m0024,Title changed/deleted,Ministre des Relations Couronne-Autochtones et des Affaires du Nord
-13.0,Hon.,Gary,Anandasangaree,Attorney General of Canada,,2025-03-14 11:31:00 a.m.,,New Title,Title changed/deleted,Procureur général du Canada
-13.0,Hon.,Patty,Hajdu,Minister of Jobs and Families,,2025-05-13 10:45:00 a.m.,,m0028,,Ministre de l’Emploi et des Familles
-14.0,Hon.,Rechie,Valdez,Chief government whip,,2025-03-14 11:31:00 a.m.,,m0023,Title changed/deleted,Whip en chef du gouvernement
-14.0,Hon.,Tim,Hodgson,Minister of Energy and Natural Resources,,2025-05-13 10:45:00 a.m.,,m0014,,Ministre de l’Énergie et des Ressources naturelles
-15.0,Hon.,Mélanie,Joly,Minister of Industry,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre de l’Industrie
-16.0,Hon.,David,McGuinty,Minister of Public Safety and Emergency Preparedness,,2025-03-14 11:31:00 a.m.,,m0031,Title changed/deleted,Ministre de la Sécurité publique et de la Protection civile
-16.0,Hon.,Dominic,LeBlanc,President of the King’s Privy Council for Canada,,2025-05-13 10:45:00 a.m.,,New Title,,Président du Conseil privé du Roi pour le Canada
-17.0,Hon.,Joël,Lightbound,"Minister of Government Transformation, Public Works and Procurement",,2025-05-13 10:45:00 a.m.,,New Title,,"Ministre de la Transformation du gouvernement, des Travaux publics et de l’Approvisionnement"
-18.0,Hon.,Nathaniel,Erskine-Smith,"Minister of Housing, Infrastructure and Communities",,2025-03-14 11:31:00 a.m.,,m0036,Title changed/deleted,"Ministre du Logement, de l’Infrastructure et des Collectivités"
-18.0,Hon.,Heath,MacDonald,Minister of Agriculture and Agri-Food,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre de l’Agriculture et de l’Agroalimentaire
-19.0,Hon.,Steven,MacKinnon,Leader of the Government in the House of Commons,,2025-05-13 10:45:00 a.m.,,New Title,,Leader du gouvernement à la Chambre des communes
-20.0,Hon.,David,McGuinty,Minister of National Defence,,2025-05-13 10:45:00 a.m.,,m0012,,Ministre de la Défense nationale
-21.0,Hon.,Jill,McKnight,Minister of Veterans Affairs,,2025-05-13 10:45:00 a.m.,,m0037,,Ministre des Anciens Combattants
-21.0,Hon.,Joanne,Thompson,"Minister of Fisheries, Oceans and the Canadian Coast Guard",,2025-03-14 11:31:00 a.m.,,m0006,Title changed/deleted,"Ministre des Pêches, des Océans et de la Garde côtière canadienne"
-22.0,Hon.,Arielle,Kayabaga,Minister of Democratic Institutions,,2025-03-14 11:31:00 a.m.,,m0032,Title changed/deleted,Ministre des Institutions démocratiques
-22.0,Hon.,Lena Metlege,Diab,"Minister of Immigration, Refugees and Citizenship",,2025-05-13 10:45:00 a.m.,,m0017,,"Ministre de l’Immigration, des Réfugiés et de la Citoyenneté"
-23.0,Hon.,Marjorie,Michel,Minister of Health,,2025-05-13 10:45:00 a.m.,,m0018,,Ministre de la Santé
-23.0,Hon.,Kody,Blois,Minister of Agriculture and Agri-Food and Rural Economic Development,,2025-03-14 11:31:00 a.m.,,m0002,Title changed/deleted,Ministre de l’Agriculture et de l’Agroalimentaire et du Développement économique rural
-24.0,Hon.,Eleanor,Olszewski,Minister of Emergency Management and Community Resilience,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre de la Gestion des urgences et de la Résilience des communautés
-24.0,Hon.,Ali,Ehsassi,"Minister of Government Transformation, Public Services and Procurement",,2025-03-14 11:31:00 a.m.,,m0004,Title changed/deleted,"Ministre de la Transformation du gouvernement, des Services publics et de l’Approvisionnement"
-25.0,Hon.,Gregor,Robertson,Minister of Housing and Infrastructure,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre du Logement et de l’Infrastructure
-26.0,Hon.,Maninder,Sidhu,Minister of International Trade,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre du Commerce international
-27.0,Hon.,Evan,Solomon,Minister of Artificial Intelligence and Digital Innovation,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre de l’Intelligence artificielle et de l’Innovation numérique
-28.0,Hon.,Joanne,Thompson,Minister of Fisheries,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre des Pêches
-29.0,Hon.,Rechie,Valdez,Minister of Women and Gender Equality,,2025-05-13 10:45:00 a.m.,,New Title,,Ministre des Femmes et de l’Égalité des genres
-30.0,Hon.,Buckley,Belanger,Secretary of State (Rural Development),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Développement rural)
-31.0,Hon.,Stephen,Fuhr,Secretary of State (Defence Procurement),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Approvisionnement en matière de défense)
-32.0,Hon.,Anna,Gainey,Secretary of State (Children and Youth),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Enfance et Jeunesse)
-33.0,Hon.,Wayne,Long,Secretary of State (Canada Revenue Agency and Financial Institutions),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Agence du revenu du Canada et Institutions financières)
-34.0,Hon.,Stephanie,McLean,Secretary of State (Seniors),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Aînés)
-35.0,Hon.,Nathalie,Provost,Secretary of State (Nature),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Nature)
-36.0,Hon.,Ruby,Sahota,Secretary of State (Combatting Crime),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Lutte contre la criminalité)
-37.0,Hon.,Randeep,Sarai,Secretary of State (International Development),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Développement international)
-38.0,Hon.,Adam,van Koeverden,Secretary of State (Sport),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Sports)
-39.0,Hon.,John,Zerucelli,Secretary of State (Labour),,2025-05-13 10:45:00 a.m.,,New Title,,Secrétaire d’État (Travail)
-,,,,Associate Minister of Health,,,,,Title changed/deleted,
-,,,,Minister for Women and Gender Equality and Youth,,,,,Title changed/deleted,
-,,,,Minister of Canadian Heritage,,,,,Title changed/deleted,
-,,,,Minister of Citizens’ Services,,,,,Title changed/deleted,
-,,,,"Minister of Diversity, Inclusion and Persons with Disabilities",,,,,Title changed/deleted,
-,,,,"Minister of Export Promotion, International Trade and Economic Development",,,,,Title changed/deleted,
-,,,,"Minister of Families, Children and Social Development",,,,,Title changed/deleted,
-,,,,Minister of Intergovernmental Affairs,,,,,Title changed/deleted,
-,,,,Minister of International Development,,,,,Title changed/deleted,
-,,,,Minister of National Revenue,,,,,Title changed/deleted,
-,,,,Minister of Official Languages,,,,,Title changed/deleted,
-,,,,Minister of Public Services and Procurement,,,,,Title changed/deleted,
-,,,,Minister of Seniors,,,,,Title changed/deleted,
-,,,,Minister of Small Business,,,,,Title changed/deleted,
-,,,,Minister of Sport,,,,,Title changed/deleted,
-,,,,Minister of Tourism,,,,,Title changed/deleted,
-,,,,Minister responsible for the Atlantic Canada Opportunities Agency,,,,,Title changed/deleted,
+﻿Precedence,Honorific Title,First Name,Last Name,Title,Province / Territory,Start Date,End Date,Titre,minID,notes
+1,Right Hon.,Mark,Carney,Prime Minister of Canada,,2025-03-14 11:31:00 a.m.,,Premier ministre du Canada,m0001,"matched, "
+2,Hon.,Shafqat,Ali,President of the Treasury Board,,2025-05-13 10:45:00 a.m.,,Président du Conseil du Trésor,m0011,"matched, "
+3,Hon.,Rebecca,Alty,Minister of Crown-Indigenous Relations,,2025-05-13 10:45:00 a.m.,,Ministre des Relations Couronne-Autochtones,m0024,"matched, "
+4,Hon.,Anita,Anand,Minister of Foreign Affairs,,2025-05-13 10:45:00 a.m.,,Ministre des Affaires étrangères,m0005,"matched, "
+5,Hon.,Gary,Anandasangaree,Minister of Public Safety,,2025-05-13 10:45:00 a.m.,,Ministre de la Sécurité publique,m0031,"matched, "
+6,Hon.,François-Philippe,Champagne,Minister of Finance and National Revenue,,2025-05-13 10:45:00 a.m.,,Ministre des Finances et du Revenu national,m0039,"matched, "
+7,Hon.,Rebecca,Chartrand,Minister of Northern and Arctic Affairs and Minister responsible for the Canadian Northern Economic Development Agency,,2025-05-13 10:45:00 a.m.,,Ministre des Affaires du Nord et de l’Arctique et ministre responsable de l’Agence canadienne de développement économique du Nord,m0003,"matched, "
+8,Hon.,Julie,Dabrusin,Minister of Environment and Climate Change,,2025-05-13 10:45:00 a.m.,,Ministre de l’Environnement et du Changement climatique,m0016,"matched, "
+9,Hon.,Sean,Fraser,Minister of Justice and Attorney General of Canada and Minister responsible for the Atlantic Canada Opportunities Agency,,2025-05-13 10:45:00 a.m.,,Ministre de la Justice et procureur général du Canada et ministre responsable de l’Agence de promotion économique du Canada atlantique,m0007,"matched, "
+10,Hon.,Chrystia,Freeland,Minister of Transport and Internal Trade,,2025-05-13 10:45:00 a.m.,,Ministre des Transports et du Commerce intérieur,m0015,"matched, "
+11,Hon.,Steven,Guilbeault,Minister of Canadian Identity and Culture and Minister responsible for Official Languages,,2025-05-13 10:45:00 a.m.,,Ministre de l’Identité et de la Culture canadiennes et ministre responsable des Langues officielles,m0022,"matched, "
+12,Hon.,Mandy,Gull-Masty,Minister of Indigenous Services,,2025-05-13 10:45:00 a.m.,,Ministre des Services aux Autochtones,m0008,"matched, "
+13,Hon.,Patty,Hajdu,Minister of Jobs and Families and Minister responsible for the Federal Economic Development Agency for Northern Ontario,,2025-05-13 10:45:00 a.m.,,Ministre de l’Emploi et des Familles et ministre responsable de l’Agence fédérale de développement économique pour le Nord de l’Ontario,m0028,"matched, "
+14,Hon.,Tim,Hodgson,Minister of Energy and Natural Resources,,2025-05-13 10:45:00 a.m.,,Ministre de l’Énergie et des Ressources naturelles,m0014,"matched, "
+15,Hon.,Mélanie,Joly,Minister of Industry and Minister responsible for Canada Economic Development for Quebec Regions,,2025-05-13 10:45:00 a.m.,,Ministre de l’Industrie et ministre responsable de Développement économique Canada pour les régions du Québec,m0009,"matched, "
+16,Hon.,Dominic,LeBlanc,"President of the King’s Privy Council for Canada and Minister responsible for Canada-U.S. Trade, Intergovernmental Affairs and One Canadian Economy",,2025-05-13 10:45:00 a.m.,,"Président du Conseil privé du Roi pour le Canada et ministre responsable du Commerce Canada–États-Unis, des Affaires intergouvernementales et de l’Unité de l’économie canadienne",m0019,"matched, "
+17,Hon.,Joël,Lightbound,"Minister of Government Transformation, Public Works and Procurement",,2025-05-13 10:45:00 a.m.,,"Ministre de la Transformation du gouvernement, des Travaux publics et de l’Approvisionnement",m0004,"matched, "
+18,Hon.,Heath,MacDonald,Minister of Agriculture and Agri-Food,,2025-05-13 10:45:00 a.m.,,Ministre de l’Agriculture et de l’Agroalimentaire,m0002,"matched, "
+19,Hon.,Steven,MacKinnon,Leader of the Government in the House of Commons,,2025-05-13 10:45:00 a.m.,,Leader du gouvernement à la Chambre des communes,m0020,"matched, "
+20,Hon.,David,McGuinty,Minister of National Defence,,2025-05-13 10:45:00 a.m.,,Ministre de la Défense nationale,m0012,"matched, "
+21,Hon.,Jill,McKnight,Minister of Veterans Affairs and Associate Minister of National Defence,,2025-05-13 10:45:00 a.m.,,Ministre des Anciens Combattants et ministre associée de la Défense nationale,m0012,"matched, "
+22,Hon.,Lena Metlege,Diab,"Minister of Immigration, Refugees and Citizenship",,2025-05-13 10:45:00 a.m.,,"Ministre de l’Immigration, des Réfugiés et de la Citoyenneté",m0017,"matched, "
+23,Hon.,Marjorie,Michel,Minister of Health,,2025-05-13 10:45:00 a.m.,,Ministre de la Santé,m0018,"matched, "
+24,Hon.,Eleanor,Olszewski,Minister of Emergency Management and Community Resilience and Minister responsible for Prairies Economic Development Canada,,2025-05-13 10:45:00 a.m.,,Ministre de la Gestion des urgences et de la Résilience des communautés et ministre responsable de Développement économique Canada pour les Prairies,m0021,"matched, "
+25,Hon.,Gregor,Robertson,Minister of Housing and Infrastructure and Minister responsible for Pacific Economic Development Canada,,2025-05-13 10:45:00 a.m.,,Ministre du Logement et de l’Infrastructure et ministre responsable de Développement économique Canada pour le Pacifique,m0036,"matched, "
+26,Hon.,Maninder,Sidhu,Minister of International Trade,,2025-05-13 10:45:00 a.m.,,Ministre du Commerce international,m0013,"matched, "
+27,Hon.,Evan,Solomon,Minister of Artificial Intelligence and Digital Innovation and Minister responsible for the Federal Economic Development Agency for Southern Ontario,,2025-05-13 10:45:00 a.m.,,Ministre de l’Intelligence artificielle et de l’Innovation numérique et ministre responsable de l’Agence fédérale de développement économique pour le Sud de l’Ontario,m0025,"matched, "
+28,Hon.,Joanne,Thompson,Minister of Fisheries,,2025-05-13 10:45:00 a.m.,,Ministre des Pêches,m0006,"matched, "
+29,Hon.,Rechie,Valdez,Minister of Women and Gender Equality and Secretary of State (Small Business and Tourism),,2025-05-13 10:45:00 a.m.,,Ministre des Femmes et de l’Égalité des genres et secrétaire d’État (Petites Entreprises et Tourisme),m0026,"matched, "
