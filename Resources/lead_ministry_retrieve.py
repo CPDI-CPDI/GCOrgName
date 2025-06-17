@@ -106,15 +106,19 @@ def match_with_keywords(row):
             if all(p in title for p in parts):
                 if df_manual.at[idx, new_date_col] == "":
                     df_manual.at[idx, new_date_col] = row["Title"]
+                else:
+                    df_h.at[row.name, "notes"] += "matched more than once"
+                    return False
                 df_h.at[row.name, "minID"] = mrow["minID"]
-                df_h.at[row.name, "notes"] += "matched, "
                 return True
         else:
             if kw.strip().lower() in title:
                 if df_manual.at[idx, new_date_col] == "":
                     df_manual.at[idx, new_date_col] = row["Title"]
+                else:
+                    df_h.at[row.name, "notes"] += "matched more than once"
+                    return False
                 df_h.at[row.name, "minID"] = mrow["minID"]
-                df_h.at[row.name, "notes"] += "matched, "
                 return True
     return False
 
