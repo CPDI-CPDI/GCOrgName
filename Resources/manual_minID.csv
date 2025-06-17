@@ -1,40 +1,40 @@
-minID,Keywords,Notes,2025-03-14
-m0001,Prime Minister,,Prime Minister
-m0002,Agriculture,,Minister of Agriculture and Agri-Food and Rural Economic Development
-m0003,"Northern,Arctic",,
-m0004,"Government Transformation,Procurement",,"Minister of Government Transformation, Public Services and Procurement"
-m0005,Foreign Affairs,,Minister of Foreign Affairs and International Development
-m0006,Fisheries,,"Minister of Fisheries, Oceans and the Canadian Coast Guard"
-m0007,Justice,,
-m0008,Indigenous Services,,Minister of Indigenous Services
-m0009,Industry,,"Minister of Innovation, Science and Industry"
-m0010,,,
-m0011,Treasury Board,,President of the Treasury Board
-m0012,National Defence,,Minister of National Defence
-m0013,International Trade,,Minister of International Trade and Intergovernmental Affairs
-m0014,"Energy,Natural Resources",,Minister of Energy and Natural Resources
-m0015,"Transport,Internal Trade",,Minister of Transport and Internal Trade
-m0016,Environment,,Minister of Environment and Climate Change
-m0017,Immigration,,"Minister of Immigration, Refugees and Citizenship"
-m0018,Health,,Minister of Health
-m0019,Privy Council,,
-m0020,Leader of the Government in the House of Commons,,
-m0021,Emergency Management,,
-m0022,"Culture,Identity",,"Minister of Canadian Culture and Identity, Parks Canada"
-m0023,Chief government whip,,Chief government whip
-m0024,Crown-Indigenous Relations,,Minister of Crown-Indigenous Relations and Northern Affairs
-m0025,Artificial Intelligence,,
-m0026,Women,,
-m0027,,,
-m0028,Jobs and Families,,Minister of Jobs and Families
-m0029,,,
-m0030,,,
-m0031,Public Safety,,Minister of Public Safety and Emergency Preparedness
-m0032,Democratic Institutions,,Minister of Democratic Institutions
-m0033,,,
-m0034,,,
-m0035,,,
-m0036,Housing,,"Minister of Housing, Infrastructure and Communities"
-m0037,Veterans,,Minister of Veterans Affairs
-m0038,,,
-m0039,Finance,,Minister of Finance
+minID,Keywords,Notes,2025-03-14,2025-05-13
+m0001,Prime Minister,,Prime Minister,2025-03-14 11:31:00 a.m.
+m0002,Agriculture,,Minister of Agriculture and Agri-Food and Rural Economic Development,2025-05-13 10:45:00 a.m.
+m0003,"Northern,Arctic",,,Minister of Northern and Arctic Affairs and Minister responsible for the Canadian Northern Economic Development Agency
+m0004,"Government Transformation,Procurement",,"Minister of Government Transformation, Public Services and Procurement","Minister of Government Transformation, Public Works and Procurement"
+m0005,Foreign Affairs,,Minister of Foreign Affairs and International Development,2025-05-13 10:45:00 a.m.
+m0006,Fisheries,,"Minister of Fisheries, Oceans and the Canadian Coast Guard",2025-05-13 10:45:00 a.m.
+m0007,Justice,,,2025-05-13 10:45:00 a.m.
+m0008,Indigenous Services,,Minister of Indigenous Services,2025-05-13 10:45:00 a.m.
+m0009,Industry,,"Minister of Innovation, Science and Industry",2025-05-13 10:45:00 a.m.
+m0010,,,,2025-05-13 10:45:00 a.m.
+m0011,Treasury Board,,President of the Treasury Board,2025-05-13 10:45:00 a.m.
+m0012,National Defence,,Minister of National Defence,2025-05-13 10:45:00 a.m.
+m0013,International Trade,,Minister of International Trade and Intergovernmental Affairs,2025-05-13 10:45:00 a.m.
+m0014,"Energy,Natural Resources",,Minister of Energy and Natural Resources,Minister of Energy and Natural Resources
+m0015,"Transport,Internal Trade",,Minister of Transport and Internal Trade,Minister of Transport and Internal Trade
+m0016,Environment,,Minister of Environment and Climate Change,2025-05-13 10:45:00 a.m.
+m0017,Immigration,,"Minister of Immigration, Refugees and Citizenship",2025-05-13 10:45:00 a.m.
+m0018,Health,,Minister of Health,2025-05-13 10:45:00 a.m.
+m0019,Privy Council,,,2025-05-13 10:45:00 a.m.
+m0020,Leader of the Government in the House of Commons,,,2025-05-13 10:45:00 a.m.
+m0021,Emergency Management,,,2025-05-13 10:45:00 a.m.
+m0022,"Culture,Identity",,"Minister of Canadian Culture and Identity, Parks Canada",Minister of Canadian Identity and Culture and Minister responsible for Official Languages
+m0023,Chief government whip,,Chief government whip,
+m0024,Crown-Indigenous Relations,,Minister of Crown-Indigenous Relations and Northern Affairs,2025-05-13 10:45:00 a.m.
+m0025,Artificial Intelligence,,,2025-05-13 10:45:00 a.m.
+m0026,Women,,,2025-05-13 10:45:00 a.m.
+m0027,,,,
+m0028,Jobs and Families,,Minister of Jobs and Families,2025-05-13 10:45:00 a.m.
+m0029,,,,
+m0030,,,,
+m0031,Public Safety,,Minister of Public Safety and Emergency Preparedness,2025-05-13 10:45:00 a.m.
+m0032,Democratic Institutions,,Minister of Democratic Institutions,
+m0033,,,,
+m0034,,,,
+m0035,,,,
+m0036,Housing,,"Minister of Housing, Infrastructure and Communities",2025-05-13 10:45:00 a.m.
+m0037,Veterans,,Minister of Veterans Affairs,2025-05-13 10:45:00 a.m.
+m0038,,,,
+m0039,Finance,,Minister of Finance,
