@@ -15,7 +15,7 @@ url_fr_scrape = "https://www.pm.gc.ca/fr/cabinet"
 output_dir = "Resources"
 file_en = os.path.join(output_dir, "lead_ministries_en.csv")
 file_fr = os.path.join(output_dir, "lead_ministries_fr.csv")
-file_harmonized = os.path.join(output_dir, "lead_code_ministries.csv")
+file_harmonized = os.path.join(output_dir, "lead_code_ministers.csv")
 file_manual = os.path.join(output_dir, "manual_minID.csv")
 
 # Download CSVs
