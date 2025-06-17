@@ -21,9 +21,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests  # install 'requests' only, 'os' is built-in
-          pip install pandas
-          pip install rapidfuzz
+          pip install requests pandas rapidfuzz beautifulsoup4 lxml # install 'requests' only, 'os' is built-in 
 
       - name: Execute Script 1 
         run: |
