@@ -1,4 +1,3 @@
-
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -30,54 +29,53 @@ df_fr.to_csv(file_fr, index=False)
 # Load manual_minID
 df_manual = pd.read_csv(file_manual)
 manual_date_cols = [col for col in df_manual.columns if re.match(r"\d{4}-\d{2}-\d{2}", col)]
-latest_manual_date = max(pd.to_datetime(manual_date_cols).date)
+latest_manual_date = max(pd.to_datetime(manual_date_cols, errors='coerce').date.tolist())
 latest_start_date = pd.to_datetime(df_en['Start Date'], errors='coerce').dt.date.max()
 
-
 if latest_start_date <= latest_manual_date:
-    print("No new date detected. Exiting.")
-    exit()
+    print("No new date detected. Exiting.")
+    exit()
 
 new_date_col = latest_start_date.strftime("%Y-%m-%d")
 if new_date_col not in df_manual.columns:
-    df_manual[new_date_col] = ""
+    df_manual[new_date_col] = ""
 
 # Remove rows with "("
 def trim_on_paren(df, col):
-    if any(df[col].str.contains(r"\(")):
-        idx = df[df[col].str.contains(r"\(")].index[0]
-        return df.iloc[:idx]
-    return df
+    if any(df[col].str.contains(r"\(")):
+        idx = df[df[col].str.contains(r"\(")].index[0]
+        return df.iloc[:idx]
+    return df
 
 df_en = trim_on_paren(df_en, "Title")
 df_fr = trim_on_paren(df_fr, "Titre")
 
 # Scrape cabinet titles
 def scrape_titles(url):
-    soup = BeautifulSoup(requests.get(url).text, "html.parser")
-    div = soup.find("div", class_="field field--name-body field--type-text-with-summary field--label-hidden field--item")
-    titles = []
-    if div:
-        ps = div.find_all("p")
-        for i in range(2, len(ps)):
-            if ps[i].find("strong") and ps[i].find("br"):
-                contents = ps[i].contents
-                for j, item in enumerate(contents):
-                    if item.name == "br" and j + 1 < len(contents):
-                        titles.append(contents[j + 1].strip())
-    return titles
+    soup = BeautifulSoup(requests.get(url).text, "html.parser")
+    div = soup.find("div", class_="field field--name-body field--type-text-with-summary field--label-hidden field--item")
+    titles = []
+    if div:
+        ps = div.find_all("p")
+        for i in range(2, len(ps)):
+            if ps[i].find("strong") and ps[i].find("br"):
+                contents = ps[i].contents
+                for j, item in enumerate(contents):
+                    if item.name == "br" and j + 1 < len(contents):
+                        titles.append(contents[j + 1].strip())
+    return titles
 
 scraped_en = scrape_titles(url_en_scrape)
 scraped_fr = scrape_titles(url_fr_scrape)
 
 # Replace titles
 def update_titles(df, col, scraped):
-    for i, title in df[col].items():
-        for s in scraped:
-            if title.lower() in s.lower():
-                df.at[i, col] = s
-                break
-    return df
+    for i, title in df[col].items():
+        for s in scraped:
+            if title.lower() in s.lower():
+                df.at[i, col] = s
+                break
+    return df
 
 df_en = update_titles(df_en, "Title", scraped_en)
 df_fr = update_titles(df_fr, "Titre", scraped_fr)
@@ -89,52 +87,53 @@ df_h["minID"] = ""
 df_h["notes"] = ""
 
 # Normalize
-def norm(text): return str(text).lower().strip()
+def norm(text):
+    return str(text).lower().strip()
 
 # Assign minID
 def assign_minID(row):
-    title = norm(row["Title"])
-    for idx, mrow in df_manual.iterrows():
-        kw = str(mrow["keywords"])
-        if pd.isna(kw) or kw.strip() == "":
-            continue
-        if "," in kw:
-            parts = [p for p in kw.split(",")]
-            if all(p.lower() in title for p in parts):
-                if df_manual.at[idx, new_date_col] == "":
-                    df_manual.at[idx, new_date_col] = row["Start Date"]
-                    df_h.at[row.name, "minID"] = mrow["minID"]
-                    return
-                else:
-                    df_h.at[row.name, "minID"] = mrow["minID"]
-                    df_h.at[row.name, "notes"] += "matched, "
-        else:
-            if kw.lower() in title:
-                if df_manual.at[idx, new_date_col] == "":
-                    df_manual.at[idx, new_date_col] = row["Start Date"]
-                    df_h.at[row.name, "minID"] = mrow["minID"]
-                    return
-                else:
-                    df_h.at[row.name, "minID"] = mrow["minID"]
-                    df_h.at[row.name, "notes"] += "matched, "
-    # No match
-    blank = df_manual[df_manual["keywords"].isna() | (df_manual["keywords"] == "")].index
-    if len(blank) > 0:
-        idx = blank[0]
-    else:
-        new_id = f"m{int(df_manual['minID'].str[1:].astype(int).max()) + 1:04d}"
-        df_manual.loc[len(df_manual)] = [new_id, row["Title"], "Identify keywords or see if there is a match with another entry, delete this when resolved", *[""]*(len(df_manual.columns)-3)]
-        df_manual.at[len(df_manual)-1, new_date_col] = row["Start Date"]
-        df_h.at[row.name, "minID"] = new_id
-        df_h.at[row.name, "notes"] = "view minID file and confirm need for new minID"
-        return
-    df_manual.at[idx, "keywords"] = row["Title"]
-    df_manual.at[idx, new_date_col] = row["Start Date"]
-    df_manual.at[idx, "notes"] = "Identify keywords or see if there is a match with another entry, delete this when resolved"
-    new_id = f"m{int(df_manual['minID'].str[1:].astype(int).max()) + 1:04d}"
-    df_manual.at[idx, "minID"] = new_id
-    df_h.at[row.name, "minID"] = new_id
-    df_h.at[row.name, "notes"] = "view minID file and confirm need for new minID"
+    title = norm(row["Title"])
+    for idx, mrow in df_manual.iterrows():
+        kw = str(mrow["keywords"])
+        if pd.isna(kw) or kw.strip() == "":
+            continue
+        if "," in kw:
+            parts = [p for p in kw.split(",")]
+            if all(p.lower() in title for p in parts):
+                if df_manual.at[idx, new_date_col] == "":
+                    df_manual.at[idx, new_date_col] = row["Start Date"]
+                    df_h.at[row.name, "minID"] = mrow["minID"]
+                    return
+                else:
+                    df_h.at[row.name, "minID"] = mrow["minID"] 
+                    df_h.at[row.name, "notes"] += "matched, "
+        else:
+            if kw.lower() in title:
+                if df_manual.at[idx, new_date_col] == "":
+                    df_manual.at[idx, new_date_col] = row["Start Date"]
+                    df_h.at[row.name, "minID"] = mrow["minID"]
+                    return
+                else:
+                    df_h.at[row.name, "minID"] = mrow["minID"]
+                    df_h.at[row.name, "notes"] += "matched, "
+    # No match
+    blank = df_manual[df_manual["keywords"].isna() | (df_manual["keywords"] == "")].index
+    if len(blank) > 0:
+        idx = blank[0]
+    else:
+        new_id = f"m{int(df_manual['minID'].str[1:].astype(int).max()) + 1:04d}"
+        df_manual.loc[len(df_manual)] = [new_id, row["Title"], "Identify keywords or see if there is a match with another entry, delete this when resolved", *[""]*(len(df_manual.columns)-3)]
+        df_manual.at[len(df_manual)-1, new_date_col] = row["Start Date"]
+        df_h.at[row.name, "minID"] = new_id
+        df_h.at[row.name, "notes"] = "view minID file and confirm need for new minID"
+        return
+    df_manual.at[idx, "keywords"] = row["Title"]
+    df_manual.at[idx, new_date_col] = row["Start Date"]
+    df_manual.at[idx, "notes"] = "Identify keywords or see if there is a match with another entry, delete this when resolved"
+    new_id = f"m{int(df_manual['minID'].str[1:].astype(int).max()) + 1:04d}"
+    df_manual.at[idx, "minID"] = new_id
+    df_h.at[row.name, "minID"] = new_id
+    df_h.at[row.name, "notes"] = "view minID file and confirm need for new minID"
 
 df_h.apply(assign_minID, axis=1)
 
@@ -143,8 +142,5 @@ df_en.to_csv(file_en, index=False)
 df_fr.to_csv(file_fr, index=False)
 df_h.to_csv(file_harmonized, index=False)
 df_manual.to_csv(file_manual, index=False)
-
-else:
-    print("All ministries have French titles. fixLeadDepartment.py should work correctly.")
 
 print("\nMinistry Download and Merge process completed.")
