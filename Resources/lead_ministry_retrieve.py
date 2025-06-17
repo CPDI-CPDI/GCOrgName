@@ -1,3 +1,4 @@
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -88,39 +89,39 @@ df_h["Titre"] = df_fr["Titre"]
 df_h["minID"] = ""
 df_h["notes"] = ""
 
-# Clean
+# Normalize
+def norm(text):
+    return str(text).replace('\\xa0', ' ').strip().lower()
 
-def clean(text):
-    return str(text).replace('\xa0', ' ').strip().lower()
-
-
-# Assign minID
-def assign_minID(row):
-    title = clean(row["Title"])
+# First pass: match using keywords only
+def match_with_keywords(row):
+    title = norm(row["Title"])
     for idx, mrow in df_manual.iterrows():
-        kw = str(mrow["Keywords"])
+        kw = mrow["Keywords"]
         if pd.isna(kw) or kw.strip() == "":
             continue
+        kw = str(kw)
         if "," in kw:
             parts = [p.strip().lower() for p in kw.split(",")]
             if all(p in title for p in parts):
                 if df_manual.at[idx, new_date_col] == "":
                     df_manual.at[idx, new_date_col] = row["Title"]
-                    df_h.at[row.name, "minID"] = mrow["minID"]
-                    return
-                else:
-                    df_h.at[row.name, "minID"] = mrow["minID"]
-                    df_h.at[row.name, "notes"] += "matched, "
+                df_h.at[row.name, "minID"] = mrow["minID"]
+                df_h.at[row.name, "notes"] += "matched, "
+                return True
         else:
-            if kw.lower() in title:
+            if kw.strip().lower() in title:
                 if df_manual.at[idx, new_date_col] == "":
                     df_manual.at[idx, new_date_col] = row["Title"]
-                    df_h.at[row.name, "minID"] = mrow["minID"]
-                    return
-                else:
-                    df_h.at[row.name, "minID"] = mrow["minID"]
-                    df_h.at[row.name, "notes"] += "matched, "
-    # No match
+                df_h.at[row.name, "minID"] = mrow["minID"]
+                df_h.at[row.name, "notes"] += "matched, "
+                return True
+    return False
+
+# Second pass: assign to blank keyword rows
+def assign_to_blank(row):
+    if df_h.at[row.name, "minID"] != "":
+        return
     blank = df_manual[df_manual["Keywords"].isna() | (df_manual["Keywords"] == "")].index
     if len(blank) > 0:
         idx = blank[0]
@@ -139,7 +140,9 @@ def assign_minID(row):
     df_h.at[row.name, "minID"] = new_id
     df_h.at[row.name, "notes"] = "view minID file and confirm need for new minID"
 
-df_h.apply(assign_minID, axis=1)
+# Apply two-pass matching
+df_h.apply(match_with_keywords, axis=1)
+df_h.apply(assign_to_blank, axis=1)
 
 # Save all
 df_en.to_csv(file_en, index=False, encoding='utf-8-sig')
