@@ -94,7 +94,7 @@ def norm(text):
 def assign_minID(row):
     title = norm(row["Title"])
     for idx, mrow in df_manual.iterrows():
-        kw = str(mrow["keywords"])
+        kw = str(mrow["Keywords"])
         if pd.isna(kw) or kw.strip() == "":
             continue
         if "," in kw:
@@ -117,7 +117,7 @@ def assign_minID(row):
                     df_h.at[row.name, "minID"] = mrow["minID"]
                     df_h.at[row.name, "notes"] += "matched, "
     # No match
-    blank = df_manual[df_manual["keywords"].isna() | (df_manual["keywords"] == "")].index
+    blank = df_manual[df_manual["Keywords"].isna() | (df_manual["Keywords"] == "")].index
     if len(blank) > 0:
         idx = blank[0]
     else:
@@ -127,7 +127,7 @@ def assign_minID(row):
         df_h.at[row.name, "minID"] = new_id
         df_h.at[row.name, "notes"] = "view minID file and confirm need for new minID"
         return
-    df_manual.at[idx, "keywords"] = row["Title"]
+    df_manual.at[idx, "Keywords"] = row["Title"]
     df_manual.at[idx, new_date_col] = row["Start Date"]
     df_manual.at[idx, "notes"] = "Identify keywords or see if there is a match with another entry, delete this when resolved"
     new_id = f"m{int(df_manual['minID'].str[1:].astype(int).max()) + 1:04d}"
