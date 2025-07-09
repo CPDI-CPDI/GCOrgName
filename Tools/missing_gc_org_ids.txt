@@ -1,6 +1,6 @@
 Count of GC OrgIDs in final_rg_match: 133
-Count of GC OrgIDs in manual_org_id_link: 389
-Count of GC OrgIDs in manual_pop_phoenix: 389
+Count of GC OrgIDs in manual_org_id_link: 390
+Count of GC OrgIDs in manual_pop_phoenix: 390
 Count of GC OrgIDs in manual_lead_department_portfolio: 389
 Count of GC OrgIDs in rg_final: 133
 Count of GC OrgIDs in FAA_combined: 0
@@ -265,6 +265,7 @@ Missing in final_rg_match:
 3703
 3704
 3705
+3706
 
 
 Missing in manual_org_id_link:
@@ -277,6 +278,7 @@ Missing in manual_pop_phoenix:
 
 Missing in manual_lead_department_portfolio:
 0
+3706
 
 
 Missing in rg_final:
@@ -537,6 +539,7 @@ Missing in rg_final:
 3703
 3704
 3705
+3706
 
 
 Missing in FAA_combined:
@@ -930,6 +933,7 @@ Missing in FAA_combined:
 3703
 3704
 3705
+3706
 
 
 Missing in en_applied:
@@ -1323,4 +1327,5 @@ Missing in en_applied:
 3703
 3704
 3705
+3706
 
