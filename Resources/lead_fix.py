@@ -26,6 +26,61 @@ backup_file = os.path.join(resources_folder, 'lead_manual_backup.csv')  # Change
 manual_lead_department_df.to_csv(backup_file, index=False)
 print(f"Backup created at {backup_file}")
 
+
+# Read the CSV files with UTF-8-SIG encoding
+try:
+    manual_lead_department_df = pd.read_csv(manual_lead_department_file, encoding='utf-8-sig')
+    gc_org_info_df = pd.read_csv(gc_org_info_file, encoding='utf-8-sig')
+    manual_ministries_df = pd.read_csv(manual_ministries_file, encoding='utf-8-sig')
+
+    print("Successfully loaded all CSV files")
+except Exception as e:
+    print(f"Error loading CSV files: {str(e)}")
+    exit(1)
+
+# Backup original file
+backup_file = os.path.join(resources_folder, 'lead_manual_backup.csv')
+manual_lead_department_df.to_csv(backup_file, index=False, encoding='utf-8-sig')
+print(f"Backup created at {backup_file}")
+
+# --- INSERTED LOGIC: Add/Update Ministries with Economic Development or Agency ---
+filtered_ministries = manual_ministries_df[
+    manual_ministries_df['Title'].str.contains('Economic Development|Agency', na=False)
+]
+
+for _, row in filtered_ministries.iterrows():
+    title = row['Title']
+    titre = row['Titre']
+    min_id = row['minID']
+
+    if 'for the ' in title.lower():
+        split_token = 'for the '
+        split_index = title.lower().index(split_token)
+        short_title = title[split_index + len(split_token):].strip()
+    else:
+        if 'for ' in title:
+            split_index = title.index('for ')
+            short_title = title[split_index + len('for '):].strip()
+        else:
+            short_title = title
+
+    match_index = manual_lead_department_df[
+        manual_lead_department_df['Harmonized GC Name'] == short_title
+    ].index
+
+    if not match_index.empty:
+        idx = match_index[0]
+        manual_lead_department_df.at[idx, 'Parent GC OrgID'] = min_id
+        manual_lead_department_df.at[idx, 'lead_department'] = title
+        manual_lead_department_df.at[idx, 'ministère_responsable'] = titre
+    else:
+        new_row = {col: '' for col in manual_lead_department_df.columns}
+        new_row['Parent GC OrgID'] = min_id
+        new_row['Harmonized GC Name'] = short_title
+        new_row['lead_department'] = title
+        new_row['ministère_responsable'] = fr_title
+        manual_lead_department_df = pd.concat([manual_lead_department_df, pd.DataFrame([new_row])], ignore_index=True)
+
 # Create a mapping of gc_orgID to harmonized_name from gc_org_info_df
 gc_orgid_to_name = {}
 for _, row in gc_org_info_df.iterrows():
