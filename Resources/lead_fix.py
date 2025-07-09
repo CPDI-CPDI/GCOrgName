@@ -58,11 +58,11 @@ if new_rows:
 
 print(f"Added {missing_count} missing organizations")
 
-# Create a mapping of ministry IDs to titles from manual_ministries_df
-ministry_id_to_title = {}
-for _, row in manual_ministries_df.iterrows():
-    if pd.notna(row['minID']) and pd.notna(row['Title']):
-        ministry_id_to_title[str(row['minID'])] = row['Title']
+# Create a mapping of ministry IDs to titles from manual_ministries_df (deprecated, keeping this section manual)
+# ministry_id_to_title = {}
+# for _, row in manual_ministries_df.iterrows():
+#     if pd.notna(row['minID']) and pd.notna(row['Title']):
+#         ministry_id_to_title[str(row['minID'])] = row['Title']
 
 # Update the 'Harmonized GC Name' based on gc_orgID or Parent GC OrgID
 updated_count = 0
