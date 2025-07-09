@@ -70,24 +70,25 @@ ministry_updated_count = 0
 
 for index, row in manual_lead_department_df.iterrows():
     # Check if Parent GC OrgID starts with 'm' (ministry ID)
-    if pd.notna(row['Parent GC OrgID']) and str(row['Parent GC OrgID']).startswith('m'):
-        # It's a ministry, use the Title from manualMinistries.csv
-        ministry_id = str(row['Parent GC OrgID'])
-        
-        if ministry_id in ministry_id_to_title:
-            old_name = manual_lead_department_df.at[index, 'Harmonized GC Name']
-            new_name = ministry_id_to_title[ministry_id]
-            
+    # deprecated section    
+#    if pd.notna(row['Parent GC OrgID']) and str(row['Parent GC OrgID']).startswith('m'):
+#        # It's a ministry, use the Title from manualMinistries.csv
+#        ministry_id = str(row['Parent GC OrgID'])
+#        
+#        if ministry_id in ministry_id_to_title:
+#            old_name = manual_lead_department_df.at[index, 'Harmonized GC Name']
+#            new_name = ministry_id_to_title[ministry_id]
+#            
             # Update both the harmonized name and lead_department for ministries
-            if old_name != new_name:
-                manual_lead_department_df.at[index, 'Harmonized GC Name'] = new_name
-                manual_lead_department_df.at[index, 'lead_department'] = new_name
-                manual_lead_department_df.at[index, 'ministère_responsable'] = row.get('ministère_responsable', '')  # Preserve French if available
-                ministry_updated_count += 1
-                print(f"Updated Ministry ID {ministry_id}: '{old_name}' -> '{new_name}'")
+#            if old_name != new_name:
+#                manual_lead_department_df.at[index, 'Harmonized GC Name'] = new_name
+#                manual_lead_department_df.at[index, 'lead_department'] = new_name
+#                manual_lead_department_df.at[index, 'ministère_responsable'] = row.get('ministère_responsable', '')  # Preserve French if available
+#                ministry_updated_count += 1
+#                print(f"Updated Ministry ID {ministry_id}: '{old_name}' -> '{new_name}'")
     
     # For regular entries, update based on gc_orgID
-    elif pd.notna(row['gc_orgID']):
+    if pd.notna(row['gc_orgID']):
         # Convert to string and remove decimal point if present
         gc_orgid = str(int(row['gc_orgID']))
         
