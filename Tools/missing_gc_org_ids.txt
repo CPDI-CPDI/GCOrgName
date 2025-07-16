@@ -1,16 +1,19 @@
-Count of GC OrgIDs in final_rg_match: 133
+Count of GC OrgIDs in final_rg_match: 106
 Count of GC OrgIDs in manual_org_id_link: 390
 Count of GC OrgIDs in manual_pop_phoenix: 390
 Count of GC OrgIDs in manual_lead_department_portfolio: 390
-Count of GC OrgIDs in rg_final: 133
+Count of GC OrgIDs in rg_final: 106
 Count of GC OrgIDs in FAA_combined: 0
 Count of GC OrgIDs in en_applied: 0
 
 
 Missing in final_rg_match:
+2245
 2265
-2281
-2282
+2276
+2289
+2290
+2294
 2301
 2302
 3399
@@ -65,6 +68,7 @@ Missing in final_rg_match:
 3455
 3456
 3457
+3458
 3459
 3461
 3462
@@ -208,23 +212,46 @@ Missing in final_rg_match:
 3613
 3614
 3616
+3618
+3619
+3620
+3621
+3622
+3623
+3624
+3625
+3626
+3627
 3630
 3632
+3633
 3634
 3635
 3636
 3637
 3638
+3639
+3641
 3642
+3643
+3644
 3645
 3646
+3647
+3648
+3649
 3650
+3651
 3652
 3654
+3655
 3656
 3657
+3658
 3659
 3660
+3661
+3662
 3663
 3664
 3665
@@ -281,9 +308,12 @@ Missing in manual_lead_department_portfolio:
 
 
 Missing in rg_final:
+2245
 2265
-2281
-2282
+2276
+2289
+2290
+2294
 2301
 2302
 3399
@@ -338,6 +368,7 @@ Missing in rg_final:
 3455
 3456
 3457
+3458
 3459
 3461
 3462
@@ -481,23 +512,46 @@ Missing in rg_final:
 3613
 3614
 3616
+3618
+3619
+3620
+3621
+3622
+3623
+3624
+3625
+3626
+3627
 3630
 3632
+3633
 3634
 3635
 3636
 3637
 3638
+3639
+3641
 3642
+3643
+3644
 3645
 3646
+3647
+3648
+3649
 3650
+3651
 3652
 3654
+3655
 3656
 3657
+3658
 3659
 3660
+3661
+3662
 3663
 3664
 3665
