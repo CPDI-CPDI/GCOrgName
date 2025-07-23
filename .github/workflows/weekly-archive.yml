@@ -1,4 +1,4 @@
-name: weekly-update
+name: weekly-archive
 
 on:
   schedule:
