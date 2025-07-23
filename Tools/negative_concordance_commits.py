@@ -1,7 +1,7 @@
 
 import csv
 import subprocess
-import os
+import io
 import json
 from datetime import datetime
 import pandas as pd
@@ -45,31 +45,24 @@ def extract_negative_diffs(target_file, output_file):
         except subprocess.CalledProcessError:
             continue
 
-        with open("old_version.tmp", "w", encoding='utf-8-sig') as f:
-            f.write(prev_content)
-        with open("new_version.tmp", "w", encoding='utf-8-sig') as f:
-            f.write(current_content)
+        # Use in-memory strings for diff comparison
+        current_lines = current_content.splitlines()
+        prev_lines = prev_content.splitlines()
 
-        try:
-            diff_output = subprocess.check_output(
-                ["diff", "-u", "old_version.tmp", "new_version.tmp"],
-                text=True,
-                stderr=subprocess.DEVNULL
-            )
-            diff_lines = diff_output.splitlines()
-        except subprocess.CalledProcessError as e:
-            diff_lines = e.output.splitlines() if e.output else []
+        # Use difflib to compute unified diff
+        import difflib
+        diff_lines = list(difflib.unified_diff(prev_lines, current_lines, lineterm=""))
 
         for line in diff_lines:
             if line.startswith("-") and not line.startswith("---"):
                 removed_line = line[1:].strip()
-                values = next(csv.reader([removed_line]))
-                row_dict = dict(zip(headers, values))
-                row_dict["commit_date"] = commit_date
-                output_rows.append(row_dict)
-
-    os.remove("old_version.tmp")
-    os.remove("new_version.tmp")
+                try:
+                    values = next(csv.reader([removed_line]))
+                    row_dict = dict(zip(headers, values))
+                    row_dict["commit_date"] = commit_date
+                    output_rows.append(row_dict)
+                except Exception:
+                    continue
 
     # Write to CSV with utf-8-sig encoding
     if output_rows:
@@ -99,4 +92,5 @@ df_org_info_sorted_date.to_csv("Archives/org_info_archive_by_date.csv", index=Fa
 # Sort by gc_orgID
 df_org_info_sorted_id = df_org_info.sort_values(by="gc_orgID")
 df_org_info_sorted_id.to_csv("Archives/org_info_archive_by_ID.csv", index=False, encoding='utf-8-sig')
+
 
