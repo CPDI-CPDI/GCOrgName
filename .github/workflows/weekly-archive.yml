@@ -18,6 +18,10 @@ jobs:
         with:
           python-version: '3.x'   # latest public version of Python
 
+      - name: Install dependencies
+        run: |
+          pip install pandas
+
       - name: Execute Archival Script
         run: |
           python Tools/negative_concordance_commits.py
