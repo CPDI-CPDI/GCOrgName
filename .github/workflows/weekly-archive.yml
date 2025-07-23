@@ -1,0 +1,45 @@
+name: weekly-update
+
+on:
+  schedule:
+    - cron: '10 16 * * 2'  # Tuesday 11 AM Toronto/New York time (EST/EDT auto handled)
+  workflow_dispatch:      # Allow manual trigger too
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    name: Run Daily Script
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'   # latest public version of Python
+
+      - name: Execute Archival Script
+        run: |
+          python Tools/negative_concordance_commits.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff-index --quiet HEAD || git commit -m "Archival commit"
+          git push
+
+      - name: Create GitHub Issue if Failed
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "Weekly Update Failed",
+              body: "The weekly scheduled script run failed. Please check the workflow logs for details.",
+              labels: ["bug", "auto-generated"]
+            })
