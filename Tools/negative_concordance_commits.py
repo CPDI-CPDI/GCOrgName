@@ -81,7 +81,7 @@ extract_negative_diffs("gc_org_info.csv", "Archives/org_info_archive_by_date.csv
 # Sort by commit_date (newest to oldest)
 df_org_info = pd.read_csv("Archives/org_info_archive_by_date.csv", encoding='utf-8-sig')
 df_org_info_sorted_date = df_org_info.sort_values(by="commit_date", ascending=False)
-df_org_info_sorted_date.to_csv("Archives/org_info_archive_by_date_sorted.csv", index=False, encoding='utf-8-sig')
+df_org_info_sorted_date.to_csv("Archives/org_info_archive_by_date.csv", index=False, encoding='utf-8-sig')
 
 # Sort by gc_orgID
 df_org_info_sorted_id = df_org_info.sort_values(by="gc_orgID")
