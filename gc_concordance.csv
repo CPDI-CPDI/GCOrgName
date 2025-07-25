@@ -64,7 +64,7 @@
 2284,Privy Council Office,Bureau du Conseil privé,PCO,BCP,278,25,Privy Council Office,pco-bcp,PCO,PCO00,www.pco-bcp.gc.ca,www.pco-bcp.gc.ca
 2285,Public Health Agency of Canada,Agence de la santé publique du Canada,PHAC,ASPC,280,148,Public Health Agency of Canada,phac-aspc,AHS,AHS00,www.phac-aspc.gc.ca,www.phac-aspc.gc.ca
 2286,Public Service Commission of Canada,Commission de la fonction publique du Canada,PSC,CFP,282,4,Public Service Commission of Canada,psc-cfp,PSC,PSC00,https://www.canada.ca/en/public-service-commission.html,https://www.canada.ca/fr/commission-fonction-publique.html
-2287,Registrar of the Supreme Court of Canada,Registraire de la Cour suprême du Canada,,,288,80,,,SUC,,www.scc-csc.ca,www.scc-csc.ca
+2287,Registrar of the Supreme Court of Canada,Registraire de la Cour suprême du Canada,SCC,CSC,288,80,,scc-csc,SUC,,www.scc-csc.ca,www.scc-csc.ca
 2288,Royal Canadian Mounted Police,Gendarmerie royale du Canada,RCMP,GRC,295,30,Royal Canadian Mounted Police,rcmp-grc,RCM,RCM00,www.rcmp-grc.gc.ca,www.rcmp-grc.gc.ca
 2289,RCMP External Review Committee,Comité externe d'examen de la GRC,ERC,CEE,296,,Royal Canadian Mounted Police External Review Committee,erc-cee,REC,,www.erc-cee.gc.ca,www.erc-cee.gc.ca
 2290,Civilian Review and Complaints Commission for the RCMP,Commission civile d'examen et de traitement des plaintes relatives à la GRC,CRCC,CCETP,297,,Civilian Review and Complaints Commission for the Royal Canadian Mounted Police,cpc-cpp,RPP,,www.crcc-ccetp.gc.ca/,www.crcc-ccetp.gc.ca/fr
