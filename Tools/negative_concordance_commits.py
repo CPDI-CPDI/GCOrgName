@@ -1,9 +1,8 @@
-
 import csv
 import subprocess
 import pandas as pd
 import difflib
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Helper function to extract negative diffs for a given file
 def extract_negative_diffs(target_file, output_file):
@@ -12,25 +11,24 @@ def extract_negative_diffs(target_file, output_file):
         reader = csv.reader(f)
         headers = next(reader)
 
+    # Define cutoff date as timezone-aware datetime
+    cutoff_date = datetime(2025, 1, 1, tzinfo=timezone.utc)
+
     # Get all commits that modified the target file
     log_output = subprocess.check_output(
-        ["git", "log", "--pretty=format:%H|%cd", "--date=iso", "--", target_file],
+        ["git", "log", "--pretty=format:%H|%cd", "--date=iso-strict", "--", target_file],
         text=True
     )
     commits = [line.strip().split("|") for line in log_output.strip().split("\n")]
 
     output_rows = []
 
-    # Define the cutoff date
-    cutoff_date = datetime(2025, 1, 1)
-
     for commit_hash, commit_date in commits:
-        # Skip commits before the cutoff date
         try:
             commit_datetime = datetime.fromisoformat(commit_date.strip())
             if commit_datetime < cutoff_date:
                 continue
-        except ValueError:
+        except Exception:
             continue
 
         try:
