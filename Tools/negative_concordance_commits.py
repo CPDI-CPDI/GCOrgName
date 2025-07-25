@@ -1,12 +1,10 @@
-
 import csv
 import subprocess
-import io
-import json
-from datetime import datetime
+import os
 import pandas as pd
+import difflib
 
-# Helper function to extract diffs for a given file
+# Helper function to extract negative diffs for a given file
 def extract_negative_diffs(target_file, output_file):
     # Read headers from the current version of the file
     with open(target_file, 'r', encoding='utf-8-sig') as f:
@@ -28,7 +26,7 @@ def extract_negative_diffs(target_file, output_file):
                 ["git", "show", f"{commit_hash}:{target_file}"],
                 stderr=subprocess.DEVNULL,
                 text=True
-            )
+            ).splitlines()
         except subprocess.CalledProcessError:
             continue
 
@@ -41,28 +39,24 @@ def extract_negative_diffs(target_file, output_file):
                 ["git", "show", f"{prev_commit}:{target_file}"],
                 stderr=subprocess.DEVNULL,
                 text=True
-            )
+            ).splitlines()
         except subprocess.CalledProcessError:
             continue
 
-        # Use in-memory strings for diff comparison
-        current_lines = current_content.splitlines()
-        prev_lines = prev_content.splitlines()
-
         # Use difflib to compute unified diff
-        import difflib
-        diff_lines = list(difflib.unified_diff(prev_lines, current_lines, lineterm=""))
+        diff_lines = list(difflib.unified_diff(prev_content, current_content, lineterm=""))
 
         for line in diff_lines:
             if line.startswith("-") and not line.startswith("---"):
                 removed_line = line[1:].strip()
-                try:
-                    values = next(csv.reader([removed_line]))
-                    row_dict = dict(zip(headers, values))
-                    row_dict["commit_date"] = commit_date
-                    output_rows.append(row_dict)
-                except Exception:
-                    continue
+                if removed_line:
+                    try:
+                        values = next(csv.reader([removed_line]))
+                        row_dict = dict(zip(headers, values))
+                        row_dict["commit_date"] = commit_date
+                        output_rows.append(row_dict)
+                    except Exception:
+                        continue
 
     # Write to CSV with utf-8-sig encoding
     if output_rows:
@@ -87,10 +81,11 @@ extract_negative_diffs("gc_org_info.csv", "Archives/org_info_archive_by_date.csv
 # Sort by commit_date (newest to oldest)
 df_org_info = pd.read_csv("Archives/org_info_archive_by_date.csv", encoding='utf-8-sig')
 df_org_info_sorted_date = df_org_info.sort_values(by="commit_date", ascending=False)
-df_org_info_sorted_date.to_csv("Archives/org_info_archive_by_date.csv", index=False, encoding='utf-8-sig')
+df_org_info_sorted_date.to_csv("Archives/org_info_archive_by_date_sorted.csv", index=False, encoding='utf-8-sig')
 
 # Sort by gc_orgID
 df_org_info_sorted_id = df_org_info.sort_values(by="gc_orgID")
 df_org_info_sorted_id.to_csv("Archives/org_info_archive_by_ID.csv", index=False, encoding='utf-8-sig')
+
 
 
