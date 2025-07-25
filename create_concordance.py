@@ -275,6 +275,10 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
             "website": "https://www.priv.gc.ca/en/",
             "site_web": "https://www.priv.gc.ca/fr/"
         },
+        "2287": {
+            "abbreviation": "SCC", 
+            "abreviation": "CSC",
+        },
     }
     
     for gc_orgid, changes in manual_changes.items():
