@@ -315,7 +315,7 @@
 3490,Québec Port Authority,qpa-apq,Quebec Port Authority,,
 2289,RCMP External Review Committee,erc-cee,Royal Canadian Mounted Police External Review Committee,REC,
 3491,Regina Airport Authority Inc.,,,,
-2287,Registrar of the Supreme Court of Canada,,,SUC,
+2287,Registrar of the Supreme Court of Canada,scc-csc,,SUC,
 3694,Registry of the Competition Tribunal,,,,
 3695,Registry of the Public Servants Disclosure Protection Tribunal,,,,
 3696,Registry of the Specific Claims Tribunal of Canada,,,,
@@ -348,7 +348,6 @@
 2293,Statistics Canada,statcan,Statistics Canada,STC,STC00
 3426,Statistics Survey Operations,,,SYT,
 3614,Statute Revision Commission Canada,,,,
-3592,"Registrar of the Supreme Court of Canada","scc-csc",,,
 3593,Tax Court of Canada,,,,
 3629,Telefilm Canada,,Telefilm Canada,,
 3502,Terry Fox Humanitarian Award Inc.,,,,
