@@ -1,8 +1,9 @@
+
 import csv
 import subprocess
-import os
 import pandas as pd
 import difflib
+from datetime import datetime
 
 # Helper function to extract negative diffs for a given file
 def extract_negative_diffs(target_file, output_file):
@@ -20,7 +21,18 @@ def extract_negative_diffs(target_file, output_file):
 
     output_rows = []
 
+    # Define the cutoff date
+    cutoff_date = datetime(2025, 1, 1)
+
     for commit_hash, commit_date in commits:
+        # Skip commits before the cutoff date
+        try:
+            commit_datetime = datetime.fromisoformat(commit_date.strip())
+            if commit_datetime < cutoff_date:
+                continue
+        except ValueError:
+            continue
+
         try:
             current_content = subprocess.check_output(
                 ["git", "show", f"{commit_hash}:{target_file}"],
@@ -86,6 +98,3 @@ df_org_info_sorted_date.to_csv("Archives/org_info_archive_by_date.csv", index=Fa
 # Sort by gc_orgID
 df_org_info_sorted_id = df_org_info.sort_values(by="gc_orgID")
 df_org_info_sorted_id.to_csv("Archives/org_info_archive_by_ID.csv", index=False, encoding='utf-8-sig')
-
-
-
