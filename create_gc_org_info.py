@@ -27,7 +27,7 @@ def apply_overrides(df):
     """Apply manual overrides to specific organizations."""
     # Override values for specific gc_orgIDs
     overrides = {
-        '3592': {
+        '2287': {
             'abbreviation': 'SCC',
             'abreviation': 'CSC'
         }
