@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from io import StringIO
 import os
 import re
+from dateutil import parser
 
 # URLs
 url_en_csv = "https://www.ourcommons.ca/members/en/ministries/csv"
@@ -31,8 +32,17 @@ df_fr.to_csv(file_fr, index=False, encoding='utf-8-sig')
 # Load manual_minID
 df_manual = pd.read_csv(file_manual, encoding='utf-8-sig')
 manual_date_cols = [col for col in df_manual.columns if re.match(r"\d{4}-\d{2}-\d{2}", col)]
-latest_manual_date = max(pd.to_datetime(manual_date_cols, errors='coerce').date.tolist())
-latest_start_date = pd.to_datetime(df_en['Start Date'], errors='coerce').dt.date.max()
+
+df_en['Start Date'] = df_en['Start Date'].apply(lambda x: parser.parse(x) if pd.notnull(x) else pd.NaT)
+latest_start_date = df_en['Start Date'].dropna().max().date()
+
+
+# Convert to datetime safely
+df_en['Start Date'] = pd.to_datetime(df_en['Start Date'], errors='coerce')
+
+# Drop NaT values before extracting date and computing max
+latest_start_date = df_en['Start Date'].dropna().dt.date.max()
+
 
 if latest_start_date <= latest_manual_date:
     print("No new date detected. Exiting.")
