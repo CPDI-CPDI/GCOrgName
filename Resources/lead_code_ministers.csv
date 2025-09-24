@@ -1,30 +1,29 @@
-﻿Precedence,Honorific Title,First Name,Last Name,Title,Province / Territory,Start Date,End Date,Titre,minID,notes
-1,Right Hon.,Mark,Carney,Prime Minister of Canada,,2025-03-14 11:31:00 a.m.,,Premier ministre du Canada,m0001,"matched, "
-2,Hon.,Shafqat,Ali,President of the Treasury Board,,2025-05-13 10:45:00 a.m.,,Président du Conseil du Trésor,m0011,"matched, "
-3,Hon.,Rebecca,Alty,Minister of Crown-Indigenous Relations,,2025-05-13 10:45:00 a.m.,,Ministre des Relations Couronne-Autochtones,m0024,"matched, "
-4,Hon.,Anita,Anand,Minister of Foreign Affairs,,2025-05-13 10:45:00 a.m.,,Ministre des Affaires étrangères,m0005,"matched, "
-5,Hon.,Gary,Anandasangaree,Minister of Public Safety,,2025-05-13 10:45:00 a.m.,,Ministre de la Sécurité publique,m0031,"matched, "
-6,Hon.,François-Philippe,Champagne,Minister of Finance and National Revenue,,2025-05-13 10:45:00 a.m.,,Ministre des Finances et du Revenu national,m0039,"matched, "
-7,Hon.,Rebecca,Chartrand,Minister of Northern and Arctic Affairs and Minister responsible for the Canadian Northern Economic Development Agency,,2025-05-13 10:45:00 a.m.,,Ministre des Affaires du Nord et de l’Arctique et ministre responsable de l’Agence canadienne de développement économique du Nord,m0003,"matched, "
-8,Hon.,Julie,Dabrusin,Minister of Environment and Climate Change,,2025-05-13 10:45:00 a.m.,,Ministre de l’Environnement et du Changement climatique,m0016,"matched, "
-9,Hon.,Sean,Fraser,Minister of Justice and Attorney General of Canada and Minister responsible for the Atlantic Canada Opportunities Agency,,2025-05-13 10:45:00 a.m.,,Ministre de la Justice et procureur général du Canada et ministre responsable de l’Agence de promotion économique du Canada atlantique,m0007,"matched, "
-10,Hon.,Chrystia,Freeland,Minister of Transport and Internal Trade,,2025-05-13 10:45:00 a.m.,,Ministre des Transports et du Commerce intérieur,m0015,"matched, "
-11,Hon.,Steven,Guilbeault,Minister of Canadian Identity and Culture and Minister responsible for Official Languages,,2025-05-13 10:45:00 a.m.,,Ministre de l’Identité et de la Culture canadiennes et ministre responsable des Langues officielles,m0022,"matched, "
-12,Hon.,Mandy,Gull-Masty,Minister of Indigenous Services,,2025-05-13 10:45:00 a.m.,,Ministre des Services aux Autochtones,m0008,"matched, "
-13,Hon.,Patty,Hajdu,Minister of Jobs and Families and Minister responsible for the Federal Economic Development Agency for Northern Ontario,,2025-05-13 10:45:00 a.m.,,Ministre de l’Emploi et des Familles et ministre responsable de l’Agence fédérale de développement économique pour le Nord de l’Ontario,m0028,"matched, "
-14,Hon.,Tim,Hodgson,Minister of Energy and Natural Resources,,2025-05-13 10:45:00 a.m.,,Ministre de l’Énergie et des Ressources naturelles,m0014,"matched, "
-15,Hon.,Mélanie,Joly,Minister of Industry and Minister responsible for Canada Economic Development for Quebec Regions,,2025-05-13 10:45:00 a.m.,,Ministre de l’Industrie et ministre responsable de Développement économique Canada pour les régions du Québec,m0009,"matched, "
-16,Hon.,Dominic,LeBlanc,"President of the King’s Privy Council for Canada and Minister responsible for Canada-U.S. Trade, Intergovernmental Affairs and One Canadian Economy",,2025-05-13 10:45:00 a.m.,,"Président du Conseil privé du Roi pour le Canada et ministre responsable du Commerce Canada–États-Unis, des Affaires intergouvernementales et de l’Unité de l’économie canadienne",m0019,"matched, "
-17,Hon.,Joël,Lightbound,"Minister of Government Transformation, Public Works and Procurement",,2025-05-13 10:45:00 a.m.,,"Ministre de la Transformation du gouvernement, des Travaux publics et de l’Approvisionnement",m0004,"matched, "
-18,Hon.,Heath,MacDonald,Minister of Agriculture and Agri-Food,,2025-05-13 10:45:00 a.m.,,Ministre de l’Agriculture et de l’Agroalimentaire,m0002,"matched, "
-19,Hon.,Steven,MacKinnon,Leader of the Government in the House of Commons,,2025-05-13 10:45:00 a.m.,,Leader du gouvernement à la Chambre des communes,m0020,"matched, "
-20,Hon.,David,McGuinty,Minister of National Defence,,2025-05-13 10:45:00 a.m.,,Ministre de la Défense nationale,m0012,"matched, "
-21,Hon.,Jill,McKnight,Minister of Veterans Affairs and Associate Minister of National Defence,,2025-05-13 10:45:00 a.m.,,Ministre des Anciens Combattants et ministre associée de la Défense nationale,m0012,"matched, "
-22,Hon.,Lena Metlege,Diab,"Minister of Immigration, Refugees and Citizenship",,2025-05-13 10:45:00 a.m.,,"Ministre de l’Immigration, des Réfugiés et de la Citoyenneté",m0017,"matched, "
-23,Hon.,Marjorie,Michel,Minister of Health,,2025-05-13 10:45:00 a.m.,,Ministre de la Santé,m0018,"matched, "
-24,Hon.,Eleanor,Olszewski,Minister of Emergency Management and Community Resilience and Minister responsible for Prairies Economic Development Canada,,2025-05-13 10:45:00 a.m.,,Ministre de la Gestion des urgences et de la Résilience des communautés et ministre responsable de Développement économique Canada pour les Prairies,m0021,"matched, "
-25,Hon.,Gregor,Robertson,Minister of Housing and Infrastructure and Minister responsible for Pacific Economic Development Canada,,2025-05-13 10:45:00 a.m.,,Ministre du Logement et de l’Infrastructure et ministre responsable de Développement économique Canada pour le Pacifique,m0036,"matched, "
-26,Hon.,Maninder,Sidhu,Minister of International Trade,,2025-05-13 10:45:00 a.m.,,Ministre du Commerce international,m0013,"matched, "
-27,Hon.,Evan,Solomon,Minister of Artificial Intelligence and Digital Innovation and Minister responsible for the Federal Economic Development Agency for Southern Ontario,,2025-05-13 10:45:00 a.m.,,Ministre de l’Intelligence artificielle et de l’Innovation numérique et ministre responsable de l’Agence fédérale de développement économique pour le Sud de l’Ontario,m0025,"matched, "
-28,Hon.,Joanne,Thompson,Minister of Fisheries,,2025-05-13 10:45:00 a.m.,,Ministre des Pêches,m0006,"matched, "
-29,Hon.,Rechie,Valdez,Minister of Women and Gender Equality and Secretary of State (Small Business and Tourism),,2025-05-13 10:45:00 a.m.,,Ministre des Femmes et de l’Égalité des genres et secrétaire d’État (Petites Entreprises et Tourisme),m0026,"matched, "
+﻿Person ID,Precedence,Honorific Title,First Name,Last Name,Title,Province / Territory,Start Date,End Date,Titre,minID,notes
+28286,1,Right Hon.,Mark,Carney,Prime Minister,,2025-03-14 11:31:00,,Premier ministre,m0001,
+110339,2,Hon.,Shafqat,Ali,President of the Treasury Board,,2025-05-13 10:45:00,,Président du Conseil du Trésor,m0011,
+123675,3,Hon.,Rebecca,Alty,Minister of Crown-Indigenous Relations,,2025-05-13 10:45:00,,Ministre des Relations Couronne-Autochtones,m0024,
+96081,4,Hon.,Anita,Anand,Minister of Foreign Affairs,,2025-05-13 10:45:00,,Ministre des Affaires étrangères,m0005,
+89449,5,Hon.,Gary,Anandasangaree,Minister of Public Safety,,2025-05-13 10:45:00,,Ministre de la Sécurité publique,m0031,
+88633,6,Hon.,François-Philippe,Champagne,Minister of Finance and National Revenue,,2025-05-13 10:45:00,,Ministre des Finances et du Revenu national,m0039,
+89464,7,Hon.,Rebecca,Chartrand,Minister of Northern and Arctic Affairs,,2025-05-13 10:45:00,,Ministre des Affaires du Nord et de l’Arctique,m0003,
+88994,8,Hon.,Julie,Dabrusin,Minister of Environment and Climate Change,,2025-05-13 10:45:00,,Ministre de l’Environnement et du Changement climatique,m0016,
+88316,9,Hon.,Sean,Fraser,Minister of Justice,,2025-05-13 10:45:00,,Ministre de la Justice,m0007,
+14171,10,Hon.,Steven,Guilbeault,Minister of Canadian Identity and Culture,,2025-05-13 10:45:00,,Ministre de l’Identité et de la Culture canadiennes,m0022,
+122492,11,Hon.,Mandy,Gull-Masty,Minister of Indigenous Services,,2025-05-13 10:45:00,,Ministre des Services aux Autochtones,m0008,
+88984,12,Hon.,Patty,Hajdu,Minister of Jobs and Families,,2025-05-13 10:45:00,,Ministre de l’Emploi et des Familles,m0028,
+123019,13,Hon.,Tim,Hodgson,Minister of Energy and Natural Resources,,2025-05-13 10:45:00,,Ministre de l’Énergie et des Ressources naturelles,m0014,
+88384,14,Hon.,Mélanie,Joly,Minister of Industry,,2025-05-13 10:45:00,,Ministre de l’Industrie,m0009,
+1813,15,Hon.,Dominic,LeBlanc,Minister of Internal Trade,,2025-09-16 16:00:00,,Ministre du Commerce intérieur,m0040,view minID file and confirm need for new minID
+88532,16,Hon.,Joël,Lightbound,"Minister of Government Transformation, Public Works and Procurement",,2025-05-13 10:45:00,,"Ministre de la Transformation du gouvernement, des Travaux publics et de l’Approvisionnement",m0004,
+109891,17,Hon.,Heath,MacDonald,Minister of Agriculture and Agri-Food,,2025-05-13 10:45:00,,Ministre de l’Agriculture et de l’Agroalimentaire,m0002,
+88468,18,Hon.,Steven,MacKinnon,Minister of Transport,,2025-09-16 16:00:00,,Ministre des Transports,m0041,view minID file and confirm need for new minID
+9486,19,Hon.,David,McGuinty,Minister of National Defence,,2025-05-13 10:45:00,,Ministre de la Défense nationale,m0012,
+123556,20,Hon.,Jill,McKnight,Minister of Veterans Affairs,,2025-05-13 10:45:00,,Ministre des Anciens Combattants,m0037,
+109915,21,Hon.,Lena Metlege,Diab,"Minister of Immigration, Refugees and Citizenship",,2025-05-13 10:45:00,,"Ministre de l’Immigration, des Réfugiés et de la Citoyenneté",m0017,
+122684,22,Hon.,Marjorie,Michel,Minister of Health,,2025-05-13 10:45:00,,Ministre de la Santé,m0018,
+89171,23,Hon.,Eleanor,Olszewski,Minister of Emergency Management and Community Resilience,,2025-05-13 10:45:00,,Ministre de la Gestion des urgences et de la Résilience des communautés,m0021,
+123644,24,Hon.,Gregor,Robertson,Minister of Housing and Infrastructure,,2025-05-13 10:45:00,,Ministre du Logement et de l’Infrastructure,m0036,
+105045,25,Hon.,Maninder,Sidhu,Minister of International Trade,,2025-05-13 10:45:00,,Ministre du Commerce international,m0013,
+123229,26,Hon.,Evan,Solomon,Minister of Artificial Intelligence and Digital Innovation,,2025-05-13 10:45:00,,Ministre de l’Intelligence artificielle et de l’Innovation numérique,m0025,
+109877,27,Hon.,Joanne,Thompson,Minister of Fisheries,,2025-05-13 10:45:00,,Ministre des Pêches,m0006,
+110538,28,Hon.,Rechie,Valdez,Minister of Women and Gender Equality,,2025-05-13 10:45:00,,Ministre des Femmes et de l’Égalité des genres,m0026,

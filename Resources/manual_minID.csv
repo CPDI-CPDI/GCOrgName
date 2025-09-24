@@ -1,40 +1,40 @@
-﻿minID,Keywords,Notes,2025-03-14,2025-05-13
-m0001,Prime Minister,,Prime Minister,Prime Minister of Canada
-m0002,Agriculture,,Minister of Agriculture and Agri-Food and Rural Economic Development,Minister of Agriculture and Agri-Food
-m0003,"Northern,Arctic",,,Minister of Northern and Arctic Affairs and Minister responsible for the Canadian Northern Economic Development Agency
-m0004,"Government Transformation,Procurement",,"Minister of Government Transformation, Public Services and Procurement","Minister of Government Transformation, Public Works and Procurement"
-m0005,Foreign Affairs,,Minister of Foreign Affairs and International Development,Minister of Foreign Affairs
-m0006,Fisheries,,"Minister of Fisheries, Oceans and the Canadian Coast Guard",Minister of Fisheries
-m0007,Justice,,,Minister of Justice and Attorney General of Canada and Minister responsible for the Atlantic Canada Opportunities Agency
-m0008,Indigenous Services,,Minister of Indigenous Services,Minister of Indigenous Services
-m0009,Industry,,"Minister of Innovation, Science and Industry",Minister of Industry and Minister responsible for Canada Economic Development for Quebec Regions
-m0010,,,,
-m0011,Treasury Board,,President of the Treasury Board,President of the Treasury Board
-m0012,National Defence,,Minister of National Defence,Minister of National Defence
-m0013,International Trade,,Minister of International Trade and Intergovernmental Affairs,Minister of International Trade
-m0014,"Energy,Natural Resources",,Minister of Energy and Natural Resources,Minister of Energy and Natural Resources
-m0015,"Transport,Internal Trade",,Minister of Transport and Internal Trade,Minister of Transport and Internal Trade
-m0016,Environment,,Minister of Environment and Climate Change,Minister of Environment and Climate Change
-m0017,Immigration,,"Minister of Immigration, Refugees and Citizenship","Minister of Immigration, Refugees and Citizenship"
-m0018,Health,,Minister of Health,Minister of Health
-m0019,Privy Council,,,"President of the King’s Privy Council for Canada and Minister responsible for Canada-U.S. Trade, Intergovernmental Affairs and One Canadian Economy"
-m0020,Leader of the Government in the House of Commons,,,Leader of the Government in the House of Commons
-m0021,Emergency Management,,,Minister of Emergency Management and Community Resilience and Minister responsible for Prairies Economic Development Canada
-m0022,"Culture,Identity",,"Minister of Canadian Culture and Identity, Parks Canada",Minister of Canadian Identity and Culture and Minister responsible for Official Languages
-m0023,Chief government whip,,Chief government whip,
-m0024,Crown-Indigenous Relations,,Minister of Crown-Indigenous Relations and Northern Affairs,Minister of Crown-Indigenous Relations
-m0025,Artificial Intelligence,,,Minister of Artificial Intelligence and Digital Innovation and Minister responsible for the Federal Economic Development Agency for Southern Ontario
-m0026,Women,,,Minister of Women and Gender Equality and Secretary of State (Small Business and Tourism)
-m0027,,,,
-m0028,Jobs and Families,,Minister of Jobs and Families,Minister of Jobs and Families and Minister responsible for the Federal Economic Development Agency for Northern Ontario
-m0029,,,,
-m0030,,,,
-m0031,Public Safety,,Minister of Public Safety and Emergency Preparedness,Minister of Public Safety
-m0032,Democratic Institutions,,Minister of Democratic Institutions,
-m0033,,,,
-m0034,,,,
-m0035,,,,
-m0036,Housing,,"Minister of Housing, Infrastructure and Communities",Minister of Housing and Infrastructure and Minister responsible for Pacific Economic Development Canada
-m0037,Veterans,,Minister of Veterans Affairs,
-m0038,,,,
-m0039,Finance,,Minister of Finance,Minister of Finance and National Revenue
+﻿minID,Keywords,Notes,2025-03-14,2025-05-13,2025-09-16,notes
+m0001,Prime Minister,,Prime Minister,Prime Minister of Canada,Prime Minister,
+m0002,Agriculture,,Minister of Agriculture and Agri-Food and Rural Economic Development,Minister of Agriculture and Agri-Food,Minister of Agriculture and Agri-Food,
+m0003,"Northern,Arctic",,,Minister of Northern and Arctic Affairs and Minister responsible for the Canadian Northern Economic Development Agency,Minister of Northern and Arctic Affairs,
+m0004,"Government Transformation,Procurement",,"Minister of Government Transformation, Public Services and Procurement","Minister of Government Transformation, Public Works and Procurement","Minister of Government Transformation, Public Works and Procurement",
+m0005,Foreign Affairs,,Minister of Foreign Affairs and International Development,Minister of Foreign Affairs,Minister of Foreign Affairs,
+m0006,Fisheries,,"Minister of Fisheries, Oceans and the Canadian Coast Guard",Minister of Fisheries,Minister of Fisheries,
+m0007,Justice,,,Minister of Justice and Attorney General of Canada and Minister responsible for the Atlantic Canada Opportunities Agency,Minister of Justice,
+m0008,Indigenous Services,,Minister of Indigenous Services,Minister of Indigenous Services,Minister of Indigenous Services,
+m0009,Industry,,"Minister of Innovation, Science and Industry",Minister of Industry and Minister responsible for Canada Economic Development for Quebec Regions,Minister of Industry,
+m0040,Minister of Internal Trade,,,,Minister of Internal Trade,"Identify keywords or see if there is a match with another entry, delete this when resolved"
+m0011,Treasury Board,,President of the Treasury Board,President of the Treasury Board,President of the Treasury Board,
+m0012,National Defence,,Minister of National Defence,Minister of National Defence,Minister of National Defence,
+m0013,International Trade,,Minister of International Trade and Intergovernmental Affairs,Minister of International Trade,Minister of International Trade,
+m0014,"Energy,Natural Resources",,Minister of Energy and Natural Resources,Minister of Energy and Natural Resources,Minister of Energy and Natural Resources,
+m0015,"Transport,Internal Trade",,Minister of Transport and Internal Trade,Minister of Transport and Internal Trade,,
+m0016,Environment,,Minister of Environment and Climate Change,Minister of Environment and Climate Change,Minister of Environment and Climate Change,
+m0017,Immigration,,"Minister of Immigration, Refugees and Citizenship","Minister of Immigration, Refugees and Citizenship","Minister of Immigration, Refugees and Citizenship",
+m0018,Health,,Minister of Health,Minister of Health,Minister of Health,
+m0019,Privy Council,,,"President of the King’s Privy Council for Canada and Minister responsible for Canada-U.S. Trade, Intergovernmental Affairs and One Canadian Economy",,
+m0020,Leader of the Government in the House of Commons,,,Leader of the Government in the House of Commons,,
+m0021,Emergency Management,,,Minister of Emergency Management and Community Resilience and Minister responsible for Prairies Economic Development Canada,Minister of Emergency Management and Community Resilience,
+m0022,"Culture,Identity",,"Minister of Canadian Culture and Identity, Parks Canada",Minister of Canadian Identity and Culture and Minister responsible for Official Languages,Minister of Canadian Identity and Culture,
+m0023,Chief government whip,,Chief government whip,,,
+m0024,Crown-Indigenous Relations,,Minister of Crown-Indigenous Relations and Northern Affairs,Minister of Crown-Indigenous Relations,Minister of Crown-Indigenous Relations,
+m0025,Artificial Intelligence,,,Minister of Artificial Intelligence and Digital Innovation and Minister responsible for the Federal Economic Development Agency for Southern Ontario,Minister of Artificial Intelligence and Digital Innovation,
+m0026,Women,,,Minister of Women and Gender Equality and Secretary of State (Small Business and Tourism),Minister of Women and Gender Equality,
+m0041,Minister of Transport,,,,Minister of Transport,"Identify keywords or see if there is a match with another entry, delete this when resolved"
+m0028,Jobs and Families,,Minister of Jobs and Families,Minister of Jobs and Families and Minister responsible for the Federal Economic Development Agency for Northern Ontario,Minister of Jobs and Families,
+m0029,,,,,,
+m0030,,,,,,
+m0031,Public Safety,,Minister of Public Safety and Emergency Preparedness,Minister of Public Safety,Minister of Public Safety,
+m0032,Democratic Institutions,,Minister of Democratic Institutions,,,
+m0033,,,,,,
+m0034,,,,,,
+m0035,,,,,,
+m0036,Housing,,"Minister of Housing, Infrastructure and Communities",Minister of Housing and Infrastructure and Minister responsible for Pacific Economic Development Canada,Minister of Housing and Infrastructure,
+m0037,Veterans,,Minister of Veterans Affairs,,Minister of Veterans Affairs,
+m0038,,,,,,
+m0039,Finance,,Minister of Finance,Minister of Finance and National Revenue,Minister of Finance and National Revenue,
