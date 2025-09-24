@@ -117,7 +117,7 @@ def match_with_keywords(row):
                 if df_manual.at[idx, new_date_col] == "":
                     df_manual.at[idx, new_date_col] = row["Title"]
                 else:
-                    df_h.at[row.name, "notes"] += "matched more than once"
+                    df_h.at[row.name, "Notes"] += "matched more than once"
                     return False
                 df_h.at[row.name, "minID"] = mrow["minID"]
                 return True
@@ -126,7 +126,7 @@ def match_with_keywords(row):
                 if df_manual.at[idx, new_date_col] == "":
                     df_manual.at[idx, new_date_col] = row["Title"]
                 else:
-                    df_h.at[row.name, "notes"] += "matched more than once"
+                    df_h.at[row.name, "Notes"] += "matched more than once"
                     return False
                 df_h.at[row.name, "minID"] = mrow["minID"]
                 return True
