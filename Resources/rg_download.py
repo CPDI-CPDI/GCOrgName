@@ -16,7 +16,7 @@ print(f"Output file will be: {output_file}")
 
 # Step 1: Download the file and save it locally
 try:
-    response = requests.get(url, verify=false)
+    response = requests.get(url, verify=False)
     response.raise_for_status()  # Raise exception for bad status codes
     
     with open(temp_file, 'wb') as file:
