@@ -216,7 +216,7 @@ def merge_additional_data(final_joined_df: pd.DataFrame,
         )
     
     # Now it's safe to coerce to integer
-final_joined_df['infobaseID'] = final_joined_df['infobaseID'].fillna(0).astype(int)
+    final_joined_df['infobaseID'] = final_joined_df['infobaseID'].fillna(0).astype(int)
 
     
     # Merge RG numbers
