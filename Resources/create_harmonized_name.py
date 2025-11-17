@@ -31,7 +31,7 @@ joined_df = pd.merge(manual_org_df, applied_en_df, left_on='Organization Legal N
 
 # Merge with infobase_en_df and infobase_fr_df using the correct column names, excluding 'Applied title' and 'Appellation legale'
 joined_df = pd.merge(joined_df, infobase_en_df[['legal_title']], left_on='Organization Legal Name English', right_on='legal_title', how='left')
-joined_df = pd.merge(joined_df, infobase_fr_df[['Titre applique']], left_on='Organization Legal Name French', right_on='Titre applique', how='left')
+joined_df = pd.merge(joined_df, infobase_fr_df[['titre_applique']], left_on='Organization Legal Name French', right_on='titre_applique', how='left')
 
 # Debug: Print the columns of joined_df
 print("Columns in joined_df:", joined_df.columns)
