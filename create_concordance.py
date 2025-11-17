@@ -188,12 +188,36 @@ def merge_additional_data(final_joined_df: pd.DataFrame,
         how='left'
     )
     
-    # Standardize columns
-    final_joined_df['gc_orgID'] = final_joined_df['gc_orgID'].astype(str).str.split('.').str[0]
-    final_joined_df = final_joined_df.rename(
-        columns={'OrgID': 'infobaseID', 'Website': 'website'}
+    
+    final_joined_df['gc_orgID'] = (
+        final_joined_df['gc_orgID'].astype(str).str.split('.').str[0]
     )
-    final_joined_df['infobaseID'] = final_joined_df['infobaseID'].fillna(0).astype(int)
+    
+    # Normalize InfoBase ID (English uses org_id; French uses OrgID)
+    rename_map = {}
+    if 'org_id' in final_joined_df.columns:
+        rename_map['org_id'] = 'infobaseID'
+    if 'OrgID' in final_joined_df.columns and 'infobaseID' not in final_joined_df.columns:
+        # If FR introduced OrgID earlier for some reason, fold it too
+        rename_map['OrgID'] = 'infobaseID'
+    
+    # Normalize website casing too
+    if 'Website' in final_joined_df.columns and 'website' not in final_joined_df.columns:
+        rename_map['Website'] = 'website'
+    
+    if rename_map:
+        final_joined_df = final_joined_df.rename(columns=rename_map)
+    
+    # Ensure the column exists before numeric coercion
+    if 'infobaseID' not in final_joined_df.columns:
+        raise KeyError(
+            "Expected an InfoBase ID column but couldn't find 'org_id' or 'OrgID' to rename. "
+            f"Available columns: {list(final_joined_df.columns)}"
+        )
+    
+    # Now it's safe to coerce to integer
+final_joined_df['infobaseID'] = final_joined_df['infobaseID'].fillna(0).astype(int)
+
     
     # Merge RG numbers
     rg_cols = ['gc_orgID', 'rgnumber']
