@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 GC Org Info builder — robust to header variants, BOMs, dtype quirks,
-and avoids duplicate 'legal_title' / 'lead_department' columns.
+and guarantees single 'legal_title' / 'lead_department' columns.
 """
 
 import os
@@ -60,7 +60,7 @@ def merge_drop_right_key(left: pd.DataFrame,
                          select_cols=None,
                          how: str = 'left') -> pd.DataFrame:
     """
-    Merge and then drop the right-hand key column to avoid creating a duplicate
+    Merge and then drop the right-hand key column to avoid keeping a duplicate
     of the join key (e.g., 'Legal title').
     """
     if select_cols is not None:
@@ -69,6 +69,26 @@ def merge_drop_right_key(left: pd.DataFrame,
     if right_on in out.columns:
         out = out.drop(columns=[right_on])
     return out
+
+
+def coalesce_into(df: pd.DataFrame, target: str, candidates: list) -> pd.DataFrame:
+    """
+    Build/overwrite df[target] with first non-null across candidates (in order).
+    Drops every candidate except the final target.
+    """
+    present = [c for c in candidates if c in df.columns]
+    if not present:
+        if target not in df.columns:
+            df[target] = None
+        return df
+    base = df[target] if target in df.columns else pd.Series([None] * len(df), index=df.index)
+    for c in present:
+        base = base.where(base.notna(), df[c])
+    df[target] = base
+    for c in present:
+        if c != target and c in df.columns:
+            df = df.drop(columns=[c])
+    return df
 
 
 # ---------- IO ----------
@@ -147,7 +167,7 @@ def main():
 
     # applied_en
     app = dfs['applied_en']
-    app_key    = find_col(app, ['Legal title', 'legal_title', 'Legal Title'])
+    app_key     = find_col(app, ['Legal title', 'legal_title', 'Legal Title'])
     app_applied = find_col(app, ['Applied title', 'applied_title'])
     app_titre   = find_col(app, ["Titre d'usage", "titre d'usage", 'titre_usage'])
     app_abbr_en = find_col(app, ['Abbreviation', 'abbreviation'])
@@ -175,7 +195,7 @@ def main():
     man2 = man.rename(columns={man_en: 'Organization Legal Name English', man_gc: 'gc_orgID'})
     if man_fr:
         man2 = man2.rename(columns={man_fr: 'Organization Legal Name French'})
-    # Keep any lead columns in manual_org under unique names to avoid collision later
+    # IMPORTANT: keep base-file lead columns under distinct names; DO NOT rename to lead_department here
     if man_lead_en and man_lead_en != 'man_lead_department':
         man2 = man2.rename(columns={man_lead_en: 'man_lead_department'})
     if man_lead_fr and man_lead_fr != 'man_ministère_responsable':
@@ -196,7 +216,7 @@ def main():
     unmatched_values = joined_df[joined_df['Names Match'] == 1].copy()
     joined_df = joined_df[joined_df['Names Match'] == 0].copy()
 
-    # ---- Enrich from Applied EN (drop right key post-merge to avoid a second 'Legal title') ----
+    # ---- Enrich from Applied EN (drop right key post-merge to avoid second 'Legal title') ----
     if app_key:
         app_cols = [c for c in [app_key, app_applied, app_titre, app_abbr_en, app_abbr_fr] if c]
         joined_df = merge_drop_right_key(
@@ -232,7 +252,7 @@ def main():
                 how='left'
             )
 
-    # ---- Clean & rename to your canonical output headers ----
+    # ---- Clean & rename to canonical output headers ----
     if 'gc_orgID' in joined_df.columns:
         joined_df['gc_orgID'] = joined_df['gc_orgID'].astype(str).str.split('.').str[0]
 
@@ -258,12 +278,7 @@ def main():
     # Harmonized names
     if har_en: rename_map[har_en] = 'harmonized_name'
     if har_fr: rename_map[har_fr] = 'nom_harmonisé'
-    # Manual_org lead columns (if present under temporary names)
-    if 'man_lead_department' in joined_df.columns:
-        rename_map['man_lead_department'] = 'lead_department'
-    if 'man_ministère_responsable' in joined_df.columns:
-        rename_map['man_ministère_responsable'] = 'ministère_responsable'
-
+    # NOTE: do NOT map manual-org lead columns to final names yet (avoid duplicates)
     final_df = joined_df.rename(columns=rename_map)
 
     # ---- Defaults & coercions ----
@@ -280,34 +295,48 @@ def main():
                 return str(x).strip()
         final_df['end_date_fin'] = final_df['end_date_fin'].apply(_coerce_end)
 
-    # ---- Merge lead department (gc_orgID) ----
+    # ---- Merge lead department (gc_orgID) with SAFE column names ----
     if lead_gc:
         lead2 = dfs['manual_lead_department'].copy()
         lead2[lead_gc] = lead2[lead_gc].astype(str)
-        lead_map = {lead_gc: 'gc_orgID'}
-        if lead_en: lead_map[lead_en] = 'lead_department'
-        if lead_fr: lead_map[lead_fr] = 'ministère_responsable'
-        lead2 = lead2.rename(columns=lead_map)
 
-        keep = [c for c in ['gc_orgID', 'lead_department', 'ministère_responsable'] if c in lead2.columns]
+        # Rename to *_lead names BEFORE merge to forbid _x/_y creation
+        rename_lead = {lead_gc: 'gc_orgID'}
+        if lead_en: rename_lead[lead_en] = 'lead_department_lead'
+        if lead_fr: rename_lead[lead_fr] = 'ministère_responsable_lead'
+        lead2 = lead2.rename(columns=rename_lead)
+
+        keep = [c for c in ['gc_orgID', 'lead_department_lead', 'ministère_responsable_lead'] if c in lead2.columns]
         final_df = final_df.merge(lead2[keep].drop_duplicates(), on='gc_orgID', how='left')
 
-    # ---- FINAL one-shot de-duplication for lead columns ----
-    # Guarantees a single 'lead_department' and 'ministère_responsable'
-    if 'lead_department_x' in final_df.columns or 'lead_department_y' in final_df.columns:
-        final_df['lead_department'] = final_df.get('lead_department_x').combine_first(final_df.get('lead_department_y'))
-        final_df = final_df.drop(columns=[c for c in ['lead_department_x', 'lead_department_y'] if c in final_df.columns])
+    # ---- FINAL: coalesce and DROP ALL lead department duplicates ----
+    # Build single 'lead_department' with strict priority
+    lead_candidates = [
+        'lead_department_lead',          # from lead manual (authoritative)
+        'man_lead_department',           # from manual_org (if present)
+        'lead_department',               # any spurious existing field
+        'lead department',               # spacing variant
+        'lead_department_x', 'lead_department_y'
+    ] + [c for c in final_df.columns if c.startswith('lead_department_') and c not in ('lead_department', 'lead_department_lead')]
 
-    if 'ministère_responsable_x' in final_df.columns or 'ministère_responsable_y' in final_df.columns:
-        final_df['ministère_responsable'] = final_df.get('ministère_responsable_x').combine_first(final_df.get('ministère_responsable_y'))
-        final_df = final_df.drop(columns=[c for c in ['ministère_responsable_x', 'ministère_responsable_y'] if c in final_df.columns])
+    final_df = coalesce_into(final_df, 'lead_department', lead_candidates)
+
+    # Same for French
+    lead_fr_candidates = [
+        'ministère_responsable_lead',
+        'man_ministère_responsable',
+        'ministère_responsable',
+        'ministere_responsable', 'ministère responsable',
+        'ministère_responsable_x', 'ministère_responsable_y'
+    ] + [c for c in final_df.columns if c.startswith('ministère_responsable_') and c not in ('ministère_responsable', 'ministère_responsable_lead')]
+
+    final_df = coalesce_into(final_df, 'ministère_responsable', lead_fr_candidates)
 
     # ---- Ensure there is only one 'legal_title' (safety) ----
     legal_dupes = [c for c in final_df.columns if c != 'legal_title' and _norm(c) in {'legal title', 'legal_title'}]
     legal_dupes += [c for c in final_df.columns if c.startswith('legal_title_')]
     legal_dupes = list(dict.fromkeys(legal_dupes))
     for c in legal_dupes:
-        # keep existing 'legal_title' and drop dupes
         if c in final_df.columns:
             final_df = final_df.drop(columns=[c])
 
@@ -344,8 +373,8 @@ def main():
         'appellation_légale':    'Source: Manual org ID link (if column exists)',
         'preferred_name':        'Source: Resources/applied_en.csv',
         'nom_préféré':          'Source: Resources/applied_en.csv',
-        'lead_department':       'Source: Resources/lead_manual.csv (coalesced if present in manual_org)',
-        'ministère_responsable': 'Source: Resources/lead_manual.csv (coalesced if present in manual_org)',
+        'lead_department':       'Source: Resources/lead_manual.csv (priority) or Manual org',
+        'ministère_responsable': 'Source: Resources/lead_manual.csv (priority) or Manual org',
         'abbreviation':          'Source: Resources/applied_en.csv',
         'abreviation':           'Source: Resources/applied_en.csv',
         'FAA_LGFP':              'Source: Scraping/combined_FAA_names.csv',
