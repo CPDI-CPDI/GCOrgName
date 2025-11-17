@@ -358,6 +358,13 @@ def main():
         sort_key = final_df.columns[0]
     final_df = final_df[cols_in_df + extras].sort_values(by=sort_key)
 
+    
+    # Final cleanup: ensure only one 'lead_department'
+    if 'lead_department_x' in final_df.columns or 'lead_department_y' in final_df.columns:
+    final_df['lead_department'] = final_df.get('lead_department_x').combine_first(final_df.get('lead_department_y'))
+    final_df = final_df.drop(columns=[c for c in ['lead_department_x', 'lead_department_y'] if c in final_df.columns])
+
+
     # ---- Save outputs ----
     final_df.to_csv(os.path.join(script_folder, 'gc_org_info.csv'), index=False, encoding='utf-8-sig')
     unmatched_values.to_csv(os.path.join(script_folder, 'unmatched_org_IDs.csv'), index=False, encoding='utf-8-sig')
