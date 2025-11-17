@@ -115,7 +115,7 @@ def standardize_dataframes(dfs: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFra
     )
     
     # Convert 'OrgID' in infobase_fr_df to int for merging
-    dfs['infobase_fr_df']['orgid'] = dfs['infobase_fr_df']['orgid'].astype(int)
+    dfs['infobase_fr_df']['org_id'] = dfs['infobase_fr_df']['org_id'].astype(int)
     
     return dfs
 
