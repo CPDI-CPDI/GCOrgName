@@ -1,167 +1,303 @@
+# -*- coding: utf-8 -*-
+"""
+GC Org Info builder — robust to header variants, BOMs, and dtype quirks.
+Keeps your outputs and column naming the same as before.
+"""
+
 import os
+import re
+import unicodedata
 import pandas as pd
 
-def load_dataframes(script_folder):
-    """Load all required CSV files into dataframes."""
+
+# ---------- Normalization + resolution helpers ----------
+
+def _norm(s: str) -> str:
+    """Normalize header/label for tolerant matching (trim, lower, strip BOM/thin spaces)."""
+    if s is None:
+        return ""
+    s = str(s).replace("\ufeff", "")  # BOM
+    s = unicodedata.normalize("NFKC", s)
+    # unify odd spaces/dashes
+    s = s.replace("\u00a0", " ").replace("\u202f", " ").replace("\u2009", " ")
+    s = s.strip()
+    s = re.sub(r"\s+", " ", s)
+    return s.lower()
+
+
+def find_col(df: pd.DataFrame, candidates):
+    """
+    Find the actual column in df that matches any candidate label,
+    using normalized comparison tolerant to case/spacing/underscores.
+    """
+    if df is None or df.empty:
+        return None
+    lut = {}
+    for c in df.columns:
+        k = _norm(c).replace("_", " ")
+        lut[k] = c
+    for cand in candidates:
+        k = _norm(cand).replace("_", " ")
+        if k in lut:
+            return lut[k]
+    return None
+
+
+def standardize_text(df: pd.DataFrame) -> pd.DataFrame:
+    """Standardize text values (not headers): normalize quotes/hard hyphens; strip."""
+    return df.apply(
+        lambda x: (x
+                   .str.replace('’', "'", regex=False)
+                   .str.replace('\\u2011', '-', regex=False)
+                   .str.strip())
+        if x.dtype == "object" else x
+    )
+
+
+# ---------- IO ----------
+
+def load_dataframes(script_folder: str):
+    """Load all required CSV files into dataframes (UTF-8 BOM tolerant, string dtypes)."""
     files = {
-        'manual_org': 'Resources/Manual org ID link.csv',
-        'combined_faa': 'Scraping/combined_FAA_names.csv',
-        'applied_en': 'Resources/applied_en.csv',
-        'infobase_en': 'Resources/infobase_en.csv',
-        'harmonized_names': 'Resources/create_harmonized_name.csv',
-        'manual_lead_department': 'Resources/lead_manual.csv'  # Changed from 'Resources/Manual_leadDepartmentPortfolio.csv'
+        'manual_org':             'Resources/Manual org ID link.csv',
+        'combined_faa':           'Scraping/combined_FAA_names.csv',
+        'applied_en':             'Resources/applied_en.csv',
+        'infobase_en':            'Resources/infobase_en.csv',
+        'harmonized_names':       'Resources/create_harmonized_name.csv',
+        'manual_lead_department': 'Resources/lead_manual.csv',  # changed in your version
     }
-    
+
     dfs = {}
-    for key, path in files.items():
-        df = pd.read_csv(os.path.join(script_folder, path))
-        dfs[key] = standardize_text(df)
+    for key, rel_path in files.items():
+        path = os.path.join(script_folder, rel_path)
+        df = pd.read_csv(path, encoding="utf-8-sig", dtype=str)
+        df = standardize_text(df)
+        # Clean common artifact
+        if 'Unnamed: 0' in df.columns:
+            df = df.drop(columns=['Unnamed: 0'])
+        dfs[key] = df
     return dfs
 
-def standardize_text(df):
-    """Standardize text by replacing special characters."""
-    return df.apply(lambda x: x.str.replace('’', "'").str.replace('\u2011', '-').str.strip() 
-                   if x.dtype == "object" else x)
 
-def apply_overrides(df):
+# ---------- Business logic ----------
+
+def apply_overrides(df: pd.DataFrame) -> pd.DataFrame:
     """Apply manual overrides to specific organizations."""
-    # Override values for specific gc_orgIDs
     overrides = {
-        '2287': {
-            'abbreviation': 'SCC',
-            'abreviation': 'CSC'
-        }
-        # Add more overrides as needed:
-        # 'gc_orgID': {'field': 'value', ...}
+        '2287': {'abbreviation': 'SCC', 'abreviation': 'CSC'},
+        # add more gc_orgID overrides here as needed
     }
-    
+    if 'gc_orgID' not in df.columns:
+        return df
     for org_id, values in overrides.items():
         for field, value in values.items():
             df.loc[df['gc_orgID'] == org_id, field] = value
-    
     return df
 
-def main():
-    """Main function to create GC organization information file."""
-    script_folder = os.path.dirname(os.path.abspath(__file__))
-    
-    # Load all dataframes
-    dfs = load_dataframes(script_folder)
-    
-    # Remove unnamed columns
-    if 'Unnamed: 0' in dfs['combined_faa'].columns:
-        dfs['combined_faa'] = dfs['combined_faa'].drop(columns=['Unnamed: 0'])
-    
-    # Prepare combined_faa dataframe
-    dfs['combined_faa']['Original English Name'] = dfs['combined_faa']['English Name']
-    dfs['combined_faa'] = dfs['combined_faa'].rename(
-        columns={'English Name': 'Organization Legal Name English'})
-    
-    # Join dataframes
-    joined_df = pd.merge(dfs['manual_org'], dfs['combined_faa'], 
-                        on='Organization Legal Name English', how='outer')
-    
-    # Process matches
-    joined_df['Names Match'] = joined_df.apply(
-        lambda row: 0 if pd.notna(row['Organization Legal Name English']) else 1, axis=1)
-    unmatched_values = joined_df[joined_df['Names Match'] == 1]
-    joined_df = joined_df[joined_df['Names Match'] == 0]
-    
-    # Perform all merges
-    final_df = (joined_df
-        .merge(
-            dfs['applied_en'][['Legal title', 'Applied title', "Titre d'usage", 
-                             'Abbreviation', 'Abreviation']],
-            left_on='Organization Legal Name English',
-            right_on='Legal title',
-            how='left'
-        )
-        .merge(
-            dfs['infobase_en'][['Legal title', 'Status', 'End date']],
-            left_on='Organization Legal Name English',
-            right_on='Legal title',
-            how='left'
-        )
-        .merge(
-            dfs['harmonized_names'][['gc_orgID', 'harmonized_name', 'nom_harmonisé']],
-            on='gc_orgID',
-            how='left'
-        )
-    )
-    
-    # Clean up and standardize fields
-    final_df['gc_orgID'] = final_df['gc_orgID'].astype(str).str.split('.').str[0]
-    final_df = final_df.rename(columns={
-        'Organization Legal Name English': 'legal_title',
-        'Organization Legal Name French': 'appellation_légale',
-        'FAA': 'FAA_LGFP',
-        'Applied title': 'preferred_name',
-        "Titre d'usage": 'nom_préféré',
-        'Abbreviation': 'abbreviation',
-        'Abreviation': 'abreviation',
-        'Status': 'status_statut',
-        'End date': 'end_date_fin'
-    })
-    
-    # Apply overrides
-    final_df = apply_overrides(final_df)
-    
-    # Set default values
-    final_df['status_statut'] = final_df['status_statut'].fillna('a')
-    final_df['end_date_fin'] = final_df['end_date_fin'].apply(
-        lambda x: str(int(float(x))) if pd.notna(x) and str(x).strip() != '' else '')
-    
-    # Convert gc_orgID to string in manual_lead_department DataFrame
-    dfs['manual_lead_department']['gc_orgID'] = dfs['manual_lead_department']['gc_orgID'].astype(str)
 
-    # Then perform the merge
-    final_df = final_df.merge(
-        dfs['manual_lead_department'][['gc_orgID', 'lead_department', 'ministère_responsable']],
-        on='gc_orgID',
-        how='left'
+def main():
+    """Create GC organization information file, robust to header changes."""
+    script_folder = os.path.dirname(os.path.abspath(__file__))
+
+    # ---- Load ----
+    dfs = load_dataframes(script_folder)
+
+    # ---- Resolve key columns in source frames ----
+
+    # manual_org: must contain gc_orgID and Org Legal Name EN (and optionally FR)
+    man = dfs['manual_org']
+    man_gc = find_col(man, ['gc_orgID', 'gc orgid', 'gc_orgid'])
+    man_en = find_col(man, ['Organization Legal Name English', 'Legal title', 'legal_title', 'English Name'])
+    man_fr = find_col(man, ['Organization Legal Name French', 'Appellation légale', 'appellation_legale'])
+
+    if not man_gc or not man_en:
+        raise KeyError(
+            "manual_org is missing required columns. "
+            f"Found gc: {man_gc}, en: {man_en}. Available: {list(man.columns)}"
+        )
+
+    # combined_faa: may have 'English Name' we convert to 'Organization Legal Name English'
+    faa = dfs['combined_faa']
+    faa_en = find_col(faa, ['Organization Legal Name English', 'English Name'])
+    if not faa_en:
+        raise KeyError(f"combined_faa missing English name column. Have: {list(faa.columns)}")
+    # keep original for traceability if using 'English Name'
+    if faa_en != 'Organization Legal Name English':
+        if 'Original English Name' not in faa.columns:
+            faa['Original English Name'] = faa[faa_en]
+        faa = faa.rename(columns={faa_en: 'Organization Legal Name English'})
+
+    # applied_en: Legal title + applied/preferred name + abbrevs
+    app = dfs['applied_en']
+    app_key = find_col(app, ['Legal title', 'legal_title', 'Legal Title'])
+    app_applied = find_col(app, ['Applied title', 'applied_title'])
+    app_titre   = find_col(app, ["Titre d'usage", "titre d'usage", 'titre_usage'])
+    app_abbr_en = find_col(app, ['Abbreviation', 'abbreviation'])
+    app_abbr_fr = find_col(app, ['Abreviation', 'abreviation'])
+
+    # infobase_en: Legal title + Status + End date
+    ibe = dfs['infobase_en']
+    ibe_key   = find_col(ibe, ['Legal title', 'legal_title', 'Legal Title'])
+    ibe_stat  = find_col(ibe, ['Status', 'status', 'Statut'])
+    ibe_end   = find_col(ibe, ['End date', 'end_date', 'End Date'])
+
+    # harmonized_names: gc_orgID + harmonized name EN/FR
+    har = dfs['harmonized_names']
+    har_gc  = find_col(har, ['gc_orgID', 'gc orgid', 'gc_orgid'])
+    har_en  = find_col(har, ['harmonized_name', 'harmonized name'])
+    har_fr  = find_col(har, ['nom_harmonisé', 'nom harmonisé', 'nom_harmonise'])
+
+    # lead manual: gc_orgID + lead dept EN/FR
+    lead = dfs['manual_lead_department']
+    lead_gc  = find_col(lead, ['gc_orgID', 'gc orgid', 'gc_orgid'])
+    lead_en  = find_col(lead, ['lead_department', 'lead department'])
+    lead_fr  = find_col(lead, ['ministère_responsable', 'ministere_responsable', 'ministère responsable'])
+
+    # ---- Build initial merge (outer) on English legal title ----
+    man2 = man.rename(columns={man_en: 'Organization Legal Name English'})
+    if man_fr:
+        man2 = man2.rename(columns={man_fr: 'Organization Legal Name French'})
+    man2 = man2.rename(columns={man_gc: 'gc_orgID'})
+
+    joined_df = pd.merge(
+        man2,
+        faa,  # already has 'Organization Legal Name English'
+        on='Organization Legal Name English',
+        how='outer'
     )
-    
-    # Order fields
+
+    # Flag matches vs unmatched
+    joined_df['Names Match'] = joined_df.apply(
+        lambda row: 0 if pd.notna(row['Organization Legal Name English']) else 1,
+        axis=1
+    )
+    unmatched_values = joined_df[joined_df['Names Match'] == 1].copy()
+    joined_df = joined_df[joined_df['Names Match'] == 0].copy()
+
+    # ---- Enrich from Applied EN ----
+    if app_key:
+        app_cols = [c for c in [app_key, app_applied, app_titre, app_abbr_en, app_abbr_fr] if c]
+        joined_df = joined_df.merge(
+            app[app_cols].drop_duplicates(),
+            left_on='Organization Legal Name English',
+            right_on=app_key,
+            how='left'
+        )
+
+    # ---- Enrich from InfoBase EN ----
+    if ibe_key:
+        ibe_cols = [c for c in [ibe_key, ibe_stat, ibe_end] if c]
+        joined_df = joined_df.merge(
+            ibe[ibe_cols].drop_duplicates(),
+            left_on='Organization Legal Name English',
+            right_on=ibe_key,
+            how='left'
+        )
+
+    # ---- Enrich from Harmonized Names (gc_orgID) ----
+    if har_gc:
+        har_cols = [c for c in [har_gc, har_en, har_fr] if c]
+        joined_df = joined_df.merge(
+            har[har_cols].drop_duplicates(),
+            left_on='gc_orgID', right_on=har_gc, how='left'
+        )
+
+    # ---- Clean & rename to your canonical output headers ----
+    # Ensure gc_orgID string without decimal artifacts
+    if 'gc_orgID' in joined_df.columns:
+        joined_df['gc_orgID'] = joined_df['gc_orgID'].astype(str).str.split('.').str[0]
+
+    rename_map = {}
+    # EN legal title / FR legal title
+    rename_map['Organization Legal Name English'] = 'legal_title'
+    if 'Organization Legal Name French' in joined_df.columns:
+        rename_map['Organization Legal Name French'] = 'appellation_légale'
+    # FAA -> FAA_LGFP (if present)
+    faa_col = find_col(joined_df, ['FAA', 'FAA_LGFP', 'FAA-LGFP'])
+    if faa_col:
+        rename_map[faa_col] = 'FAA_LGFP'
+    # Applied EN to preferred_name / nom_préféré
+    if app_applied: rename_map[app_applied] = 'preferred_name'
+    if app_titre:   rename_map[app_titre]   = 'nom_préféré'
+    # Abbreviations
+    if app_abbr_en: rename_map[app_abbr_en] = 'abbreviation'
+    if app_abbr_fr: rename_map[app_abbr_fr] = 'abreviation'
+    # Status / End date
+    if ibe_stat: rename_map[ibe_stat] = 'status_statut'
+    if ibe_end:  rename_map[ibe_end]  = 'end_date_fin'
+    # Harmonized names
+    if har_en: rename_map[har_en] = 'harmonized_name'
+    if har_fr: rename_map[har_fr] = 'nom_harmonisé'
+
+    final_df = joined_df.rename(columns=rename_map)
+
+    # ---- Defaults & coercions ----
+    if 'status_statut' in final_df.columns:
+        final_df['status_statut'] = final_df['status_statut'].fillna('a')
+
+    if 'end_date_fin' in final_df.columns:
+        def _coerce_end(x):
+            if pd.isna(x) or str(x).strip() == '':
+                return ''
+            try:
+                # tolerate "2024.0" etc.
+                return str(int(float(str(x).strip())))
+            except Exception:
+                return str(x).strip()
+        final_df['end_date_fin'] = final_df['end_date_fin'].apply(_coerce_end)
+
+    # ---- Merge lead department (gc_orgID) ----
+    if lead_gc:
+        lead2 = dfs['manual_lead_department'].copy()
+        # normalize types
+        lead2[lead_gc] = lead2[lead_gc].astype(str)
+        # rename to canonical target names
+        lead_map = {}
+        lead_map[lead_gc] = 'gc_orgID'
+        if lead_en: lead_map[lead_en] = 'lead_department'
+        if lead_fr: lead_map[lead_fr] = 'ministère_responsable'
+        lead2 = lead2.rename(columns=lead_map)
+
+        # keep only used cols
+        keep = [c for c in ['gc_orgID', 'lead_department', 'ministère_responsable'] if c in lead2.columns]
+        final_df = final_df.merge(lead2[keep].drop_duplicates(), on='gc_orgID', how='left')
+
+    # ---- Reorder/output columns (keep extras at end for transparency) ----
     ordered_fields = [
-        'gc_orgID', 'harmonized_name', 'nom_harmonisé', 'legal_title', 
+        'gc_orgID', 'harmonized_name', 'nom_harmonisé', 'legal_title',
         'appellation_légale', 'preferred_name', 'nom_préféré', 'lead_department',
         'ministère_responsable', 'abbreviation', 'abreviation', 'FAA_LGFP',
         'status_statut', 'end_date_fin'
     ]
-    final_df = final_df[ordered_fields].sort_values(by='gc_orgID')
-    
-    # Save files
-    final_df.to_csv(
-        os.path.join(script_folder, 'gc_org_info.csv'),
-        index=False, encoding='utf-8-sig'
-    )
-    unmatched_values.to_csv(
-        os.path.join(script_folder, 'unmatched_org_IDs.csv'),
-        index=False, encoding='utf-8-sig'
-    )
+    cols_in_df = [c for c in ordered_fields if c in final_df.columns]
+    extras = [c for c in final_df.columns if c not in cols_in_df]
+    final_df = final_df[cols_in_df + extras].sort_values(by='gc_orgID' if 'gc_orgID' in final_df.columns else cols_in_df[0])
 
-    # Documentation for each field
+    # ---- Save outputs ----
+    final_df.to_csv(os.path.join(script_folder, 'gc_org_info.csv'), index=False, encoding='utf-8-sig')
+    unmatched_values.to_csv(os.path.join(script_folder, 'unmatched_org_IDs.csv'), index=False, encoding='utf-8-sig')
+
+    # ---- Save simple documentation (same as before, with clarified sources) ----
     documentation = {
-        'gc_orgID': 'Source: create_harmonized_name.csv',
-        'harmonized_name': 'Source: Resources/create_harmonized_name.csv',
-        'nom_harmonisé': 'Source: Resources/create_harmonized_name.csv',
-        'legal_title': 'Source: Resources/Manual org ID link.csv and Scraping/combined_FAA_names.csv',
-        'appellation_légale': 'Not provided in the code, likely from a similar source',
-        'preferred_name': 'Source: Resources/applied_en.csv',
-        'nom_préféré': 'Source: Resources/applied_en.csv',
-        'lead_department': 'Source: Resources/lead_manual.csv',
+        'gc_orgID':              'Source: Resources/create_harmonized_name.csv',
+        'harmonized_name':       'Source: Resources/create_harmonized_name.csv',
+        'nom_harmonisé':         'Source: Resources/create_harmonized_name.csv',
+        'legal_title':           'Source: Manual org ID link + Scraping/combined_FAA_names',
+        'appellation_légale':    'Source: Manual org ID link (if column exists)',
+        'preferred_name':        'Source: Resources/applied_en.csv',
+        'nom_préféré':          'Source: Resources/applied_en.csv',
+        'lead_department':       'Source: Resources/lead_manual.csv',
         'ministère_responsable': 'Source: Resources/lead_manual.csv',
-        'abbreviation': 'Source: Resources/applied_en.csv',
-        'abreviation': 'Source: Resources/applied_en.csv',
-        'FAA_LGFP': 'Source: Scraping/combined_FAA_names.csv',
-        'status_statut': 'Source: Resources/infobase_en.csv',
-        'end_date_fin': 'Source: Resources/infobase_en.csv'
+        'abbreviation':          'Source: Resources/applied_en.csv',
+        'abreviation':           'Source: Resources/applied_en.csv',
+        'FAA_LGFP':              'Source: Scraping/combined_FAA_names.csv',
+        'status_statut':         'Source: Resources/infobase_en.csv',
+        'end_date_fin':          'Source: Resources/infobase_en.csv'
     }
-
-    # Save documentation to a file
-    with open(os.path.join(script_folder, 'gc_org_info_documentation.txt'), 'w') as f:
+    with open(os.path.join(script_folder, 'gc_org_info_documentation.txt'), 'w', encoding='utf-8') as f:
         for field, doc in documentation.items():
             f.write(f'{field}: {doc}\n')
+
 
 if __name__ == "__main__":
     main()
