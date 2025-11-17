@@ -163,9 +163,9 @@ def merge_additional_data(final_joined_df: pd.DataFrame,
     """
     # Define merges to perform
     merge_columns = [
-        ('applied_en_df', 'legal_title', 
+        ('applied_en_df', 'Legal title', 
          ['Legal title', 'Applied title', "Titre d'usage", 'Abbreviation', 'Abreviation']),
-        ('infobase_en_df', 'legal_title', 
+        ('infobase_en_df', 'Legal title', 
          ['legal_title', 'org_id', 'website'])
     ]
     
