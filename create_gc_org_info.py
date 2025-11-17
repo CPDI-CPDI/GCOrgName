@@ -66,29 +66,9 @@ def merge_drop_right_key(left: pd.DataFrame,
     if select_cols is not None:
         right = right[select_cols].drop_duplicates()
     out = left.merge(right, left_on=left_on, right_on=right_on, how=how)
-    # Drop the right key if present (pandas keeps it when using left_on/right_on)
     if right_on in out.columns:
         out = out.drop(columns=[right_on])
     return out
-
-
-def coalesce_columns(df: pd.DataFrame, target: str, candidates: list) -> pd.DataFrame:
-    """
-    Create/overwrite df[target] with the first non-null among candidates that exist.
-    Then drop any duplicate candidate columns (if they differ from target).
-    """
-    present = [c for c in candidates if c in df.columns]
-    if not present:
-        return df
-    if target not in df.columns:
-        df[target] = None
-    for c in present:
-        df[target] = df[target].where(df[target].notna(), df[c])
-    # Drop all present duplicates except the chosen target
-    for c in present:
-        if c != target and c in df.columns:
-            df = df.drop(columns=[c])
-    return df
 
 
 # ---------- IO ----------
@@ -101,7 +81,7 @@ def load_dataframes(script_folder: str):
         'applied_en':             'Resources/applied_en.csv',
         'infobase_en':            'Resources/infobase_en.csv',
         'harmonized_names':       'Resources/create_harmonized_name.csv',
-        'manual_lead_department': 'Resources/lead_manual.csv',  # changed in your version
+        'manual_lead_department': 'Resources/lead_manual.csv',  # your updated source
     }
 
     dfs = {}
@@ -238,10 +218,9 @@ def main():
             how='left'
         )
 
-    # ---- Enrich from Harmonized Names (gc_orgID); drop duplicate right key if same name) ----
+    # ---- Enrich from Harmonized Names (gc_orgID) ----
     if har_gc:
         har_cols = [c for c in [har_gc, har_en, har_fr] if c]
-        # If har_gc equals 'gc_orgID', standard merge on 'gc_orgID' and no right_on needed
         if har_gc == 'gc_orgID':
             joined_df = joined_df.merge(har[har_cols].drop_duplicates(), on='gc_orgID', how='left')
         else:
@@ -254,7 +233,6 @@ def main():
             )
 
     # ---- Clean & rename to your canonical output headers ----
-    # Ensure gc_orgID string without decimal artifacts
     if 'gc_orgID' in joined_df.columns:
         joined_df['gc_orgID'] = joined_df['gc_orgID'].astype(str).str.split('.').str[0]
 
@@ -302,7 +280,7 @@ def main():
                 return str(x).strip()
         final_df['end_date_fin'] = final_df['end_date_fin'].apply(_coerce_end)
 
-    # ---- Merge lead department (gc_orgID) and coalesce duplicates ----
+    # ---- Merge lead department (gc_orgID) ----
     if lead_gc:
         lead2 = dfs['manual_lead_department'].copy()
         lead2[lead_gc] = lead2[lead_gc].astype(str)
@@ -314,29 +292,24 @@ def main():
         keep = [c for c in ['gc_orgID', 'lead_department', 'ministère_responsable'] if c in lead2.columns]
         final_df = final_df.merge(lead2[keep].drop_duplicates(), on='gc_orgID', how='left')
 
-        # Coalesce duplicates if the base file already had these fields
-        # Handle variants produced by pandas ('_x'/'_y') or from earlier sources.
-        # lead_department
-        candidates_lead_en = [c for c in [
-            'lead_department_x', 'lead_department_y',
-            'lead department', 'lead_department'
-        ] if c in final_df.columns] + [c for c in final_df.columns if c.startswith('lead_department_')]
-        final_df = coalesce_columns(final_df, 'lead_department', candidates_lead_en)
+    # ---- FINAL one-shot de-duplication for lead columns ----
+    # Guarantees a single 'lead_department' and 'ministère_responsable'
+    if 'lead_department_x' in final_df.columns or 'lead_department_y' in final_df.columns:
+        final_df['lead_department'] = final_df.get('lead_department_x').combine_first(final_df.get('lead_department_y'))
+        final_df = final_df.drop(columns=[c for c in ['lead_department_x', 'lead_department_y'] if c in final_df.columns])
 
-        # ministère_responsable
-        candidates_lead_fr = [c for c in [
-            'ministère_responsable_x', 'ministère_responsable_y',
-            'ministere_responsable', 'ministère responsable', 'ministère_responsable'
-        ] if c in final_df.columns] + [c for c in final_df.columns if c.startswith('ministère_responsable_')]
-        final_df = coalesce_columns(final_df, 'ministère_responsable', candidates_lead_fr)
+    if 'ministère_responsable_x' in final_df.columns or 'ministère_responsable_y' in final_df.columns:
+        final_df['ministère_responsable'] = final_df.get('ministère_responsable_x').combine_first(final_df.get('ministère_responsable_y'))
+        final_df = final_df.drop(columns=[c for c in ['ministère_responsable_x', 'ministère_responsable_y'] if c in final_df.columns])
 
-    # ---- Ensure there is only one 'legal_title' ----
-    # (If any variant/suffixed columns slipped through, coalesce and drop extras.)
+    # ---- Ensure there is only one 'legal_title' (safety) ----
     legal_dupes = [c for c in final_df.columns if c != 'legal_title' and _norm(c) in {'legal title', 'legal_title'}]
     legal_dupes += [c for c in final_df.columns if c.startswith('legal_title_')]
-    legal_dupes = list(dict.fromkeys(legal_dupes))  # unique
-    if legal_dupes:
-        final_df = coalesce_columns(final_df, 'legal_title', ['legal_title'] + legal_dupes)
+    legal_dupes = list(dict.fromkeys(legal_dupes))
+    for c in legal_dupes:
+        # keep existing 'legal_title' and drop dupes
+        if c in final_df.columns:
+            final_df = final_df.drop(columns=[c])
 
     # ---- Apply overrides ----
     final_df = apply_overrides(final_df)
@@ -357,13 +330,6 @@ def main():
     else:
         sort_key = final_df.columns[0]
     final_df = final_df[cols_in_df + extras].sort_values(by=sort_key)
-
-    
-    # Final cleanup: ensure only one 'lead_department'
-    if 'lead_department_x' in final_df.columns or 'lead_department_y' in final_df.columns:
-    final_df['lead_department'] = final_df.get('lead_department_x').combine_first(final_df.get('lead_department_y'))
-    final_df = final_df.drop(columns=[c for c in ['lead_department_x', 'lead_department_y'] if c in final_df.columns])
-
 
     # ---- Save outputs ----
     final_df.to_csv(os.path.join(script_folder, 'gc_org_info.csv'), index=False, encoding='utf-8-sig')
