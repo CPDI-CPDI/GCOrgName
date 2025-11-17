@@ -42,7 +42,7 @@ joined_df.loc[joined_df['harmonized_name'].isna(), 'harmonized_name'] = joined_d
 
 # Create the 'nom_harmonisé' field with the specified priority
 joined_df['nom_harmonisé'] = joined_df["Titre d'usage"]
-joined_df.loc[joined_df['nom_harmonisé'].isna(), 'nom_harmonisé'] = joined_df['Titre applique']
+joined_df.loc[joined_df['nom_harmonisé'].isna(), 'nom_harmonisé'] = joined_df['titre_applique']
 joined_df.loc[joined_df['nom_harmonisé'].isna(), 'nom_harmonisé'] = joined_df['Organization Legal Name French']
 
 # Manual changes
