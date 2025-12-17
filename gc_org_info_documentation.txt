@@ -11,4 +11,3 @@ abbreviation: Source: Resources/applied_en.csv
 abreviation: Source: Resources/applied_en.csv
 FAA_LGFP: Source: Scraping/combined_FAA_names.csv
 status_statut: Source: Resources/infobase_en.csv
-end_date_fin: Source: Resources/infobase_en.csv
