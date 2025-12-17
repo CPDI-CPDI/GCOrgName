@@ -345,13 +345,13 @@ def main():
     target_cols = [
         'gc_orgID',
         'harmonized_name',
-        'nom_harmonise',
+        'nom_harmonisé',
         'legal_title',
-        'appellation_legale',
+        'appellation_légale',
         'preferred_name',
-        'nom_prefere',
+        'nom_préféré',
         'lead_department',
-        'ministere_responsable',
+        'ministère_responsable',
         'abbreviation',
         'abreviation',
         'FAA_LGFP',
@@ -360,38 +360,37 @@ def main():
     for c in target_cols:
         if c not in final_df.columns:
             final_df[c] = ''
-
+    
     # ---- Keep only these 13, in order ----
     final_df = final_df[target_cols]
-
+    
     # ---- Sort by gc_orgID (numeric-friendly) ----
     final_df['gc_orgID'] = final_df['gc_orgID'].astype(str).str.split('.').str[0]
     final_df['_sort_gc'] = pd.to_numeric(final_df['gc_orgID'], errors='coerce')
     final_df = final_df.sort_values(by=['_sort_gc', 'gc_orgID']).drop(columns=['_sort_gc'])
-
+    
     # ---- Save outputs ----
     final_df.to_csv(os.path.join(script_folder, 'gc_org_info.csv'), index=False, encoding='utf-8-sig')
-
+    
     # ---- Save simple documentation (aligned to final headers) ----
     documentation = {
-        'gc_orgID':              'Source: Resources/create_harmonized_name.csv',
-        'harmonized_name':       'Source: Resources/create_harmonized_name.csv',
-        'nom_harmonise':         'Source: Resources/create_harmonized_name.csv',
-        'legal_title':           'Source: Manual org ID link + Scraping/combined_FAA_names',
-        'appellation_legale':    'Source: Manual org ID link (if column exists)',
-        'preferred_name':        'Source: Resources/applied_en.csv',
-        'nom_prefere':           'Source: Resources/applied_en.csv',
-        'lead_department':       'Source: Resources/lead_manual.csv (priority) or Manual org',
-        'ministere_responsable': 'Source: Resources/lead_manual.csv (priority) or Manual org',
-        'abbreviation':          'Source: Resources/applied_en.csv',
-        'abreviation':           'Source: Resources/applied_en.csv',
-        'FAA_LGFP':              'Source: Scraping/combined_FAA_names.csv',
-        'status_statut':         'Source: Resources/infobase_en.csv',
+        'gc_orgID':               'Source: Resources/create_harmonized_name.csv',
+        'harmonized_name':        'Source: Resources/create_harmonized_name.csv',
+        'nom_harmonisé':          'Source: Resources/create_harmonized_name.csv',
+        'legal_title':            'Source: Manual org ID link + Scraping/combined_FAA_names',
+        'appellation_légale':     'Source: Manual org ID link (if column exists)',
+        'preferred_name':         'Source: Resources/applied_en.csv',
+        'nom_préféré':           'Source: Resources/applied_en.csv',
+        'lead_department':        'Source: Resources/lead_manual.csv (priority) or Manual org',
+        'ministère_responsable':  'Source: Resources/lead_manual.csv (priority) or Manual org',
+        'abbreviation':           'Source: Resources/applied_en.csv',
+        'abreviation':            'Source: Resources/applied_en.csv',
+        'FAA_LGFP':               'Source: Scraping/combined_FAA_names.csv',
+        'status_statut':          'Source: Resources/infobase_en.csv',
     }
     with open(os.path.join(script_folder, 'gc_org_info_documentation.txt'), 'w', encoding='utf-8') as f:
         for field, doc in documentation.items():
             f.write(f'{field}: {doc}\n')
-
 
 if __name__ == "__main__":
     main()
