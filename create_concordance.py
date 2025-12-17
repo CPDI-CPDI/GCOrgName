@@ -380,38 +380,28 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+
 def finalize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Finalize the dataframe for output.
-    """
-    # Replace zero values in 'infobaseID' with blank strings, if present
-    if 'infobaseID' in df.columns:
-        df['infobaseID'] = pd.to_numeric(df['infobaseID'], errors='coerce').fillna(0).astype(int)
-        df['infobaseID'] = df['infobaseID'].replace(0, '')
+    # Drop 'Names Match' if present
+    if 'Names Match' in df.columns:
+        df = df.drop(columns=['Names Match'])
 
-    # Ensure 'site_web' column exists
-    if 'site_web' not in df.columns:
-        df['site_web'] = None
+    # Deduplicate columns
+    df = df.loc[:, ~df.columns.duplicated()]
 
-    # Normalize 'website' casing if needed
-    if 'website' not in df.columns:
-        alt_web = find_col(df, ['Website'])
-        if alt_web:
-            df = df.rename(columns={alt_web: 'website'})
-
-    # Reorder and sort columns (only keep those that exist)
-    final_field_order = [
-        'gc_orgID', 'harmonized_name', 'nom_harmonisé',
-        'abbreviation', 'abreviation', 'infobaseID', 'rg',
-        'ati', 'open_gov_ouvert', 'pop', 'phoenix',
-        'website', 'site_web'
+    # Enforce required column order
+    required_columns = [
+        'gc_orgID', 'harmonized_name', 'nom_harmonisé', 'abbreviation', 'abreviation',
+        'infobaseID', 'rg', 'ati', 'open_gov_ouvert', 'pop', 'phoenix', 'website', 'site_web',
+        'Organization Legal Name English', 'Organization Legal Name French', 'French Name', 'FAA',
+        'Original English Name', 'Legal title', 'Applied title', "Titre d'usage", 'legal_title',
+        'org_id', 'Harmonize_name'
     ]
-    cols_in_df = [c for c in final_field_order if c in df.columns]
-    # keep any extra columns at the end (optional; comment out to strictly enforce)
-    extras = [c for c in df.columns if c not in cols_in_df]
-    df = df[cols_in_df + extras].sort_values(by='gc_orgID' if 'gc_orgID' in df.columns else df.columns[0])
+    cols_in_df = [c for c in required_columns if c in df.columns]
+    extras = [c for c in df.columns if c not in required_columns]
+    df = df[cols_in_df + extras]
 
-    return df
+    return
 
 
 def validate_unmatched_data(unmatched_df: pd.DataFrame) -> None:
