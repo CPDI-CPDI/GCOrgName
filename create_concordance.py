@@ -378,13 +378,12 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
             df.loc[df['gc_orgID'] == gc_orgid, field] = value
     return df
 
-
 def finalize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     # Normalize some header variants to your target names
     rename_map = {
-        'nom_harmonisé': 'nom_harmonise',
-        'Nom harmonisé': 'nom_harmonise',
-        'Nom_harmonisé': 'nom_harmonise',
+        # Preserve accented French header in final output
+        'Nom harmonisé': 'nom_harmonisé',
+        'Nom_harmonisé': 'nom_harmonisé',
         # Keep website headers consistent
         'Site Web': 'site_web',
         'Website': 'website',
@@ -425,7 +424,7 @@ def finalize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     target_cols = [
         'gc_orgID',
         'harmonized_name',
-        'nom_harmonise',
+        'nom_harmonisé',
         'abbreviation',
         'abreviation',
         'infobaseID',
@@ -451,7 +450,6 @@ def finalize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         df = df.sort_values(by=['_sort_gc', 'gc_orgID']).drop(columns=['_sort_gc'])
 
     return df
-
 
 def validate_unmatched_data(unmatched_df: pd.DataFrame) -> None:
     """Validate the unmatched data to ensure data quality."""
