@@ -379,30 +379,76 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
             df.loc[df['gc_orgID'] == gc_orgid, field] = value
     return df
 
-
-
 def finalize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    # Drop 'Names Match' if present
-    if 'Names Match' in df.columns:
-        df = df.drop(columns=['Names Match'])
+    # Normalize some header variants to your target names
+    rename_map = {
+        'nom_harmonisé': 'nom_harmonise',
+        'Nom harmonisé': 'nom_harmonise',
+        'Nom_harmonisé': 'nom_harmonise',
+        # Keep website headers consistent
+        'Site Web': 'site_web',
+        'Website': 'website',
+        # If any upstream variant for open gov/ATI shows up:
+        'open_gov': 'open_gov_ouvert',
+        'open_gov_ouvert': 'open_gov_ouvert',
+        'ati': 'ati'
+    }
+    df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
 
-    # Deduplicate columns
-    df = df.loc[:, ~df.columns.duplicated()]
+    # Ensure clean numeric-looking IDs (strip Excel decimals like "123.0")
+    if 'gc_orgID' in df.columns:
+        df['gc_orgID'] = (
+            df['gc_orgID'].astype(str).str.split('.').str[0].str.replace(r'\D+', '', regex=True)
+        )
 
-    # Enforce required column order
-    required_columns = [
-        'gc_orgID', 'harmonized_name', 'nom_harmonisé', 'abbreviation', 'abreviation',
-        'infobaseID', 'rg', 'ati', 'open_gov_ouvert', 'pop', 'phoenix', 'website', 'site_web',
-        'Organization Legal Name English', 'Organization Legal Name French', 'French Name', 'FAA',
-        'Original English Name', 'Legal title', 'Applied title', "Titre d'usage", 'legal_title',
-        'org_id', 'Harmonize_name'
+    # If infobaseID came in under another name, map it now (defensive)
+    for candidate in ['org_id', 'OrgID', 'Org Id']:
+        if candidate in df.columns and 'infobaseID' not in df.columns:
+            df = df.rename(columns={candidate: 'infobaseID'})
+            break
+
+    # Numeric coercions (leave blanks as empty string for friendliness in CSV)
+    def _to_int_or_blank(s):
+        return (
+            pd.to_numeric(s, errors='coerce')
+              .astype('Int64')
+              .astype(str)
+              .replace({'<NA>': ''})
+        )
+
+    if 'infobaseID' in df.columns:
+        df['infobaseID'] = _to_int_or_blank(df['infobaseID'])
+    if 'rg' in df.columns:
+        df['rg'] = _to_int_or_blank(df['rg'])
+
+    # Ensure the exact 13 columns exist, creating empties where needed
+    target_cols = [
+        'gc_orgID',
+        'harmonized_name',
+        'nom_harmonise',
+        'abbreviation',
+        'abreviation',
+        'infobaseID',
+        'rg',
+        'ati',
+        'open_gov_ouvert',
+        'pop',
+        'phoenix',
+        'website',
+        'site_web',
     ]
-    cols_in_df = [c for c in required_columns if c in df.columns]
-    extras = [c for c in df.columns if c not in required_columns]
-    df = df[cols_in_df + extras]
+    for c in target_cols:
+        if c not in df.columns:
+            df[c] = ''
 
-    return
+    # Select and order exactly as requested; keep only these 13
+    df = df[target_cols]
 
+    # Sort by gc_orgID if present
+    if 'gc_orgID' in df.columns:
+        # Use numeric sort where possible, but keep blanks at end
+        df['_sort_gc'] = pd.to_numeric(df['gc_orgID'], errors='coerce')
+        df = df.sort_values(by=['_sort_gc', 'gc_orgID']).drop(columns=['_sort_gc'])
 
 def validate_unmatched_data(unmatched_df: pd.DataFrame) -> None:
     """Validate the unmatched data to ensure data quality."""
