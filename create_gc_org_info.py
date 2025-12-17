@@ -354,8 +354,7 @@ def main():
 
     # ---- Save outputs ----
     final_df.to_csv(os.path.join(script_folder, 'gc_org_info.csv'), index=False, encoding='utf-8-sig')
-    unmatched_values.to_csv(os.path.join(script_folder, 'unmatched_org_IDs.csv'), index=False, encoding='utf-8-sig')
-
+    
     # ---- Save simple documentation ----
     documentation = {
         'gc_orgID':              'Source: Resources/create_harmonized_name.csv',
