@@ -216,7 +216,6 @@ def merge_additional_data(final_joined_df: pd.DataFrame,
         logger.warning("Skipped InfoBase EN merge: could not resolve 'legal_title' in infobase_en_df")
 
     # ---------- Pull in harmonized names ----------
-    harmonized_cols = ['gc_orgID', 'harmonized_name', 'nom_harmonisé']
     right_harm = dfs['harmonized_names_df']
     # Resolve the three columns softly
     harm_gc   = find_col(right_harm, ['gc_orgID', 'gc orgid', 'gc_orgid'])
@@ -312,7 +311,7 @@ def merge_additional_data(final_joined_df: pd.DataFrame,
         # Standardize FR site column name to 'site_web'
         if fr_site and fr_site != 'site_web':
             final_joined_df = final_joined_df.rename(columns={fr_site: 'site_web'})
-        # Keep FR legal name column as-is; you didn't use it later, but it’s available
+        # Keep FR legal name column as-is; it's available if needed later.
     else:
         logger.warning("Skipped InfoBase FR merge: could not resolve OrgID/org_id in infobase_fr_df")
 
@@ -378,6 +377,7 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
         for field, value in changes.items():
             df.loc[df['gc_orgID'] == gc_orgid, field] = value
     return df
+
 
 def finalize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     # Normalize some header variants to your target names
@@ -449,6 +449,9 @@ def finalize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         # Use numeric sort where possible, but keep blanks at end
         df['_sort_gc'] = pd.to_numeric(df['gc_orgID'], errors='coerce')
         df = df.sort_values(by=['_sort_gc', 'gc_orgID']).drop(columns=['_sort_gc'])
+
+    return df
+
 
 def validate_unmatched_data(unmatched_df: pd.DataFrame) -> None:
     """Validate the unmatched data to ensure data quality."""
