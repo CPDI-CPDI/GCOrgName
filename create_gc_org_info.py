@@ -208,14 +208,6 @@ def main():
         how='outer'
     )
 
-    # Flag matches vs unmatched
-    joined_df['Names Match'] = joined_df.apply(
-        lambda row: 0 if pd.notna(row['Organization Legal Name English']) else 1,
-        axis=1
-    )
-    unmatched_values = joined_df[joined_df['Names Match'] == 1].copy()
-    joined_df = joined_df[joined_df['Names Match'] == 0].copy()
-
     # ---- Enrich from Applied EN (drop right key post-merge to avoid second 'Legal title') ----
     if app_key:
         app_cols = [c for c in [app_key, app_applied, app_titre, app_abbr_en, app_abbr_fr] if c]
