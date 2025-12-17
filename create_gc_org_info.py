@@ -131,6 +131,7 @@ def apply_overrides(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+
 def main():
     """Create GC organization information file, robust to header changes and duplicates."""
     script_folder = os.path.dirname(os.path.abspath(__file__))
@@ -195,7 +196,7 @@ def main():
     man2 = man.rename(columns={man_en: 'Organization Legal Name English', man_gc: 'gc_orgID'})
     if man_fr:
         man2 = man2.rename(columns={man_fr: 'Organization Legal Name French'})
-    # IMPORTANT: keep base-file lead columns under distinct names; DO NOT rename to lead_department here
+    # Keep base-file lead columns under distinct names; DO NOT rename to lead_department here
     if man_lead_en and man_lead_en != 'man_lead_department':
         man2 = man2.rename(columns={man_lead_en: 'man_lead_department'})
     if man_lead_fr and man_lead_fr != 'man_ministère_responsable':
@@ -270,7 +271,7 @@ def main():
     # Harmonized names
     if har_en: rename_map[har_en] = 'harmonized_name'
     if har_fr: rename_map[har_fr] = 'nom_harmonisé'
-    # NOTE: do NOT map manual-org lead columns to final names yet (avoid duplicates)
+
     final_df = joined_df.rename(columns=rename_map)
 
     # ---- Defaults & coercions ----
@@ -332,45 +333,60 @@ def main():
         if c in final_df.columns:
             final_df = final_df.drop(columns=[c])
 
-    # ---- Apply overrides ----
-    final_df = apply_overrides(final_df)
+    # ---- De-accent to match target schema and remove end_date_fin from final output ----
+    final_df = final_df.rename(columns={
+        'nom_harmonisé': 'nom_harmonise',
+        'appellation_légale': 'appellation_legale',
+        'nom_préféré': 'nom_prefere',
+        'ministère_responsable': 'ministere_responsable',
+    })
 
-    # ---- Reorder/output columns (keep extras at end for transparency) ----
-    ordered_fields = [
-        'gc_orgID', 'harmonized_name', 'nom_harmonisé', 'legal_title',
-        'appellation_légale', 'preferred_name', 'nom_préféré', 'lead_department',
-        'ministère_responsable', 'abbreviation', 'abreviation', 'FAA_LGFP',
-        'status_statut', 'end_date_fin'
+    # ---- Ensure all 13 target columns exist (create empty if missing) ----
+    target_cols = [
+        'gc_orgID',
+        'harmonized_name',
+        'nom_harmonise',
+        'legal_title',
+        'appellation_legale',
+        'preferred_name',
+        'nom_prefere',
+        'lead_department',
+        'ministere_responsable',
+        'abbreviation',
+        'abreviation',
+        'FAA_LGFP',
+        'status_statut',
     ]
-    cols_in_df = [c for c in ordered_fields if c in final_df.columns]
-    extras = [c for c in final_df.columns if c not in cols_in_df]
-    if 'gc_orgID' in final_df.columns:
-        sort_key = 'gc_orgID'
-    elif cols_in_df:
-        sort_key = cols_in_df[0]
-    else:
-        sort_key = final_df.columns[0]
-    final_df = final_df[cols_in_df + extras].sort_values(by=sort_key)
+    for c in target_cols:
+        if c not in final_df.columns:
+            final_df[c] = ''
+
+    # ---- Keep only these 13, in order ----
+    final_df = final_df[target_cols]
+
+    # ---- Sort by gc_orgID (numeric-friendly) ----
+    final_df['gc_orgID'] = final_df['gc_orgID'].astype(str).str.split('.').str[0]
+    final_df['_sort_gc'] = pd.to_numeric(final_df['gc_orgID'], errors='coerce')
+    final_df = final_df.sort_values(by=['_sort_gc', 'gc_orgID']).drop(columns=['_sort_gc'])
 
     # ---- Save outputs ----
     final_df.to_csv(os.path.join(script_folder, 'gc_org_info.csv'), index=False, encoding='utf-8-sig')
-    
-    # ---- Save simple documentation ----
+
+    # ---- Save simple documentation (aligned to final headers) ----
     documentation = {
         'gc_orgID':              'Source: Resources/create_harmonized_name.csv',
         'harmonized_name':       'Source: Resources/create_harmonized_name.csv',
-        'nom_harmonisé':         'Source: Resources/create_harmonized_name.csv',
+        'nom_harmonise':         'Source: Resources/create_harmonized_name.csv',
         'legal_title':           'Source: Manual org ID link + Scraping/combined_FAA_names',
-        'appellation_légale':    'Source: Manual org ID link (if column exists)',
+        'appellation_legale':    'Source: Manual org ID link (if column exists)',
         'preferred_name':        'Source: Resources/applied_en.csv',
-        'nom_préféré':          'Source: Resources/applied_en.csv',
+        'nom_prefere':           'Source: Resources/applied_en.csv',
         'lead_department':       'Source: Resources/lead_manual.csv (priority) or Manual org',
-        'ministère_responsable': 'Source: Resources/lead_manual.csv (priority) or Manual org',
+        'ministere_responsable': 'Source: Resources/lead_manual.csv (priority) or Manual org',
         'abbreviation':          'Source: Resources/applied_en.csv',
         'abreviation':           'Source: Resources/applied_en.csv',
         'FAA_LGFP':              'Source: Scraping/combined_FAA_names.csv',
         'status_statut':         'Source: Resources/infobase_en.csv',
-        'end_date_fin':          'Source: Resources/infobase_en.csv'
     }
     with open(os.path.join(script_folder, 'gc_org_info_documentation.txt'), 'w', encoding='utf-8') as f:
         for field, doc in documentation.items():
