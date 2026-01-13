@@ -1,108 +1,154 @@
 ﻿rgnumber,rg_dept_en,rg_dept_fr
+175,FRPD Testing Only Department,FRPD Testing Only Department
+159,Receiver General-Year End Adjusting Entries,Entrées de fin d'exercice du Receveur général
+154,Office of the Commissioner of Lobbying,Commissariat au lobbying
+152,Assisted Human Reproduction Agency of Canada,Agence canadienne de contrôle de la procréation assistée
+153,Canada Emission Reduction Incentives Agency,Agence canadienne pour l'incitation à la réduction des émissions
+151,Office of the Senate Ethics Officer,Bureau du conseiller sénatorial en éthique
+150,Indian Specific Claims Commission,Commission des revendications particulières des Indiens
+148,Public Health Agency of Canada,Agence de la santé publique du Canada
+149,Office of Indian Residential Schools Resolution of Canada,Bureau du Canada sur le règlement des questions des pensionnats autochtones
+147,Office of the Conflict of Interest and Ethics Commissioner,Bureau du commissaire aux conflits d'intérêts et à l'éthique
+146,Public Service Human Resource Management Agency of Canada,Agence de gestion des ressources humaines de la fonction publique du Canada
+145,Library and Archives of Canada,Bibliothèque et Archives du Canada
+143,Canadian Firearms Centre,Centre canadien des armes à feu
+144,Courts Administration Service,Service administratif des tribunaux judiciaires
+142,Office of Infrastructure of Canada,Bureau de l'infrastructure du Canada
+141,Financial Consumer Agency of Canada,Agence de la consommation en matière financière du Canada
+140,Canadian Human Rights Tribunal,Tribunal canadien des droits de la personne
+139,Financial Transactions and Reports Analysis Centre of Canada,Centre d'analyse des opérations et déclarations financières du Canada
+138,Military Grievances External Review Committee,Comité externe d'examen des griefs militaires
+137,Military Police Complaints Commission,Commission d'examen des plaintes concernant la police militaire
+135,Department of Canadian Heritage,Ministère du Patrimoine canadien
+136,Canadian Food Inspection Agency,Agence canadienne d'inspection des aliments
+134,Canadian Dairy Commission,Commission canadienne du lait
+133,Canadian Grain Commission,Commission canadienne des grains
+131,Law Commission of Canada,Commission du droit du Canada
+130,Canada Revenue Agency,Agence du revenu du Canada
+128,Communication Canada,Communication Canada
+127,Department of Public Works and Government Services,Ministère des Travaux publics et des Services gouvernementaux
+126,National Round Table on the Environment and the Economy,Table ronde nationale sur l'environnement et l'économie
+125,Canadian Artists and Producers Professional Relations Tribunal,Tribunal canadien des relations professionnelles artistes-producteurs
+124,Parks Canada Agency,Agence Parcs Canada
+123,Export Development Canada (Crown Corporation),Exportation et développement Canada (Société d'État)
+122,Canada Revenue Agency - (Administered Activities),Agence du revenu du Canada - (activités administrées)
+116,Copyright Board,Commission du droit d'auteur
+119,Canadian Space Agency,Agence spatiale canadienne
+121,Canadian Polar Commission,Commission canadienne des affaires polaires
+115,"NAFTA Secretariat, Canadian Section","Secrétariat de l'ALÉNA, section canadienne"
+109,Patented Medicine Prices Review Board,Conseil d'examen du prix des médicaments brevetés
+108,Hazardous Materials Information Review Commission,Conseil de contrôle des renseignements relatifs aux matières dangereuses
+102,The National Battlefields Commission,Commission des champs de bataille nationaux
+101,Canadian Transportation Accident Investigation and Safety Board,Bureau canadien d'enquête sur les accidents de transport et de la sécurité des transports
+100,Canadian Centre for Occupational Health and Safety,Centre canadien d'hygiène et de sécurité au travail
+097,Receiver General,Receveur général
+096,Offices of the Information and Privacy Commissioners of Canada,Commissariats à l'information et à la protection de la vie privée au Canada
+095,Canadian Security Intelligence Service,Service canadien du renseignement de sécurité
+092,Tax Court of Canada,Cour canadienne de l'impôt
+089,National Library,Bibliothèque nationale
+091,Canada Mortgage and Housing Corporation (Crown Corporation),Société canadienne d'hypothèques et de logement (Société d'État)
+088,Department of Public Safety and Emergency Preparedness,Ministère de la Sécurité publique et de la Protection civile
+086,Department of Fisheries and Oceans,Ministère des Pêches et des Océans
+087,Public Service Superannuation,Pension de retraite de la fonction publique
+085,Canada Border Services Agency,Agence des services frontaliers du Canada
+082,Public Service Staffing Tribunal,Tribunal de la dotation de la fonction publique
+083,"Office of the Co-ordinator, Status of Women",Bureau de la coordonnatrice de la situation de la femme
+080,Registrar of the Supreme Court of Canada,Registraire de la Cour suprême du Canada
+081,Canadian Commercial Corporation,XXX
+077,Transportation Appeal Tribunal of Canada,Tribunal d'appel des transports du Canada
+079,Payroll System General Ledger,Grand livre général du système de la paye
+076,Office of the Commissioner of Official Languages,Commissariat aux langues officielles
+074,National Energy Board,Office national de l'énergie
+075,Canadian Human Rights Commission,Commission canadienne des droits de la personne
+066,Northern Pipeline Agency,Administration du pipe-line du Nord
+067,House of Commons,Chambre des communes
+061,Canadian Institutes of Health Research,Instituts de recherche en santé du Canada
+063,Social Sciences and Humanities Research Council,Conseil de recherches en sciences humaines
+065,Federal Court of Canada,Cour fédérale du Canada
+060,Canada Industrial Relations Board,Conseil canadien des relations industrielles
+058,Public Service Labour Relations Board,Commission des relations de travail dans la fonction publique
+057,Parole Board of Canada,Commission des libérations conditionnelles du Canada
+056,Treasury Board Secretariat,Secrétariat du Conseil du Trésor
+053,Correctional Service of Canada,Service correctionnel du Canada
+054,Statistics Canada,Statistique Canada
+052,Canada School of Public Service,École de la fonction publique du Canada
+051,Office of the Commissioner for Federal Judicial Affairs,Bureau du commissaire à la magistrature fédérale
+049,Registry of the Competition Tribunal,Greffe du Tribunal de la concurrence
+050,Department of Citizenship and Immigration,Ministère de la Citoyenneté et de l'Immigration
+047,Canadian Nuclear Safety Commission,Commission canadienne de sûreté nucléaire
+045,Canadian International Trade Tribunal,Tribunal canadien du commerce extérieur
+044,Department of Western Economic Diversification,Ministère de la Diversification de l'économie de l'Ouest canadien
+041,Department of Natural Resources,Ministère des Ressources naturelles
+042,Department of Crown-Indigenous Relations and Northern Affairs,Ministère des Relations Couronne-Autochtones et des Affaires du Nord
+043,Canadian Intergovernmental Conference Secretariat,Secrétariat des conférences intergouvernementales canadiennes
+040,Canadian Transportation Agency,Office des transports du Canada
+039,National Film Board,Office national du film
+037,Telefilm Canada,Téléfilm Canada
+035,National Research Council of Canada,Conseil national de recherches du Canada
+036,Social Development,Développement social
+033,Department of Industry,Ministère de l'Industrie
+034,Department of Transport,Ministère des Transports
+031,Services Canada,Services Canada
+032,Immigration and Refugee Board,Commission de l'immigration et du statut de réfugié
+026,National Archives of Canada,Archives nationales du Canada
+027,Natural Sciences and Engineering Research Council,Conseil de recherches en sciences naturelles et en génie
+028,Public Works,Travaux public
+030,Royal Canadian Mounted Police,Gendarmerie royale du Canada
+025,Privy Council Office,Bureau du Conseil privé
+024,International Joint Commission (Canadian Section),Commission mixte internationale (section canadienne)
+023,Atlantic Canada Opportunities Agency,Agence de promotion économique du Canada atlantique
+022,Department of Health,Ministère de la Santé
+021,Department of Veterans Affairs,Ministère des Anciens Combattants
+018,Department of National Defence,Ministère de la Défense nationale
+017,Library of Parliament,Bibliothèque du Parlement
+016,Canadian Radio-television and Telecommunications Commission,Conseil de la radiodiffusion et des télécommunications canadiennes
+015,Office of the Chief Electoral Officer,Bureau du directeur général des élections
+014,Department of Employment and Social Development,Ministère de l'Emploi et du Développement social
+013,Department of Justice,Ministère de la Justice
+012,Economic Development Agency of Canada for the Regions of Quebec,Agence de développement économique du Canada pour les régions du Québec
+011,Office of the Superintendent of Financial Institutions,Bureau du surintendant des institutions financières
+010,International Trade,Commerce international
+008,Office of the Governor General's Secretary,Bureau du secrétaire du gouverneur général
+009,Senate,Sénat
 001,Department of Agriculture and Agri-Food,Ministère de l'Agriculture et de l'Agroalimentaire
 002,Office of the Auditor General,Bureau du vérificateur général
+003,Canadian International Development Agency,Agence canadienne de développement international
 004,Public Service Commission,Commission de la fonction publique
 005,"Department of Foreign Affairs, Trade and Development","Ministère des Affaires étrangères, du Commerce et du Développement"
 006,Department of Finance,Ministère des Finances
 007,Department of the Environment,Ministère de l'Environnement
-008,Office of the Governor General's Secretary,Bureau du secrétaire du gouverneur général
-009,Senate,Sénat
-011,Office of the Superintendent of Financial Institutions,Bureau du surintendant des institutions financières
-012,Economic Development Agency of Canada for the Regions of Quebec,Agence de développement économique du Canada pour les régions du Québec
-013,Department of Justice,Ministère de la Justice
-014,Department of Employment and Social Development,Ministère de l'Emploi et du Développement social
-015,Office of the Chief Electoral Officer,Bureau du directeur général des élections
-016,Canadian Radio-television and Telecommunications Commission,Conseil de la radiodiffusion et des télécommunications canadiennes
-017,Library of Parliament,Bibliothèque du Parlement
-018,Department of National Defence,Ministère de la Défense nationale
 019,Office of the Director of Public Prosecutions,Bureau du directeur des poursuites pénales
-021,Department of Veterans Affairs,Ministère des Anciens Combattants
-022,Department of Health,Ministère de la Santé
-023,Atlantic Canada Opportunities Agency,Agence de promotion économique du Canada atlantique
-024,International Joint Commission (Canadian Section),Commission mixte internationale (section canadienne)
-025,Privy Council Office,Bureau du Conseil privé
-027,Natural Sciences and Engineering Research Council,Conseil de recherches en sciences naturelles et en génie
-030,Royal Canadian Mounted Police,Gendarmerie royale du Canada
-032,Immigration and Refugee Board,Commission de l'immigration et du statut de réfugié
-033,Department of Industry,Ministère de l'Industrie
-034,Department of Transport,Ministère des Transports
-035,National Research Council of Canada,Conseil national de recherches du Canada
-037,Telefilm Canada,Téléfilm Canada
+020,Federal Bridge Corporation Limited,La Société des ponts fédéraux Limitée
+029,Public Appointments Commission,Commission des nominations publiques
 038,Canada Border Services Agency - (Administered Activities),Agence des services frontaliers du Canada - (activités administrées)
-039,National Film Board,Office national du film
-040,Canadian Transportation Agency,Office des transports du Canada
-041,Department of Natural Resources,Ministère des Ressources naturelles
-042,Department of Crown-Indigenous Relations and Northern Affairs,Ministère des Relations Couronne-Autochtones et des Affaires du Nord
-043,Canadian Intergovernmental Conference Secretariat,Secrétariat des conférences intergouvernementales canadiennes
-044,Department of Western Economic Diversification,Ministère de la Diversification de l'économie de l'Ouest canadien
 046,Office of the Public Sector Integrity Commissioner,Commissariat à l'intégrité du secteur public
-047,Canadian Nuclear Safety Commission,Commission canadienne de sûreté nucléaire
-050,Department of Citizenship and Immigration,Ministère de la Citoyenneté et de l'Immigration
-051,Office of the Commissioner for Federal Judicial Affairs,Bureau du commissaire à la magistrature fédérale
-052,Canada School of Public Service,École de la fonction publique du Canada
-053,Correctional Service of Canada,Service correctionnel du Canada
-054,Statistics Canada,Statistique Canada
-056,Treasury Board Secretariat,Secrétariat du Conseil du Trésor
-057,Parole Board of Canada,Commission des libérations conditionnelles du Canada
-061,Canadian Institutes of Health Research,Instituts de recherche en santé du Canada
+048,Registry of the Public Servants Disclosure Protection Tribunal,Greffe du Tribunal de la protection des fonctionnaires divulgateurs d'actes répréhensibles
+055,Office of the Communications Security Establishment Commissioner,Bureau du commissaire du Centre de la sécurité des télécommunications
+064,Indian Residential Schools Truth and Reconciliation Commission,Commission de vérité et de réconciliation relative aux pensionnats indiens
+071,Public Appointments Commission Secretariat,Secrétariat de la Commission des nominations publiques
+103,Security Intelligence Review Committee,Comité de surveillance des activités de renseignement de sécurité
+129,Registry of the Specific Claims Tribunal,Greffe du Tribunal des revendications particulières
 062,Federal Economic Development Agency for Southern Ontario,Agence fédérale de développement économique pour le Sud de l'Ontario
-063,Social Sciences and Humanities Research Council,Conseil de recherches en sciences humaines
-066,Northern Pipeline Agency,Administration du pipe-line du Nord
-067,House of Commons,Chambre des communes
-075,Canadian Human Rights Commission,Commission canadienne des droits de la personne
-076,Office of the Commissioner of Official Languages,Commissariat aux langues officielles
 078,Canadian Northern Economic Development Agency,Agence canadienne de développement économique du Nord
-079,Payroll System General Ledger,Grand livre général du système de la paye
-080,Registrar of the Supreme Court of Canada,Registraire de la Cour suprême du Canada
-085,Canada Border Services Agency,Agence des services frontaliers du Canada
-086,Department of Fisheries and Oceans,Ministère des Pêches et des Océans
-087,Public Service Superannuation,Pension de retraite de la fonction publique
-088,Department of Public Safety and Emergency Preparedness,Ministère de la Sécurité publique et de la Protection civile
-091,Canada Mortgage and Housing Corporation (Crown Corporation),Société canadienne d'hypothèques et de logement (Société d'État)
-095,Canadian Security Intelligence Service,Service canadien du renseignement de sécurité
-096,Offices of the Information and Privacy Commissioners of Canada,Commissariats à l'information et à la protection de la vie privée au Canada
-097,Receiver General,Receveur général
-100,Canadian Centre for Occupational Health and Safety,Centre canadien d'hygiène et de sécurité au travail
-101,Canadian Transportation Accident Investigation and Safety Board,Bureau canadien d'enquête sur les accidents de transport et de la sécurité des transports
-102,The National Battlefields Commission,Commission des champs de bataille nationaux
-109,Patented Medicine Prices Review Board,Conseil d'examen du prix des médicaments brevetés
-116,Copyright Board,Commission du droit d'auteur
-119,Canadian Space Agency,Agence spatiale canadienne
-122,Canada Revenue Agency - (Administered Activities),Agence du revenu du Canada - (activités administrées)
-123,Export Development Canada (Crown Corporation),Exportation et développement Canada (Société d'État)
-124,Parks Canada Agency,Agence Parcs Canada
-127,Department of Public Works and Government Services,Ministère des Travaux publics et des Services gouvernementaux
-130,Canada Revenue Agency,Agence du revenu du Canada
-131,Law Commission of Canada,Commission du droit du Canada
-133,Canadian Grain Commission,Commission canadienne des grains
-134,Canadian Dairy Commission,Commission canadienne du lait
-135,Department of Canadian Heritage,Ministère du Patrimoine canadien
-136,Canadian Food Inspection Agency,Agence canadienne d'inspection des aliments
-137,Military Police Complaints Commission,Commission d'examen des plaintes concernant la police militaire
-138,Military Grievances External Review Committee,Comité externe d'examen des griefs militaires
-139,Financial Transactions and Reports Analysis Centre of Canada,Centre d'analyse des opérations et déclarations financières du Canada
-141,Financial Consumer Agency of Canada,Agence de la consommation en matière financière du Canada
-144,Courts Administration Service,Service administratif des tribunaux judiciaires
-145,Library and Archives of Canada,Bibliothèque et Archives du Canada
-147,Office of the Conflict of Interest and Ethics Commissioner,Bureau du commissaire aux conflits d'intérêts et à l'éthique
-148,Public Health Agency of Canada,Agence de la santé publique du Canada
-151,Office of the Senate Ethics Officer,Bureau du conseiller sénatorial en éthique
-154,Office of the Commissioner of Lobbying,Commissariat au lobbying
-163,Shared Services Canada,Services partagés Canada
 165,Communications Security Establishment,Centre de la sécurité des télécommunications
+163,Shared Services Canada,Services partagés Canada
 170,Administrative Tribunals Support Service of Canada,Service canadien d'appui aux tribunaux administratifs
 171,Canadian High Arctic Research Station,Station canadienne de recherche dans l'Extrême-Arctique
 176,Parliamentary Protective Service,Service de protection parlementaire
+192,Secretariat of the National Security and Intelligence Committee of Parliamentarians,Secrétariat du Comité des parlementaires sur la sécurité nationale et le renseignement
 180,Invest in Canada Hub,Investir au Canada
 183,Office of the Parliamentary Budget Officer,Bureau du directeur parlementaire du budget
-190,Department for Women and Gender Equality,Ministère des Femmes et de l'Égalité des genres
 191,Department of Indigenous Services,Ministère des Services aux Autochtones
-192,Secretariat of the National Security and Intelligence Committee of Parliamentarians,Secrétariat du Comité des parlementaires sur la sécurité nationale et le renseignement
 193,Leaders' Debates Commission,Commission des débats des chefs
+190,Department for Women and Gender Equality,Ministère des Femmes et de l'Égalité des genres
 195,Canadian Energy Regulator,Régie canadienne de l'énergie
 196,National Security and Intelligence Review Agency Secretariat,Secrétariat de l'Office de surveillance des activités en matière de sécurité nationale et de renseignement
 197,Office of the Intelligence Commissioner,Bureau du commissaire au renseignement
+194,Impact Assessment Agency of Canada,Agence canadienne d'évaluation d'impact
 199,Canadian Accessibility Standards Development Organization,Organisation canadienne d'élaboration de normes d'accessibilité
 200,Federal Economic Development Agency for Northern Ontario,Agence fédérale de développement économique pour le Nord de l'Ontario
 240,Pacific Economic Development Agency of Canada,Agence de développement économique du Pacifique Canada
+241,Canada Water Agency,Agence canadienne de l'eau
 242,"Department of Housing, Infrastructure and Communities","Ministère du Logement, de l'Infrastructure et des Collectivités"
+243,Miscarriage of Justice Review Commission,Commission d'examen des erreurs du système judiciaire
+244,Department of National Defence – Canadian Coast Guard,Ministère de la Défense nationale – Garde côtière canadienne

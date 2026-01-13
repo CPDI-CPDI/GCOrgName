@@ -1,20 +1,17 @@
-Count of GC OrgIDs in final_rg_match: 105
+Count of GC OrgIDs in final_rg_match: 138
 Count of GC OrgIDs in manual_org_id_link: 390
 Count of GC OrgIDs in manual_pop_phoenix: 389
 Count of GC OrgIDs in manual_lead_department_portfolio: 392
-Count of GC OrgIDs in rg_final: 105
+Count of GC OrgIDs in rg_final: 138
 Count of GC OrgIDs in FAA_combined: 0
 Count of GC OrgIDs in en_applied: 0
 
 
 Missing in final_rg_match:
-2245
 2265
 2276
 2289
-2290
 2294
-2301
 2302
 3399
 3400
@@ -33,7 +30,6 @@ Missing in final_rg_match:
 3414
 3415
 3416
-3417
 3418
 3419
 3420
@@ -138,7 +134,6 @@ Missing in final_rg_match:
 3528
 3531
 3532
-3533
 3534
 3535
 3536
@@ -156,7 +151,6 @@ Missing in final_rg_match:
 3552
 3553
 3554
-3555
 3556
 3557
 3558
@@ -170,7 +164,6 @@ Missing in final_rg_match:
 3566
 3568
 3569
-3570
 3571
 3572
 3573
@@ -190,13 +183,10 @@ Missing in final_rg_match:
 3588
 3589
 3590
-3591
 3592
-3593
 3594
 3595
 3596
-3599
 3600
 3601
 3602
@@ -204,7 +194,6 @@ Missing in final_rg_match:
 3604
 3605
 3606
-3607
 3608
 3609
 3611
@@ -224,13 +213,11 @@ Missing in final_rg_match:
 3627
 3630
 3632
-3633
 3634
 3635
 3636
 3637
 3638
-3639
 3641
 3642
 3643
@@ -251,49 +238,29 @@ Missing in final_rg_match:
 3658
 3659
 3660
-3661
 3662
 3663
-3664
 3665
-3666
 3667
 3668
 3669
 3670
-3671
-3672
 3673
 3674
-3675
-3676
 3679
-3680
-3681
 3682
-3683
-3684
-3685
 3686
 3687
 3688
 3689
 3690
 3691
-3692
-3693
-3694
-3695
-3696
-3697
 3698
 3700
 3701
 3702
-3703
 3704
 3705
-3706
 3707
 3708
 
@@ -316,13 +283,10 @@ Missing in manual_lead_department_portfolio:
 
 
 Missing in rg_final:
-2245
 2265
 2276
 2289
-2290
 2294
-2301
 2302
 3399
 3400
@@ -341,7 +305,6 @@ Missing in rg_final:
 3414
 3415
 3416
-3417
 3418
 3419
 3420
@@ -446,7 +409,6 @@ Missing in rg_final:
 3528
 3531
 3532
-3533
 3534
 3535
 3536
@@ -464,7 +426,6 @@ Missing in rg_final:
 3552
 3553
 3554
-3555
 3556
 3557
 3558
@@ -478,7 +439,6 @@ Missing in rg_final:
 3566
 3568
 3569
-3570
 3571
 3572
 3573
@@ -498,13 +458,10 @@ Missing in rg_final:
 3588
 3589
 3590
-3591
 3592
-3593
 3594
 3595
 3596
-3599
 3600
 3601
 3602
@@ -512,7 +469,6 @@ Missing in rg_final:
 3604
 3605
 3606
-3607
 3608
 3609
 3611
@@ -532,13 +488,11 @@ Missing in rg_final:
 3627
 3630
 3632
-3633
 3634
 3635
 3636
 3637
 3638
-3639
 3641
 3642
 3643
@@ -559,49 +513,29 @@ Missing in rg_final:
 3658
 3659
 3660
-3661
 3662
 3663
-3664
 3665
-3666
 3667
 3668
 3669
 3670
-3671
-3672
 3673
 3674
-3675
-3676
 3679
-3680
-3681
 3682
-3683
-3684
-3685
 3686
 3687
 3688
 3689
 3690
 3691
-3692
-3693
-3694
-3695
-3696
-3697
 3698
 3700
 3701
 3702
-3703
 3704
 3705
-3706
 3707
 3708
 
