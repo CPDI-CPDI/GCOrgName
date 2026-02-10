@@ -1,34 +1,20 @@
 ﻿RGOriginalName,rgnumber,MatchedName,MatchScore,gc_orgID,Organization Legal Name English
-Public Service Human Resource Management Agency of Canada,146,Aboriginal Business Canada,86,3599,
 Administrative Tribunals Support Service of Canada,170,Administrative Tribunals Support Service of Canada,100,2297,
-Assisted Human Reproduction Agency of Canada,152,Assisted Human Reproduction Agency of Canada,100,3664,
 Atlantic Canada Opportunities Agency,23,Atlantic Canada Opportunities Agency,100,2244,
-Office of Infrastructure of Canada,142,Bank of Canada,86,3633,
 Canada Border Services Agency,85,Canada Border Services Agency,100,2300,
-Canada Emission Reduction Incentives Agency,153,Canada Emission Reduction Incentives Agency,100,2301,
-National Energy Board,74,Canada Employment Insurance Financing Board,86,3666,
-Canadian Firearms Centre,143,Canada Firearms Centre,96,3555,
-Canada Industrial Relations Board,60,Canada Industrial Relations Board,100,3680,
 Canada Mortgage and Housing Corporation (Crown Corporation),91,Canada Mortgage and Housing Corporation,90,3631,
 Canada Revenue Agency,130,Canada Revenue Agency,100,2303,
 Canada School of Public Service,52,Canada School of Public Service,100,2304,
-Canada Water Agency,241,Canada Water Agency,100,3703,
 Canadian Accessibility Standards Development Organization,199,Canadian Accessibility Standards Development Organization,100,2319,
-Canadian Artists and Producers Professional Relations Tribunal,125,Canadian Artists and Producers Professional Relations Tribunal,100,3681,
 Canadian Centre for Occupational Health and Safety,100,Canadian Centre for Occupational Health and Safety,100,2305,
-Department of National Defence - Canadian Coast Guard,244,Canadian Coast Guard,90,3533,
-Canadian Commercial Corporation,81,Canadian Commercial Corporation,100,3639,
 Canadian Dairy Commission,134,Canadian Dairy Commission,100,3615,
 Canadian Energy Regulator,195,Canadian Energy Regulator,100,2312,
 Canadian Food Inspection Agency,136,Canadian Food Inspection Agency,100,2306,
 Canadian Grain Commission,133,Canadian Grain Commission,100,2246,
 Canadian High Arctic Research Station,171,Canadian High Arctic Research Station,100,2318,
 Canadian Human Rights Commission,75,Canadian Human Rights Commission,100,2247,
-Canadian Human Rights Tribunal,140,Canadian Human Rights Tribunal,100,3683,
 Canadian Institutes of Health Research,61,Canadian Institutes of Health Research,100,2307,
 Canadian Intergovernmental Conference Secretariat,43,Canadian Intergovernmental Conference Secretariat,100,2248,
-Canadian International Development Agency,3,Canadian International Development Agency,100,3684,
-Canadian International Trade Tribunal,45,Canadian International Trade Tribunal,100,3685,
 Canadian Northern Economic Development Agency,78,Canadian Northern Economic Development Agency,100,2249,
 Canadian Nuclear Safety Commission,47,Canadian Nuclear Safety Commission,100,2308,
 Canadian Radio-television and Telecommunications Commission,16,Canadian Radio-television and Telecommunications Commission,100,2396,
@@ -36,8 +22,6 @@ Canadian Security Intelligence Service,95,Canadian Security Intelligence Service
 Canadian Space Agency,119,Canadian Space Agency,100,2251,
 Canadian Transportation Accident Investigation and Safety Board,101,Canadian Transportation Accident Investigation and Safety Board,100,2309,
 Canadian Transportation Agency,40,Canadian Transportation Agency,100,2252,
-Security Intelligence Review Committee,103,Civilian Review and Complaints Commission for the Royal Canadian Mounted Police,86,2290,
-Communication Canada,128,Communication Canada,100,3417,
 Communications Security Establishment,165,Communications Security Establishment,100,2253,
 Copyright Board,116,Copyright Board,100,2254,
 Correctional Service of Canada,53,Correctional Service of Canada,100,2255,
@@ -66,17 +50,12 @@ Department of Western Economic Diversification,44,Department of Western Economic
 Department of the Environment,7,Department of the Environment,100,2237,
 Economic Development Agency of Canada for the Regions of Quebec,12,Economic Development Agency of Canada for the Regions of Quebec,100,2257,
 Export Development Canada (Crown Corporation),123,Export Development Canada,90,3640,
-Federal Court of Canada,65,Federal Court of Canada,100,3570,
 Federal Economic Development Agency for Northern Ontario,200,Federal Economic Development Agency for Northern Ontario,100,2299,
 Federal Economic Development Agency for Southern Ontario,62,Federal Economic Development Agency for Southern Ontario,100,2258,
 Financial Consumer Agency of Canada,141,Financial Consumer Agency of Canada,100,2259,
 Financial Transactions and Reports Analysis Centre of Canada,139,Financial Transactions and Reports Analysis Centre of Canada,100,2260,
-Hazardous Materials Information Review Commission,108,Hazardous Materials Information Review Commission,100,3671,
 House of Commons,67,House of Commons,100,3428,
 Immigration and Refugee Board,32,Immigration and Refugee Board,100,2261,
-Impact Assessment Agency of Canada,194,Impact Assessment Agency of Canada,100,2245,
-Office of Indian Residential Schools Resolution of Canada,149,Indian Residential Schools Resolution Canada,95,3607,
-Indian Residential Schools Truth and Reconciliation Commission,64,Indian Residential Schools Truth and Reconciliation Commission,100,3672,
 International Joint Commission (Canadian Section),24,International Joint Commission (Canadian Section),100,3407,
 Invest in Canada Hub,180,Invest in Canada Hub,100,2317,
 Law Commission of Canada,131,Law Commission of Canada,100,2310,
@@ -85,10 +64,8 @@ Library and Archives of Canada,145,Library and Archives of Canada,100,2262,
 Library of Parliament,17,Library of Parliament,100,3429,
 Military Grievances External Review Committee,138,Military Grievances External Review Committee,100,2263,
 Military Police Complaints Commission,137,Military Police Complaints Commission,100,2264,
-Miscarriage of Justice Review Commission,243,Miscarriage of Justice Review Commission,100,3706,
 National Film Board,39,National Film Board,100,2266,
 National Research Council of Canada,35,National Research Council of Canada,100,2313,
-National Round Table on the Environment and the Economy,126,National Round Table on the Environment and the Economy,100,3675,
 National Security and Intelligence Review Agency Secretariat,196,National Security and Intelligence Review Agency Secretariat,100,2291,
 Natural Sciences and Engineering Research Council,27,Natural Sciences and Engineering Research Council,100,2314,
 Northern Pipeline Agency,66,Northern Pipeline Agency,100,2268,
@@ -113,29 +90,53 @@ Parole Board of Canada,57,Parole Board of Canada,100,2267,
 Patented Medicine Prices Review Board,109,Patented Medicine Prices Review Board,100,2283,
 Payroll System General Ledger,79,Payroll System General Ledger,100,3548,
 Privy Council Office,25,Privy Council Office,100,2284,
-Public Appointments Commission Secretariat,71,Public Appointments Commission Secretariat,100,3676,
 Public Health Agency of Canada,148,Public Health Agency of Canada,100,2285,
 Public Service Commission,4,Public Service Commission,100,2286,
-Public Service Labour Relations Board,58,Public Service Labour Relations Board,100,3692,
-Public Service Staffing Tribunal,82,Public Service Staffing Tribunal,100,3693,
 Public Service Superannuation,87,Public Service Superannuation,100,3549,
 Registrar of the Supreme Court of Canada,80,Registrar of the Supreme Court of Canada,100,2287,
-Registry of the Competition Tribunal,49,Registry of the Competition Tribunal,100,3694,
-Registry of the Public Servants Disclosure Protection Tribunal,48,Registry of the Public Servants Disclosure Protection Tribunal,100,3695,
-Registry of the Specific Claims Tribunal,129,Registry of the Specific Claims Tribunal,100,3696,
 Royal Canadian Mounted Police,30,Royal Canadian Mounted Police,100,2288,
 Secretariat of the National Security and Intelligence Committee of Parliamentarians,192,Secretariat of the National Security and Intelligence Committee of Parliamentarians,100,2295,
 Senate,9,Senate,100,3432,
-Services Canada,31,Service Canada,97,3591,
 Shared Services Canada,163,Shared Services Canada,100,2292,
 Social Sciences and Humanities Research Council,63,Social Sciences and Humanities Research Council,100,2316,
 Statistics Canada,54,Statistics Canada,100,2293,
-Tax Court of Canada,92,Tax Court of Canada,100,3593,
 Telefilm Canada,37,Telefilm Canada,100,3629,
-Federal Bridge Corporation Limited,20,The Federal Bridge Corporation Limited,95,3661,
 The National Battlefields Commission,102,The National Battlefields Commission,100,2311,
-Transportation Appeal Tribunal of Canada,77,Transportation Appeal Tribunal of Canada,100,3697,
 Treasury Board Secretariat,56,Treasury Board Secretariat,100,2242,
+Offices of the Information and Privacy Commissioners of Canada,96,Office of the Privacy Commissioner of Canada,0,2282,
+Offices of the Information and Privacy Commissioners of Canada,96,Office of the Privacy Commissioner of Canada,0,2282,
+Natural Resources (Department of),41,,0,0,
+Public Service Human Resource Management Agency of Canada,146,Aboriginal Business Canada,86,3599,Aboriginal Business Canada
+Assisted Human Reproduction Agency of Canada,152,Assisted Human Reproduction Agency of Canada,100,3664,Assisted Human Reproduction Agency of Canada
+Office of Infrastructure of Canada,142,Bank of Canada,86,3633,Bank of Canada
+Canada Emission Reduction Incentives Agency,153,Canada Emission Reduction Incentives Agency,100,2301,Canada Emission Reduction Incentives Agency
+National Energy Board,74,Canada Employment Insurance Financing Board,86,3666,Canada Employment Insurance Financing Board
+Canadian Firearms Centre,143,Canada Firearms Centre,96,3555,Canada Firearms Centre
+Canada Industrial Relations Board,60,Canada Industrial Relations Board,100,3680,Canada Industrial Relations Board
+Canada Water Agency,241,Canada Water Agency,100,3703,Canada Water Agency
+Canadian Artists and Producers Professional Relations Tribunal,125,Canadian Artists and Producers Professional Relations Tribunal,100,3681,Canadian Artists and Producers Professional Relations Tribunal
+Department of National Defence - Canadian Coast Guard,244,Canadian Coast Guard,90,3533,Canadian Coast Guard
+Canadian Commercial Corporation,81,Canadian Commercial Corporation,100,3639,Canadian Commercial Corporation
+Canadian Human Rights Tribunal,140,Canadian Human Rights Tribunal,100,3683,Canadian Human Rights Tribunal
+Canadian International Development Agency,3,Canadian International Development Agency,100,3684,Canadian International Development Agency
+Canadian International Trade Tribunal,45,Canadian International Trade Tribunal,100,3685,Canadian International Trade Tribunal
+Security Intelligence Review Committee,103,Civilian Review and Complaints Commission for the Royal Canadian Mounted Police,86,2290,Civilian Review and Complaints Commission for the Royal Canadian Mounted Police
+Communication Canada,128,Communication Canada,100,3417,Communication Canada
+Federal Court of Canada,65,Federal Court of Canada,100,3570,Federal Court of Canada
+Hazardous Materials Information Review Commission,108,Hazardous Materials Information Review Commission,100,3671,Hazardous Materials Information Review Commission
+Impact Assessment Agency of Canada,194,Impact Assessment Agency of Canada,100,2245,Impact Assessment Agency of Canada
+Office of Indian Residential Schools Resolution of Canada,149,Indian Residential Schools Resolution Canada,95,3607,Indian Residential Schools Resolution Canada
+Indian Residential Schools Truth and Reconciliation Commission,64,Indian Residential Schools Truth and Reconciliation Commission,100,3672,Indian Residential Schools Truth and Reconciliation Commission
+Miscarriage of Justice Review Commission,243,Miscarriage of Justice Review Commission,100,3706,Miscarriage of Justice Review Commission
+National Round Table on the Environment and the Economy,126,National Round Table on the Environment and the Economy,100,3675,National Round Table on the Environment and the Economy
+Public Appointments Commission Secretariat,71,Public Appointments Commission Secretariat,100,3676,Public Appointments Commission Secretariat
+Public Service Labour Relations Board,58,Public Service Labour Relations Board,100,3692,Public Service Labour Relations Board
+Public Service Staffing Tribunal,82,Public Service Staffing Tribunal,100,3693,Public Service Staffing Tribunal
+Registry of the Competition Tribunal,49,Registry of the Competition Tribunal,100,3694,Registry of the Competition Tribunal
+Registry of the Public Servants Disclosure Protection Tribunal,48,Registry of the Public Servants Disclosure Protection Tribunal,100,3695,Registry of the Public Servants Disclosure Protection Tribunal
+Registry of the Specific Claims Tribunal,129,Registry of the Specific Claims Tribunal,100,3696,Registry of the Specific Claims Tribunal
+Services Canada,31,Service Canada,97,3591,Service Canada
+Tax Court of Canada,92,Tax Court of Canada,100,3593,Tax Court of Canada
+Federal Bridge Corporation Limited,20,The Federal Bridge Corporation Limited,95,3661,The Federal Bridge Corporation Limited
+Transportation Appeal Tribunal of Canada,77,Transportation Appeal Tribunal of Canada,100,3697,Transportation Appeal Tribunal of Canada
 Receiver General-Year End Adjusting Entries,159,,0,0,
-Offices of the Information and Privacy Commissioners of Canada,96,Office of the Privacy Commissioner of Canada,0,2282,
-Offices of the Information and Privacy Commissioners of Canada,96,Office of the Privacy Commissioner of Canada,0,2282,
