@@ -21,7 +21,7 @@
 2241,Women and Gender Equality Canada,Femmes et Égalité des genres Canada,WAGE,FEGC,246,190,Women and Gender Equality Canada,wage,CSW,CSW00,www.swc-cfc.gc.ca,www.cfc-swc.gc.ca
 2242,Treasury Board of Canada Secretariat,Secrétariat du Conseil du Trésor du Canada,TBS,SCT,326,56,Treasury Board of Canada Secretariat,tbs-sct,TBD,TBD00,www.canada.ca/en/treasury-board-secretariat/index.html,www.canada.ca/fr/secretariat-conseil-tresor/index.html
 2243,Indigenous Services Canada,Services aux Autochtones Canada,ISC,SAC,348,191,Indigenous Services Canada,isc-sac,DIS,DIS00,www.canada.ca/en/indigenous-services-canada.html,www.canada.ca/fr/services-autochtones-canada.html
-2244,Atlantic Canada Opportunities Agency,Agence de promotion économique du Canada atlantique,ACOA,APECA,12,23,Atlantic Canada Opportunities Agency,acoa-apeca,ACO,ACO00,www.acoa-apeca.gc.ca,www.acoa-apeca.gc.ca
+2244,Atlantic Canada Opportunities Agency,Agence de promotion économique du Canada atlantique,ACOA,APECA,12,23,Atlantic Canada Opportunities Agency,acoa-apeca,ACO,ACO00,https://www.canada.ca/en/atlantic-canada-opportunities.html,https://www.canada.ca/fr/promotion-economique-canada-atlantique.html
 2245,Impact Assessment Agency of Canada,Agence d'évaluation d'impact du Canada,IAAC,AEIC,63,194,Impact Assessment Agency of Canada,iaac-aeic,IAA,DOE01,https://www.canada.ca/en/impact-assessment-agency.html,https://www.canada.ca/fr/agence-evaluation-impact.html
 2246,Canadian Grain Commission,Commission canadienne des grains,CGC,CCG,69,133,Canadian Grain Commission,cgc-ccg,CGC,CGC00,www.grainscanada.gc.ca,www.grainscanada.gc.ca
 2247,Canadian Human Rights Commission,Commission canadienne des droits de la personne,CHRC,CCDP,71,75,Canadian Human Rights Commission,chrc-ccdp,HRC,HRC00,www.chrc-ccdp.gc.ca,www.ccdp-chrc.gc.ca
@@ -43,11 +43,11 @@
 2263,Military Grievances External Review Committee,Comité externe d'examen des griefs militaires,MGERC,CEEGM,209,138,Military Grievances External Review Committee,mgerc-ceegm,FCG,FCG00,www.canada.ca/en/military-grievances-external-review.html,www.canada.ca/fr/externe-examen-griefs-militaires.html
 2264,Military Police Complaints Commission of Canada,Commission d'examen des plaintes concernant la police militaire du Canada,MPCC,CPPM,210,137,Military Police Complaints Commission,mpcc-cppm,CPM,CPM00,www.mpcc-cppm.gc.ca,www.mpcc-cppm.gc.ca
 2265,Farm Products Council of Canada,Conseil des produits agricoles du Canada,FPCC,CPAC,222,,Farm Products Council of Canada,fpcc-cpac,FPN,,www.fpcc-cpac.gc.ca,www.fpcc-cpac.gc.ca
-2266,National Film Board,Office national du film,NFB,ONF,223,39,National Film Board of Canada,nfb-onf,NFB,NFB00,www.onf-nfb.gc.ca,www.onf-nfb.gc.ca
+2266,National Film Board,Office national du film,NFB,ONF,223,39,National Film Board of Canada,nfb-onf,NFB,NFB00,www.canada.ca/en/national-film-board.html,www.canada.ca/fr/office-national-film.html
 2267,Parole Board of Canada,Commission des libérations conditionnelles du Canada,PBC,CLCC,227,57,Parole Board of Canada,pbc-clcc,NPB,NPB00,www.canada.ca/en/parole-board.html,www.canada.ca/fr/commission-liberations-conditionnelles.html
 2268,Northern Pipeline Agency Canada,Administration du pipe-line du Nord Canada,NPA,APN,235,66,Northern Pipeline Agency Canada,npa-apn,NPA,,https://northern-pipeline.canada.ca/home,https://pipe-line-nord.canada.ca/accueil
 2269,"Housing, Infrastructure and Communities Canada","Logement, Infrastructures et Collectivités Canada",HICC,LICC,237,242,Office of Infrastructure of Canada,infc,HIC,INF00,https://housing-infrastructure.canada.ca/,https://housing-infrastructure.canada.ca/
-2270,Office of the Auditor General of Canada,Bureau du vérificateur général du Canada,OAG,BVG,238,2,Office of the Auditor General of Canada,oag-bvg,AUD,AUD00,www.oag-bvg.gc.ca,www.oag-bvg.gc.ca
+2270,Office of the Auditor General of Canada,Bureau du vérificateur général du Canada,OAG,BVG,0,2,Office of the Auditor General of Canada,oag-bvg,AUD,AUD00,,
 2271,Elections Canada,Élections Canada,elections,elections,239,15,Office of the Chief Electoral Officer,elections,CEO,CEO00,www.elections.ca,www.elections.ca
 2272,Office of the Commissioner for Federal Judicial Affairs Canada,Commissariat à la magistrature fédérale Canada,FJA,CMF,240,51,,fja-cmf,FJA,FJA00,www.fja-cmf.gc.ca,www.fja-cmf.gc.ca
 2273,Office of the Commissioner of Lobbying of Canada,Commissariat au lobbying du Canada,OCL,CAL,241,154,Office of the Commissioner of Lobbying,ocl-cal,LOB,LOB00,https://lobbycanada.gc.ca/en,https://lobbycanada.gc.ca/fr
@@ -147,8 +147,8 @@
 3445,Canada Games Council,Conseil des Jeux du Canada,,,37,,,,,,www.canadagames.ca,www.canadagames.ca
 3446,Canada Health Infoway Inc.,Inforoute Santé du Canada Inc.,,,38,,,,,,www.infoway-inforoute.ca,www.infoway-inforoute.ca
 3447,Canada Media Fund,Fonds des médias du Canada,,,41,,,,,,www.cmf-fmc.ca,www.cmf-fmc.ca
-3448,Canada-Newfoundland and Labrador Offshore Petroleum Board,Office Canada-Terre-Neuve-et-Labrador des hydrocarbures extracôtiers,,,48,,Canada-Newfoundland and Labrador Offshore Petroleum Board,cnlopb,CFO,,www.cnlopb.ca,www.ctnlohe.ca
-3449,Canada-Nova Scotia Offshore Energy Regulator,Régie Canada-Nouvelle-Écosse de l'énergie extracôtière,,,49,,Canada-Nova-Scotia Offshore Petroleum Board,,CNO,,www.cnsopb.ns.ca,www.ocnehe.ca
+3448,Canada-Newfoundland and Labrador Offshore Petroleum Board,Office Canada-Terre-Neuve-et-Labrador des hydrocarbures extracôtiers,,,0,,Canada-Newfoundland and Labrador Offshore Petroleum Board,cnlopb,CFO,,,
+3449,Canada-Nova Scotia Offshore Energy Regulator,Régie Canada-Nouvelle-Écosse de l'énergie extracôtière,,,49,,Canada-Nova-Scotia Offshore Petroleum Board,,CNO,,https://cnsoer.ca/,https://rcneee.ca/
 3450,Canadian Agency for Drugs and Technologies in Health (CADTH),Agence canadienne des médicaments et des technologies de la santé (ACMTS),,,50,,,,,,www.cadth.ca,www.cadth.ca/fr
 3451,Canadian Centre on Substance Use and Addictions,Centre canadien sur les dépendances et l’usage de substances,,,56,,,,,,www.ccsa.ca,www.ccsa.ca
 3452,Canadian Energy Research Institute,Canadian Energy Research Institute,,,62,,,,,,www.ceri.ca,www.ceri.ca
@@ -167,7 +167,7 @@
 3466,Greater Toronto Airports Authority,Autorité aéroportuaire du Grand Toronto,,,166,,,,,,www.torontopearson.com,www.torontopearson.com
 3467,Halifax International Airport Authority,Administration de l'aéroport international d'Halifax,,,167,,,,,,www.hiaa.ca,www.hiaa.ca
 3468,Halifax Port Authority,Administration portuaire d'Halifax,,,168,,Halifax Port Authority,halpa-aphal,,,www.portofhalifax.ca,www.portofhalifax.ca
-3469,Hamilton Port Authority,Administration portuaire de Hamilton,,,169,,Hamilton-Oshawa Port Authority,hampa-apham,,,www.hamiltonport.ca,www.hamiltonport.ca
+3469,Hamilton Port Authority,Administration portuaire de Hamilton,,,0,,Hamilton-Oshawa Port Authority,hampa-apham,,,,
 3470,Institut national du sport du Québec,Institut national du sport du Québec,,,180,,,,,,www.insquebec.org,www.insquebec.org
 3471,Internal Trade Secretariat Corporation,Corporation du Secrétariat du commerce intérieur,,,182,,,,,,www.cfta-alec.ca,www.cfta-alec.ca
 3472,International Fisheries Commissions Pension Society,Société de caisse de retraite de la Commission internationale des pêcheries,,,188,,,,,,,
