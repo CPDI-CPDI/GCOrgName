@@ -1,159 +1,149 @@
 import os
 import pandas as pd
 
-# Enable debugging
-DEBUG = True
 
-def debug_print(message):
-    if DEBUG:
-        print(f"DEBUG: {message}")
+def _read_csv(path: str) -> pd.DataFrame:
+    """Read CSV robustly as strings (preserve leading zeros, avoid NaN coercion)."""
+    return pd.read_csv(path, dtype=str, keep_default_na=False, encoding="utf-8-sig")
 
-# Function to standardize hyphens and apostrophes
-def standardize_text(text):
-    if pd.isna(text):
-        debug_print(f"standardize_text received NA value")
-        return text
-    debug_print(f"standardizing: '{text}'")
-    standardized = text.replace('–', '-').replace('—', '-').replace('’', "'").replace('‘', "'")
-    if standardized != text:
-        debug_print(f"text standardized to: '{standardized}'")
-    return standardized
 
-# Get the directory of the current script
-script_folder = os.getcwd()
-debug_print(f"Script folder: {script_folder}")
+def _norm_str(s: str) -> str:
+    if s is None:
+        return ""
+    return str(s).strip()
 
-# Paths to the CSV files
-matched_file = os.path.join(script_folder, 'Resources', 'rg_matched.csv')
-fixed_file = os.path.join(script_folder, 'Resources', 'rg_fixed.csv')
-debug_print(f"Matched file: {matched_file}")
-debug_print(f"Fixed file: {fixed_file}")
 
-# Load the CSV files
-try:
-    matched_df = pd.read_csv(matched_file)
-    debug_print(f"Matched data loaded with {len(matched_df)} rows")
-    debug_print(f"Matched data columns: {list(matched_df.columns)}")
-    debug_print(f"Sample matched data: {matched_df.head(3).to_dict('records')}")
-except Exception as e:
-    debug_print(f"Error loading matched file: {str(e)}")
-    raise
+def _strip_trailing_dot_zero(s: str) -> str:
+    """
+    Normalize values like '123.0' -> '123' without converting to numeric.
+    Useful for gc_orgID coming from Excel-ish sources.
+    """
+    s = _norm_str(s)
+    if s.endswith(".0") and s.replace(".0", "").isdigit():
+        return s[:-2]
+    return s
 
-try:
-    fixed_df = pd.read_csv(fixed_file)
-    debug_print(f"Fixed data loaded with {len(fixed_df)} rows")
-    debug_print(f"Fixed data columns: {list(fixed_df.columns)}")
-    debug_print(f"Sample fixed data: {fixed_df.head(3).to_dict('records')}")
-except Exception as e:
-    debug_print(f"Error loading fixed file: {str(e)}")
-    raise
 
-# Standardize hyphens and apostrophes in relevant columns if they exist
-debug_print("Standardizing text in dataframes...")
-for df_name, df, columns in [
-    ("matched_df", matched_df, ['RGOriginalName', 'MatchedName']),
-    ("fixed_df", fixed_df, ['RGOriginalName', 'MatchedName', 'Organization Legal Name English'])
-]:
-    for column in columns:
-        if column in df.columns:
-            debug_print(f"Standardizing {df_name}.{column}")
-            df[column] = df[column].apply(standardize_text)
-        else:
-            debug_print(f"Column {column} not found in {df_name}")
+def _ensure_cols(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    df = df.copy()
+    for c in cols:
+        if c not in df.columns:
+            df[c] = ""
+    return df
 
-# Check if Organization Legal Name English exists in fixed_df
-if 'Organization Legal Name English' in fixed_df.columns:
-    debug_print("Organization Legal Name English column found in fixed_df")
-    debug_print(f"Null values: {fixed_df['Organization Legal Name English'].isna().sum()}")
-    debug_print(f"Empty strings: {(fixed_df['Organization Legal Name English'] == '').sum()}")
-    if not fixed_df.empty:
-        debug_print(f"Sample values: {fixed_df['Organization Legal Name English'].head().tolist()}")
-else:
-    debug_print("ERROR: Organization Legal Name English column NOT found in fixed_df")
 
-# Replace values in 'MatchedName' and 'gc_orgID' when MatchScore is less than 95
-debug_print("Replacing poor matches with fixed data...")
-replacements_made = 0
-for index, row in matched_df.iterrows():
-    if row['MatchScore'] < 95:
-        debug_print(f"Low score ({row['MatchScore']}) for '{row['RGOriginalName']}'")
-        fixed_row = fixed_df[fixed_df['RGOriginalName'] == row['RGOriginalName']]
-        if not fixed_row.empty:
-            debug_print(f"Found in fixed_df: {fixed_row[['RGOriginalName', 'MatchedName', 'gc_orgID']].iloc[0].to_dict()}")
-            matched_df.at[index, 'MatchedName'] = fixed_row['MatchedName'].values[0]
-            matched_df.at[index, 'gc_orgID'] = fixed_row['gc_orgID'].values[0]
-            replacements_made += 1
-        else:
-            debug_print(f"Not found in fixed_df")
+def main():
+    repo_root = os.getcwd()
 
-debug_print(f"Made {replacements_made} replacements from fixed data")
+    matched_path = os.path.join(repo_root, "Resources", "rg_matched.csv")
+    reviewq_path = os.path.join(repo_root, "Resources", "rg_review_queue.csv")
+    fixed_path = os.path.join(repo_root, "Resources", "rg_fixed.csv")
 
-# Identify new entries in rg_fixed.csv based on 'gc_orgID'
-new_entries = fixed_df[~fixed_df['gc_orgID'].isin(matched_df['gc_orgID'])]
-debug_print(f"Found {len(new_entries)} new entries in fixed_df not in matched_df")
+    out_final_path = os.path.join(repo_root, "Resources", "rg_final.csv")
+    out_missing_fixes_path = os.path.join(repo_root, "Resources", "rg_final_missing_fixes.csv")
 
-# Append new entries to the matched DataFrame
-final_df = pd.concat([matched_df, new_entries], ignore_index=True)
-debug_print(f"Combined final_df has {len(final_df)} rows")
+    # --- Load inputs ---
+    if not os.path.exists(matched_path):
+        raise FileNotFoundError(f"Missing required file: {matched_path}")
 
-# Set gc_orgID to whole numbers, handling non-finite values
-debug_print("Converting gc_orgID to integers...")
-final_df['gc_orgID'] = pd.to_numeric(final_df['gc_orgID'], errors='coerce').fillna(0).astype(int)
+    matched_df = _read_csv(matched_path)
 
-# Merge 'rgnumber' field from rg_fixed.csv to final_RG_match.csv
-if 'rgnumber' in fixed_df.columns:
-    debug_print("Merging rgnumber from fixed_df...")
-    before_merge = len(final_df)
-    final_df = final_df.merge(fixed_df[['RGOriginalName', 'rgnumber']], on='RGOriginalName', how='left')
-    after_merge = len(final_df)
-    debug_print(f"Merge resulted in {after_merge} rows (was {before_merge})")
-else:
-    debug_print("rgnumber column not found in fixed_df")
+    # Review queue is optional; if missing, treat as empty (no issue rows)
+    if os.path.exists(reviewq_path):
+        review_df = _read_csv(reviewq_path)
+    else:
+        review_df = pd.DataFrame(columns=["RGOriginalName"])
 
-# Check for duplicate columns after merge
-duplicate_cols = [col for col in final_df.columns if col.endswith('_x') or col.endswith('_y')]
-if duplicate_cols:
-    debug_print(f"Found duplicate columns after merge: {duplicate_cols}")
+    # Fixed is optional but normally present; if missing, treat as empty fixes
+    if os.path.exists(fixed_path):
+        fixed_df = _read_csv(fixed_path)
+    else:
+        fixed_df = pd.DataFrame(columns=["RGOriginalName"])
 
-# Remove duplicate columns resulting from the merge
-if 'rgnumber_y' in final_df.columns:
-    debug_print("Dropping rgnumber_y column")
-    final_df = final_df.drop(columns=['rgnumber_y'])
-if 'rgnumber_x' in final_df.columns:
-    debug_print("Renaming rgnumber_x to rgnumber")
-    final_df = final_df.rename(columns={'rgnumber_x': 'rgnumber'})
+    # --- Normalize key column ---
+    matched_df = _ensure_cols(matched_df, ["RGOriginalName"])
+    review_df = _ensure_cols(review_df, ["RGOriginalName"])
+    fixed_df = _ensure_cols(fixed_df, ["RGOriginalName"])
 
-# Reorder columns to ensure 'rgnumber' is the second field if it exists
-if 'rgnumber' in final_df.columns:
-    debug_print("Reordering columns to put rgnumber second")
-    columns_order = ['RGOriginalName', 'rgnumber'] + [col for col in final_df.columns if col not in ['RGOriginalName', 'rgnumber']]
-    final_df = final_df[columns_order]
-    debug_print(f"New column order: {list(final_df.columns)}")
+    matched_df["RGOriginalName"] = matched_df["RGOriginalName"].map(_norm_str)
+    review_df["RGOriginalName"] = review_df["RGOriginalName"].map(_norm_str)
+    fixed_df["RGOriginalName"] = fixed_df["RGOriginalName"].map(_norm_str)
 
-# Set rgnumber to whole numbers, handling non-finite values
-if 'rgnumber' in final_df.columns:
-    debug_print("Converting rgnumber to integers...")
-    final_df['rgnumber'] = pd.to_numeric(final_df['rgnumber'], errors='coerce').fillna(0).astype(int)
+    # Remove empty-name rows from key sets
+    issue_names = set(n for n in review_df["RGOriginalName"].tolist() if n)
 
-# Round all numeric fields to whole numbers, handling non-finite values before conversion
-debug_print("Rounding all numeric fields...")
-for col in final_df.select_dtypes(include=['float64', 'int64']).columns:
-    debug_print(f"Processing numeric column: {col}")
-    final_df[col] = pd.to_numeric(final_df[col], errors='coerce').fillna(0).round(0).astype(int)
+    # --- Base set: matched rows NOT in review queue ---
+    base_df = matched_df[~matched_df["RGOriginalName"].isin(issue_names)].copy()
 
-# Final check on data
-debug_print("Final check of data:")
-debug_print(f"Final dataframe has {len(final_df)} rows and columns: {list(final_df.columns)}")
-if 'Organization Legal Name English' in final_df.columns:
-    debug_print(f"Organization Legal Name English column is present")
-    debug_print(f"Null values: {final_df['Organization Legal Name English'].isna().sum()}")
-    debug_print(f"Empty strings: {(final_df['Organization Legal Name English'] == '').sum() if '' in final_df['Organization Legal Name English'].values else 0}")
-else:
-    debug_print("Organization Legal Name English column is NOT present in final output")
+    # --- Reviewed set: fixed rows IN review queue ---
+    reviewed_df = fixed_df[fixed_df["RGOriginalName"].isin(issue_names)].copy()
 
-# Save the updated DataFrame to a new CSV file in the Resources folder
-updated_output_file = os.path.join(script_folder, 'Resources', 'rg_final.csv')
-debug_print(f"Saving final result to {updated_output_file}")
-final_df.to_csv(updated_output_file, index=False, encoding='utf-8-sig')
+    # Normalize IDs/fields without turning blanks into 0 or losing leading zeros
+    for df in (base_df, reviewed_df):
+        if "gc_orgID" in df.columns:
+            df["gc_orgID"] = df["gc_orgID"].map(_strip_trailing_dot_zero)
+        if "rgnumber" in df.columns:
+            df["rgnumber"] = df["rgnumber"].map(_strip_trailing_dot_zero)
 
-print(f"The updated matched names have been saved to {updated_output_file}")
+    # Ensure CandidateCollision exists for both (helpful for downstream visibility)
+    base_df = _ensure_cols(base_df, ["CandidateCollision"])
+    reviewed_df = _ensure_cols(reviewed_df, ["CandidateCollision"])
+
+    # For reviewed rows, collision flag is not meaningful unless reviewer sets it; default blank
+    reviewed_df["CandidateCollision"] = reviewed_df["CandidateCollision"].map(_norm_str)
+
+    # --- Validate coverage: queue items missing fixes ---
+    fixed_name_set = set(n for n in reviewed_df["RGOriginalName"].tolist() if n)
+    missing = sorted(list(issue_names - fixed_name_set))
+
+    if missing:
+        # Include a compact diagnostic with queue context
+        diag_cols = []
+        for c in ["RGOriginalName", "rgnumber", "MatchedName", "MatchScore", "gc_orgID", "CandidateCollision", "ReviewReasons"]:
+            if c in review_df.columns:
+                diag_cols.append(c)
+        if not diag_cols:
+            diag_cols = ["RGOriginalName"]
+
+        missing_df = review_df[review_df["RGOriginalName"].isin(missing)].copy()
+        missing_df = missing_df[diag_cols]
+        missing_df.to_csv(out_missing_fixes_path, index=False, encoding="utf-8-sig")
+    else:
+        # If previously existed, remove stale diagnostic
+        if os.path.exists(out_missing_fixes_path):
+            os.remove(out_missing_fixes_path)
+
+    # --- Final union ---
+    final_df = pd.concat([base_df, reviewed_df], ignore_index=True)
+
+    # As a safety: never manufacture gc_orgID=0
+    if "gc_orgID" in final_df.columns:
+        final_df["gc_orgID"] = final_df["gc_orgID"].map(_strip_trailing_dot_zero)
+        # If someone literally has "0" in source, keep it (we won't rewrite),
+        # but we won't create it.
+
+    # Keep a stable, sensible column order (preserve any extra columns at end)
+    preferred_order = [
+        "RGOriginalName",
+        "rgnumber",
+        "MatchedName",
+        "MatchScore",
+        "Organization Legal Name English",
+        "gc_orgID",
+        "CandidateCollision",
+    ]
+    existing = [c for c in preferred_order if c in final_df.columns]
+    extras = [c for c in final_df.columns if c not in existing]
+    final_df = final_df[existing + extras]
+
+    final_df.to_csv(out_final_path, index=False, encoding="utf-8-sig")
+
+    print(f"RG final written: {out_final_path}")
+    if missing:
+        print(f"WARNING: Missing fixes for {len(missing)} queue items. See: {out_missing_fixes_path}")
+    else:
+        print("All queue items have reviewed fixes (or queue is empty).")
+
+
+if __name__ == "__main__":
+    main()

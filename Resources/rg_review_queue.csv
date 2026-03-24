@@ -1,0 +1,12 @@
+﻿RGOriginalName,rgnumber,MatchedName,MatchScore,Organization Legal Name English,gc_orgID,CandidateCollision,AlreadyInFixed,Review_LowScore,Review_NoMatchedName,Review_NoGcOrgID,Review_CandidateCollision,ReviewReasons
+Canada Border Services Agency,85,Canada Border Services Agency,100.0,Canada Border Services Agency,2300,True,True,False,False,False,True,CandidateCollision
+Canada Border Services Agency - (Administered Activities),38,Canada Border Services Agency,90.0,Canada Border Services Agency,2300,True,True,True,False,False,True,LowScore;CandidateCollision
+Canada Mortgage and Housing Corporation (Crown Corporation),91,Canada Mortgage and Housing Corporation,90.0,Canada Mortgage and Housing Corporation,3631,False,True,True,False,False,False,LowScore
+Canada Revenue Agency,130,Canada Revenue Agency,100.0,Canada Revenue Agency,2303,True,True,False,False,False,True,CandidateCollision
+Canada Revenue Agency - (Administered Activities),122,Canada Revenue Agency,90.0,Canada Revenue Agency,2303,True,True,True,False,False,True,LowScore;CandidateCollision
+Export Development Canada (Crown Corporation),123,Export Development Canada,90.0,Export Development Canada,3640,False,True,True,False,False,False,LowScore
+Office of the Auditor General,2,Office of the Auditor General,100.0,Office of the Auditor General,2270,True,True,False,False,False,True,CandidateCollision
+Receiver General,97,Office of the Auditor General,85.5,Office of the Auditor General,2270,True,True,True,False,False,True,LowScore;CandidateCollision
+Offices of the Information and Privacy Commissioners of Canada,96,Office of the Information Commissioner of Canada,87.27272727272728,Office of the Information Commissioner of Canada,2281,False,True,True,False,False,False,LowScore
+Senate,9,Senate,100.0,Senate,3432,True,True,False,False,False,True,CandidateCollision
+Office of the Senate Ethics Officer,151,Senate,90.0,Senate,3432,True,True,True,False,False,True,LowScore;CandidateCollision

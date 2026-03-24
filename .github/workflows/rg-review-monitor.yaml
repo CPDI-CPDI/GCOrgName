@@ -1,0 +1,257 @@
+name: RG Review Queue Monitor
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "Resources/rg_review_queue.csv"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: rg-review-monitor
+  cancel-in-progress: false
+
+jobs:
+  rg-review-queue-issue:
+    name: Monitor RG review queue and open/update issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Summarize rg_review_queue.csv
+        id: summarize
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import json
+          import csv
+          from collections import Counter
+
+          path = "Resources/rg_review_queue.csv"
+
+          summary = {
+              "exists": False,
+              "row_count": 0,
+              "reason_counts": {},
+              "already_in_fixed_count": 0,
+              "collision_count": 0,
+              "sample_rows": [],
+              "should_open_issue": False,
+              "status": "missing"
+          }
+
+          if not os.path.exists(path):
+              # No queue file found; treat as no actionable queue in this run.
+              summary["status"] = "missing"
+          else:
+              summary["exists"] = True
+              summary["status"] = "present"
+
+              with open(path, "r", encoding="utf-8-sig", newline="") as f:
+                  reader = csv.DictReader(f)
+                  rows = list(reader)
+
+              summary["row_count"] = len(rows)
+
+              reason_counter = Counter()
+              already_in_fixed_count = 0
+              collision_count = 0
+              sample_rows = []
+
+              for r in rows:
+                  reasons = (r.get("ReviewReasons") or "").strip()
+                  if reasons:
+                      for item in reasons.split(";"):
+                          item = item.strip()
+                          if item:
+                              reason_counter[item] += 1
+
+                  already_in_fixed = str(r.get("AlreadyInFixed", "")).strip().lower() == "true"
+                  if already_in_fixed:
+                      already_in_fixed_count += 1
+
+                  collision = str(r.get("CandidateCollision", "")).strip().lower() == "true"
+                  if collision:
+                      collision_count += 1
+
+                  if len(sample_rows) < 10:
+                      sample_rows.append({
+                          "RGOriginalName": r.get("RGOriginalName", ""),
+                          "MatchedName": r.get("MatchedName", ""),
+                          "MatchScore": r.get("MatchScore", ""),
+                          "gc_orgID": r.get("gc_orgID", ""),
+                          "ReviewReasons": reasons
+                      })
+
+              summary["reason_counts"] = dict(reason_counter)
+              summary["already_in_fixed_count"] = already_in_fixed_count
+              summary["collision_count"] = collision_count
+              summary["sample_rows"] = sample_rows
+
+              # Open/update issue only if queue has rows
+              summary["should_open_issue"] = summary["row_count"] > 0
+              summary["status"] = "actionable" if summary["should_open_issue"] else "empty"
+
+          # Write outputs (json-encoded to preserve structure)
+          out = os.environ["GITHUB_OUTPUT"]
+          with open(out, "a", encoding="utf-8") as fh:
+              fh.write(f"exists={str(summary['exists']).lower()}\n")
+              fh.write(f"row_count={summary['row_count']}\n")
+              fh.write(f"status={summary['status']}\n")
+              fh.write(f"should_open_issue={str(summary['should_open_issue']).lower()}\n")
+              fh.write("summary_json<<EOF\n")
+              fh.write(json.dumps(summary, ensure_ascii=False))
+              fh.write("\nEOF\n")
+          PY
+
+      - name: Create or update RG review issue
+        if: steps.summarize.outputs.should_open_issue == 'true'
+        uses: actions/github-script@v7
+        env:
+          SUMMARY_JSON: ${{ steps.summarize.outputs.summary_json }}
+        with:
+          script: |
+            const summary = JSON.parse(process.env.SUMMARY_JSON || "{}");
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const issueTitle = "RG review queue updated — verify rg_fixed.csv";
+            const labelNames = ["rg-review", "auto-generated"];
+
+            // Ensure labels exist (best effort)
+            for (const name of labelNames) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({
+                    owner,
+                    repo,
+                    name,
+                    color: name === "rg-review" ? "0e8a16" : "bfdadc",
+                    description:
+                      name === "rg-review"
+                        ? "Manual review needed for Receiver General review queue"
+                        : "Created or updated by GitHub Actions"
+                  });
+                } else {
+                  core.warning(`Could not verify/create label '${name}': ${e.message}`);
+                }
+              }
+            }
+
+            const reasonCounts = summary.reason_counts || {};
+            const reasonLines = Object.keys(reasonCounts).length
+              ? Object.entries(reasonCounts)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([k, v]) => `- **${k}**: ${v}`)
+                  .join("\n")
+              : "- (none)";
+
+            const sampleRows = Array.isArray(summary.sample_rows) ? summary.sample_rows : [];
+            const sampleTableHeader = "| RGOriginalName | MatchedName | MatchScore | gc_orgID | ReviewReasons |\n|---|---|---:|---|---|";
+            const sampleTableRows = sampleRows.length
+              ? sampleRows.map(r => {
+                  const esc = (s) => String(s ?? "").replace(/\|/g, "\\|");
+                  return `| ${esc(r.RGOriginalName)} | ${esc(r.MatchedName)} | ${esc(r.MatchScore)} | ${esc(r.gc_orgID)} | ${esc(r.ReviewReasons)} |`;
+                }).join("\n")
+              : "| (none) |  |  |  |  |";
+
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            const body = `
+            ## RG review queue updated
+
+            The automated pipeline detected an updated \`Resources/rg_review_queue.csv\` and manual review may be required before confirming \`rg_fixed.csv\`.
+
+            ### Summary
+            - **Rows in review queue**: ${summary.row_count ?? 0}
+            - **Rows already present in rg_fixed.csv**: ${summary.already_in_fixed_count ?? 0}
+            - **Candidate collision rows**: ${summary.collision_count ?? 0}
+            - **Workflow run**: ${runUrl}
+
+            ### Review reasons
+            ${reasonLines}
+
+            ### What to do
+            1. Review \`Resources/rg_review_queue.csv\`
+            2. Validate/correct entries in \`Resources/rg_fixed.csv\` (manual-authoritative file)
+            3. Re-run the RG / weekly update workflow if needed
+            4. Confirm \`Resources/rg_final.csv\` looks correct downstream
+
+            ### Sample rows (first 10)
+            ${sampleTableHeader}
+            ${sampleTableRows}
+
+            ---
+            _This issue was created/updated automatically by the RG Review Queue Monitor workflow._
+            `.trim();
+
+            // Find an open issue with the same title (prefer one with rg-review label)
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              per_page: 100
+            });
+
+            const matching = openIssues.find(i =>
+              i.title === issueTitle &&
+              !i.pull_request &&
+              (i.labels || []).some(l => (typeof l === "string" ? l : l.name) === "rg-review")
+            ) || openIssues.find(i =>
+              i.title === issueTitle && !i.pull_request
+            );
+
+            if (matching) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: matching.number,
+                body
+              });
+
+              // Ensure labels are present
+              const existingLabels = new Set((matching.labels || []).map(l => typeof l === "string" ? l : l.name));
+              const missingLabels = labelNames.filter(l => !existingLabels.has(l));
+              if (missingLabels.length) {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: matching.number,
+                  labels: missingLabels
+                });
+              }
+
+              core.notice(`Updated existing issue #${matching.number}`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner,
+                repo,
+                title: issueTitle,
+                body,
+                labels: labelNames
+              });
+              core.notice(`Created new issue #${created.data.number}`);
+            }
+
+      - name: No-op summary when queue is empty or missing
+        if: steps.summarize.outputs.should_open_issue != 'true'
+        run: |
+          echo "No actionable RG review queue rows found (empty or missing file)."
+          echo "Status: ${{ steps.summarize.outputs.status }}"
+          echo "Row count: ${{ steps.summarize.outputs.row_count }}"

@@ -1,98 +1,292 @@
-import csv
 import subprocess
 import pandas as pd
-import difflib
-from datetime import datetime, timezone
+import json
+import os
+from datetime import datetime
+from typing import List, Optional, Tuple
 
-# Helper function to extract negative diffs for a given file
-def extract_negative_diffs(target_file, output_file):
-    # Read headers from the current version of the file
-    with open(target_file, 'r', encoding='utf-8-sig') as f:
-        reader = csv.reader(f)
-        headers = next(reader)
+ARCHIVES_DIR = "Archives"
 
-    # Define cutoff date as timezone-aware datetime
-    cutoff_date = datetime(2025, 1, 1, tzinfo=timezone.utc)
+CONCORD_PATH = "gc_concordance.csv"
+ORGINFO_PATH = "gc_org_info.csv"
 
-    # Get all commits that modified the target file
-    log_output = subprocess.check_output(
-        ["git", "log", "--pretty=format:%H|%cd", "--date=iso-strict", "--", target_file],
-        text=True
-    )
-    commits = [line.strip().split("|") for line in log_output.strip().split("\n")]
+# Output files (same names as today, but cleaner contents)
+CONCORD_BY_DATE = os.path.join(ARCHIVES_DIR, "concordance_archive_by_date.csv")
+CONCORD_BY_ID = os.path.join(ARCHIVES_DIR, "concordance_archive_by_ID.csv")
+ORGINFO_BY_DATE = os.path.join(ARCHIVES_DIR, "org_info_archive_by_date.csv")
+ORGINFO_BY_ID = os.path.join(ARCHIVES_DIR, "org_info_archive_by_ID.csv")
 
-    output_rows = []
+# Canonical event log (new, but very useful)
+EVENT_LOG = os.path.join(ARCHIVES_DIR, "archive_events.csv")
 
-    for commit_hash, commit_date in commits:
+
+def run_git(args: List[str]) -> str:
+    out = subprocess.check_output(["git"] + args)
+    return out.decode("utf-8", errors="replace")
+
+
+def git_show(commit: str, path: str) -> Optional[str]:
+    try:
+        return run_git(["show", f"{commit}:{path}"])
+    except subprocess.CalledProcessError:
+        return None
+
+
+def git_commit_date(commit: str) -> str:
+    # Example: 2026-03-23 15:10:00 -0400
+    return run_git(["show", "-s", "--format=%ci", commit]).strip()
+
+
+def list_commits_touching(path: str) -> List[str]:
+    try:
+        out = run_git(["log", "--format=%H", "--", path]).strip()
+        return out.splitlines() if out else []
+    except subprocess.CalledProcessError:
+        return []
+
+
+def first_parent(commit: str) -> Optional[str]:
+    try:
+        parts = run_git(["rev-list", "--parents", "-n", "1", commit]).strip().split()
+        return parts[1] if len(parts) > 1 else None
+    except subprocess.CalledProcessError:
+        return None
+
+
+def read_csv_text(csv_text: str) -> pd.DataFrame:
+    from io import StringIO
+    return pd.read_csv(StringIO(csv_text), dtype=str, keep_default_na=False, encoding_errors="replace")
+
+
+def normalize_df(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df.columns = [str(c).strip() for c in df.columns]
+    for c in df.columns:
+        df[c] = df[c].astype(str).map(lambda x: x.strip() if isinstance(x, str) else x)
+    df = df.reindex(sorted(df.columns), axis=1)
+    return df
+
+
+def choose_key_columns(df: pd.DataFrame, file_kind: str) -> List[str]:
+    cols = list(df.columns)
+
+    if file_kind == "org_info":
+        for c in ["gc_orgID", "gc_orgId", "GCOrgID", "id", "ID"]:
+            if c in cols:
+                return [c]
+
+    if file_kind == "concordance":
+        candidates = [
+            ["gc_orgID", "source", "source_orgID"],
+            ["gc_orgID", "Source", "source_orgID"],
+            ["gc_orgID", "dataset", "source_orgID"],
+            ["gc_orgID", "source_orgID"],
+            ["gc_orgID", "source_id"],
+            ["gc_orgID"],
+        ]
+        for key_cols in candidates:
+            if all(k in cols for k in key_cols):
+                if not df.duplicated(subset=key_cols).any():
+                    return key_cols
+        if "gc_orgID" in cols:
+            return ["gc_orgID"]
+
+    return []
+
+
+def add_row_hash_key(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    row_json = df.apply(lambda r: json.dumps(r.to_dict(), ensure_ascii=False, sort_keys=True), axis=1)
+    df["_row_hash_key"] = pd.util.hash_pandas_object(row_json, index=False).astype(str)
+    return df
+
+
+def compute_events(parent_df: pd.DataFrame, curr_df: pd.DataFrame, file_path: str, file_kind: str, commit: str) -> pd.DataFrame:
+    parent_df = normalize_df(parent_df)
+    curr_df = normalize_df(curr_df)
+
+    key_cols = choose_key_columns(curr_df, file_kind)
+    use_row_hash = (not key_cols) or curr_df.duplicated(subset=key_cols).any() or parent_df.duplicated(subset=key_cols).any()
+
+    if use_row_hash:
+        parent_df = add_row_hash_key(parent_df)
+        curr_df = add_row_hash_key(curr_df)
+        key_cols = ["_row_hash_key"]
+
+    parent_idx = parent_df.set_index(key_cols, drop=False)
+    curr_idx = curr_df.set_index(key_cols, drop=False)
+
+    parent_keys = set(parent_idx.index)
+    curr_keys = set(curr_idx.index)
+
+    removed_keys = parent_keys - curr_keys
+    added_keys = curr_keys - parent_keys
+    common_keys = parent_keys & curr_keys
+
+    events = []
+    commit_date = git_commit_date(commit)
+
+    def row_to_json(row: pd.Series) -> str:
+        return json.dumps(row.to_dict(), ensure_ascii=False, sort_keys=True)
+
+    def key_to_str(row: pd.Series) -> str:
+        return "|".join([str(row[c]) for c in key_cols])
+
+    # Removed
+    for k in removed_keys:
+        row = parent_idx.loc[k]
+        if isinstance(row, pd.DataFrame):
+            for _, r in row.iterrows():
+                events.append({
+                    "file": file_path,
+                    "file_kind": file_kind,
+                    "commit_hash": commit,
+                    "commit_date": commit_date,
+                    "change_type": "removed",
+                    "key": key_to_str(r),
+                    "gc_orgID": r.get("gc_orgID", ""),
+                    "row_before_json": row_to_json(r),
+                    "row_after_json": ""
+                })
+        else:
+            events.append({
+                "file": file_path,
+                "file_kind": file_kind,
+                "commit_hash": commit,
+                "commit_date": commit_date,
+                "change_type": "removed",
+                "key": key_to_str(row),
+                "gc_orgID": row.get("gc_orgID", ""),
+                "row_before_json": row_to_json(row),
+                "row_after_json": ""
+            })
+
+    # Added
+    for k in added_keys:
+        row = curr_idx.loc[k]
+        if isinstance(row, pd.DataFrame):
+            for _, r in row.iterrows():
+                events.append({
+                    "file": file_path,
+                    "file_kind": file_kind,
+                    "commit_hash": commit,
+                    "commit_date": commit_date,
+                    "change_type": "added",
+                    "key": key_to_str(r),
+                    "gc_orgID": r.get("gc_orgID", ""),
+                    "row_before_json": "",
+                    "row_after_json": row_to_json(r)
+                })
+        else:
+            events.append({
+                "file": file_path,
+                "file_kind": file_kind,
+                "commit_hash": commit,
+                "commit_date": commit_date,
+                "change_type": "added",
+                "key": key_to_str(row),
+                "gc_orgID": row.get("gc_orgID", ""),
+                "row_before_json": "",
+                "row_after_json": row_to_json(row)
+            })
+
+    # Modified (same key, different row)
+    for k in common_keys:
+        p = parent_idx.loc[k]
+        c = curr_idx.loc[k]
+        if isinstance(p, pd.DataFrame) or isinstance(c, pd.DataFrame):
+            continue
+        pj = row_to_json(p)
+        cj = row_to_json(c)
+        if pj != cj:
+            events.append({
+                "file": file_path,
+                "file_kind": file_kind,
+                "commit_hash": commit,
+                "commit_date": commit_date,
+                "change_type": "modified",
+                "key": key_to_str(c),
+                "gc_orgID": c.get("gc_orgID", "") or p.get("gc_orgID", ""),
+                "row_before_json": pj,
+                "row_after_json": cj
+            })
+
+    cols = ["file","file_kind","commit_hash","commit_date","change_type","key","gc_orgID","row_before_json","row_after_json"]
+    return pd.DataFrame(events, columns=cols)
+
+
+def build_archive_for_file(file_path: str, file_kind: str) -> pd.DataFrame:
+    commits = list_commits_touching(file_path)
+    commits = list(reversed(commits))  # chronological
+
+    all_events = []
+    for commit in commits:
+        parent = first_parent(commit)
+        if not parent:
+            continue
+        curr_text = git_show(commit, file_path)
+        parent_text = git_show(parent, file_path)
+        if curr_text is None or parent_text is None:
+            continue
         try:
-            commit_datetime = datetime.fromisoformat(commit_date.strip())
-            if commit_datetime < cutoff_date:
-                continue
+            curr_df = read_csv_text(curr_text)
+            parent_df = read_csv_text(parent_text)
         except Exception:
             continue
+        events = compute_events(parent_df, curr_df, file_path, file_kind, commit)
+        if not events.empty:
+            all_events.append(events)
 
+    if not all_events:
+        return pd.DataFrame(columns=["file","file_kind","commit_hash","commit_date","change_type","key","gc_orgID","row_before_json","row_after_json"])
+
+    return pd.concat(all_events, ignore_index=True)
+
+
+def write_views(events_df: pd.DataFrame, by_date_path: str, by_id_path: str):
+    if events_df.empty:
+        events_df.to_csv(by_date_path, index=False, encoding="utf-8-sig")
+        events_df.to_csv(by_id_path, index=False, encoding="utf-8-sig")
+        return
+
+    def parse_dt(s: str) -> Tuple[int, str]:
         try:
-            current_content = subprocess.check_output(
-                ["git", "show", f"{commit_hash}:{target_file}"],
-                stderr=subprocess.DEVNULL,
-                text=True
-            ).splitlines()
-        except subprocess.CalledProcessError:
-            continue
+            dt = datetime.strptime(s, "%Y-%m-%d %H:%M:%S %z")
+            return (0, dt.isoformat())
+        except Exception:
+            return (1, s)
 
-        try:
-            prev_commit = subprocess.check_output(
-                ["git", "rev-list", "-n", "1", f"{commit_hash}^"],
-                text=True
-            ).strip()
-            prev_content = subprocess.check_output(
-                ["git", "show", f"{prev_commit}:{target_file}"],
-                stderr=subprocess.DEVNULL,
-                text=True
-            ).splitlines()
-        except subprocess.CalledProcessError:
-            continue
+    tmp = events_df.copy()
+    tmp["_dt_sort_key"] = tmp["commit_date"].map(parse_dt)
+    by_date = tmp.sort_values(by="_dt_sort_key", ascending=False).drop(columns=["_dt_sort_key"])
 
-        # Use difflib to compute unified diff
-        diff_lines = list(difflib.unified_diff(prev_content, current_content, lineterm=""))
+    tmp2 = events_df.copy()
+    tmp2["_dt_sort_key"] = tmp2["commit_date"].map(parse_dt)
+    by_id = tmp2.sort_values(by=["gc_orgID", "_dt_sort_key"], ascending=[True, False]).drop(columns=["_dt_sort_key"])
 
-        for line in diff_lines:
-            if line.startswith("-") and not line.startswith("---"):
-                removed_line = line[1:].strip()
-                if removed_line:
-                    try:
-                        values = next(csv.reader([removed_line]))
-                        row_dict = dict(zip(headers, values))
-                        row_dict["commit_date"] = commit_date
-                        output_rows.append(row_dict)
-                    except Exception:
-                        continue
+    by_date.to_csv(by_date_path, index=False, encoding="utf-8-sig")
+    by_id.to_csv(by_id_path, index=False, encoding="utf-8-sig")
 
-    # Write to CSV with utf-8-sig encoding
-    if output_rows:
-        fieldnames = ["commit_date"] + headers
-        with open(output_file, "w", newline='', encoding='utf-8-sig') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            for row in output_rows:
-                writer.writerow(row)
 
-# Process gc_concordance.csv
-extract_negative_diffs("gc_concordance.csv", "Archives/concordance_archive_by_date.csv")
+def main():
+    os.makedirs(ARCHIVES_DIR, exist_ok=True)
 
-# Sort by gc_orgID and save
-df_concordance = pd.read_csv("Archives/concordance_archive_by_date.csv", encoding='utf-8-sig')
-df_concordance_sorted = df_concordance.sort_values(by="gc_orgID")
-df_concordance_sorted.to_csv("Archives/concordance_archive_by_ID.csv", index=False, encoding='utf-8-sig')
+    concord_events = build_archive_for_file(CONCORD_PATH, "concordance")
+    orginfo_events = build_archive_for_file(ORGINFO_PATH, "org_info")
 
-# Process gc_org_info.csv
-extract_negative_diffs("gc_org_info.csv", "Archives/org_info_archive_by_date.csv")
+    all_events = pd.concat([concord_events, orginfo_events], ignore_index=True)
+    all_events.to_csv(EVENT_LOG, index=False, encoding="utf-8-sig")
 
-# Sort by commit_date (newest to oldest)
-df_org_info = pd.read_csv("Archives/org_info_archive_by_date.csv", encoding='utf-8-sig')
-df_org_info_sorted_date = df_org_info.sort_values(by="commit_date", ascending=False)
-df_org_info_sorted_date.to_csv("Archives/org_info_archive_by_date.csv", index=False, encoding='utf-8-sig')
+    write_views(concord_events, CONCORD_BY_DATE, CONCORD_BY_ID)
+    write_views(orginfo_events, ORGINFO_BY_DATE, ORGINFO_BY_ID)
 
-# Sort by gc_orgID
-df_org_info_sorted_id = df_org_info.sort_values(by="gc_orgID")
-df_org_info_sorted_id.to_csv("Archives/org_info_archive_by_ID.csv", index=False, encoding='utf-8-sig')
+    print("Archive generation complete.")
+    print(f"- {EVENT_LOG}")
+    print(f"- {CONCORD_BY_DATE}")
+    print(f"- {CONCORD_BY_ID}")
+    print(f"- {ORGINFO_BY_DATE}")
+    print(f"- {ORGINFO_BY_ID}")
+
+
+if __name__ == "__main__":
+    main()

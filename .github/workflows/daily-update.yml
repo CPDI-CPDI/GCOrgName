@@ -1,0 +1,113 @@
+name: daily-update
+
+on:
+  schedule:
+    # Tuesday 11 AM Toronto/New York time (EST/EDT auto handled)
+    - cron: "0 11 * 3-10 1-5"
+    - cron: "0 12 * 11,12,1,2 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  run-daily-update:
+    name: Run Daily Update Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pandas rapidfuzz beautifulsoup4 lxml certifi
+
+      # -------------------------
+      # Phase A: Generate current datasets + current outputs
+      # -------------------------
+
+      - name: 1) Retrieve datasets
+        run: python Resources/retrieve_datasets.py
+
+      - name: 2) Download RG data
+        run: python Resources/rg_download.py
+
+      - name: 3) RG fuzzy match + review queue
+        run: python Resources/rg_fuzzy.py
+
+      - name: 4) Retrieve lead ministry data
+        run: python Resources/lead_ministry_retrieve.py
+
+      - name: 5) Build RG final (current behavior for now)
+        run: python Resources/rg_final_match.py
+
+      - name: 6) Scrape FAA
+        run: python Scraping/scrapeAllFAA.py
+
+      - name: 7) Combine FAA names
+        run: python Scraping/combine_FAA_names.py
+
+      - name: 8) Create harmonized names
+        run: python Resources/create_harmonized_name.py
+
+      - name: 9) Build concordance
+        run: python create_concordance.py
+
+      - name: 10) Build org info
+        run: python create_gc_org_info.py
+
+      # -------------------------
+      # Phase B: Apply lead_fix using CURRENT org_info, then rebuild outputs
+      # -------------------------
+
+      - name: 11) Apply lead manual fixes using current org_info
+        run: python Resources/lead_fix.py
+
+      - name: 12) Rebuild concordance (after lead_fix)
+        run: python create_concordance.py
+
+      - name: 13) Rebuild org info (after lead_fix)
+        run: python create_gc_org_info.py
+
+      # Diagnostics/QA scripts (run after final outputs)
+      - name: 14) Compare manuals
+        run: python Tools/compare_manuals.py
+
+      - name: 15) Compare org info vs concordance
+        run: python Tools/compare_org_concord.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            Resources/*.csv Resources/*.txt \
+            Scraping/*.csv \
+            Archives/*.csv \
+            Tools/gc_org_info_report.csv Tools/missing_gc_org_ids.txt \
+            gc_concordance.csv gc_org_info.csv \
+            mismatches.csv unmatched_org_IDs.csv info_only_records.csv concord_only_records.csv 2>/dev/null || true
+          git diff-index --quiet HEAD || git commit -m "Auto-update: weekly pipeline"
+          git push
+
+      - name: Create GitHub Issue if Failed
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "Daily Update Failed",
+              body: "The daily scheduled script run failed.\n\nPlease check the workflow logs for details.",
+              labels: ["bug", "auto-generated"]
+            })
