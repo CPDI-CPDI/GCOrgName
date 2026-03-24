@@ -413,12 +413,31 @@ def main():
     mapped = mapped.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").fillna("")
     unmapped = unmapped.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").fillna("")
 
-    # outputs
-    mapped.to_csv("gc_org_info.csv", index=False, encoding="utf-8-sig")
-    unmapped.to_csv("org_info_unmapped_rows.csv", index=False, encoding="utf-8-sig")
+    # ---- Final output contract enforcement ----
+    # Normalize and drop fully empty rows
+    tmp = mapped.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all")
 
-    # ---- Save outputs ----
-    final_df.to_csv(os.path.join(script_folder, 'gc_org_info.csv'), index=False, encoding='utf-8-sig')
+    # Separate unmapped diagnostics BEFORE enforcing (optional but useful)
+    if "gc_orgID" not in tmp.columns:
+        raise ValueError("gc_org_info output is missing required column: gc_orgID")
+
+    gc = tmp["gc_orgID"].astype(str).str.strip().str.split(".").str[0]
+    gc = gc.where(~gc.str.lower().isin(["nan", "none"]), "")
+
+    unmapped = tmp[(gc == "") | (gc == "0") | (~gc.str.match(r"^[0-9]+$"))].copy()
+    if not unmapped.empty:
+        unmapped.to_csv("org_info_unmapped_rows.csv", index=False, encoding="utf-8-sig")
+
+    # Enforce: ONLY valid gc_orgID rows make it into gc_org_info.csv
+    valid_mask = gc.str.match(r"^[0-9]+$") & (gc != "") & (gc != "0")
+    final_df = tmp[valid_mask].copy()
+    final_df["gc_orgID"] = gc[valid_mask]
+
+    # Fail hard if anything invalid remains (shouldn't)
+    if final_df["gc_orgID"].astype(str).str.strip().eq("").any():
+        raise ValueError("Blank gc_orgID rows still present after filtering (unexpected).")
+
+    final_df.to_csv("gc_org_info.csv", index=False, encoding="utf-8-sig")
 
     # ---- Save simple documentation (aligned to final headers) ----
     documentation = {

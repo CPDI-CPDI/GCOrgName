@@ -6,6 +6,44 @@ import pandas as pd
 import unicodedata
 import re
 
+def enforce_valid_gc_orgid(df: pd.DataFrame, *, context: str) -> pd.DataFrame:
+    """
+    Enforce output contract:
+      - no fully-empty rows
+      - every row must have a valid gc_orgID
+      - gc_orgID must be numeric and not '0'
+    If violations remain, raise to fail the workflow.
+    """
+    df = df.copy()
+
+    # Normalize blanks
+    df = df.replace(r"^\s*$", pd.NA, regex=True)
+
+    # Drop fully empty rows
+    df = df.dropna(how="all")
+
+    if "gc_orgID" not in df.columns:
+        raise ValueError(f"[{context}] Missing required column gc_orgID")
+
+    # Normalize gc_orgID to clean string
+    gc = df["gc_orgID"].astype(str).str.strip()
+    gc = gc.str.split(".").str[0]  # strip excel .0
+    gc = gc.where(~gc.str.lower().isin(["nan", "none"]), "")
+
+    # Keep only numeric, non-zero IDs
+    valid = gc.str.match(r"^[0-9]+$") & (gc != "0") & (gc != "")
+    bad_count = int((~valid).sum())
+
+    if bad_count:
+        bad_sample = df.loc[~valid, ["gc_orgID"]].head(10)
+        raise ValueError(
+            f"[{context}] Found {bad_count} rows with blank/invalid gc_orgID. "
+            f"Sample:\n{bad_sample.to_string(index=False)}"
+        )
+
+    df["gc_orgID"] = gc
+    return df
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
@@ -493,6 +531,7 @@ def save_results(df: pd.DataFrame, unmatched_df: pd.DataFrame, script_folder: st
         # Validate unmatched data before saving
         validate_unmatched_data(combined_unmatched)
 
+        mapped_df = enforce_valid_gc_orgid(df, context="gc_concordance.csv output")
         mapped_df.to_csv(output_file, index=False, encoding='utf-8-sig')
         combined_unmatched.to_csv(unmatched_output_file, index=False, encoding='utf-8-sig')
 
