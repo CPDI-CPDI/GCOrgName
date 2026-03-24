@@ -1,22 +1,21 @@
 # Tools
 
-This folder contains a variety of tools which help improve data quality and automate tasks for the GCOrgName project.
+This folder contains operational QA tools used by the automated workflows.
 
-## Available Tools
+## Operational (used by workflows)
+- `compare_manuals.py`  
+  Generates QA outputs:
+  - `gc_org_info_report.csv`
+  - `missing_gc_org_ids.txt`
+- `compare_org_concord.py`  
+  Consistency checks between `gc_org_info.csv` and `gc_concordance.csv`.
+- `negative_concordance_commits.py`  
+  Generates clean archive outputs under `Archives/` (run by `daily-archive`).
 
-### Website Validator
-**Status: Currently broken**
-- `website_validator.py`: A script designed to validate website URLs and check their accessibility. This tool reads URLs from a CSV file, attempts to connect to each URL, and reports those that are inaccessible or return non-200 status codes.
+## Committed reports
+These outputs are committed intentionally for quick review:
+- `gc_org_info_report.csv`
+- `missing_gc_org_ids.txt`
 
-### Data Comparison Tools
-- `compare_org_concord.py`: Compares organization data between 'GC Org Info.csv' and 'gc_concordance.csv' to identify mismatches in harmonized names in both English and French.
-- `compare_manuals.py`: Analyzes multiple CSV files in the Resources folder to identify missing GC organization IDs across different data sources and generates a report of discrepancies.
-
-### PDF Generation
-- `lead_dept_pdf.py`: Creates PDF reports showing lead departments and their associated organizations. Produces two PDF files:
-  - A main report grouping organizations by lead department
-  - A report of organizations without an assigned lead department
-
-## Contributing
-
-If you find bugs or want to improve any of these tools, please create an issue or submit a pull request.
+## Removed / not operational
+PDF generators, broken validators, and other one-off tools are intentionally not maintained in the automated pipeline.

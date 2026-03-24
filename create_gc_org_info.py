@@ -401,6 +401,22 @@ def main():
     final_df['_sort_gc'] = pd.to_numeric(final_df['gc_orgID'], errors='coerce')
     final_df = final_df.sort_values(by=['_sort_gc', 'gc_orgID']).drop(columns=['_sort_gc'])
 
+    # normalize
+    final_df["gc_orgID"] = final_df["gc_orgID"].astype(str).str.split(".").str[0].str.strip()
+    final_df.loc[final_df["gc_orgID"].str.lower().isin(["nan", "none"]), "gc_orgID"] = ""
+
+    # split
+    mapped = final_df[final_df["gc_orgID"] != ""].copy()
+    unmapped = final_df[final_df["gc_orgID"] == ""].copy()
+
+    # clean empties
+    mapped = mapped.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").fillna("")
+    unmapped = unmapped.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").fillna("")
+
+    # outputs
+    mapped.to_csv("gc_org_info.csv", index=False, encoding="utf-8-sig")
+    unmapped.to_csv("org_info_unmapped_rows.csv", index=False, encoding="utf-8-sig")
+
     # ---- Save outputs ----
     final_df.to_csv(os.path.join(script_folder, 'gc_org_info.csv'), index=False, encoding='utf-8-sig')
 

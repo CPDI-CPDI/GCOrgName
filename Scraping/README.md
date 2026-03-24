@@ -1,16 +1,18 @@
-Scraping Folder 
+# Scraping
 
-* The point of this script is to take the official names according to the Financial Administration Act from the FAA website and structure them into a single CSV. 
-* Schedules 1, i.1, 2, 3, 4, and 5 contain the legal names for GC organizations. Each schedule gets its own CSV file.
-* All legal names are harmonized into one CSV file, along with the schedule number in which they were found. 
-* Sometimes leagal names repeat in several schedules. The duplicates were removed. 
+This folder contains scripts and intermediate outputs for sources that require scraping or non-trivial collection (e.g., FAA).
 
-Verified Schedules
-| Schedule   | Status |
-| -------- | ------- |
-| 1  | Verified   |
-| i.1 | Verified     |
-| 2    | Verified   |
-| 3  | Broken   |
-| 4 | Verified    |
-| 5   | Verified  |
+## What runs automatically
+The daily update workflow runs:
+
+- `scrapeAllFAA.py`  
+  Retrieves FAA-related data.
+- `combine_FAA_names.py`  
+  Standardizes/combines FAA outputs into:
+  - `combined_FAA_names.csv`
+
+That combined FAA file is then merged into the concordance/org-info build.
+
+## Outputs
+- `combined_FAA_names.csv` is the main “product” of this folder.
+Other files here may be intermediate and should be treated as generated artifacts unless explicitly documented.

@@ -1,15 +1,73 @@
 # GCOrgName
-Compile most used GC org names to get one harmonized name and ID number. 
 
-This project combines information from several open datasets, with data from the Receiver General, Federal Identity Program, Infobase, the Financial Administration Act and the Open Government Portal. 
-There are also manual components with both the assigning of Organizational ID numbers to each organization, as well as manually assigned HR and Pay related identifiers. As well, occasionally values will be overwritten when they are out of date in a source (like when a department name changes in one source but not another)
+This repository produces the **current, best-available** concordance and organization info tables for Government of Canada organizations by integrating multiple public datasets plus curated manual mappings.
 
+**Primary outputs (repo root):**
+- `gc_concordance.csv` — “crosswalk” table (GC org ID + harmonized names + key source IDs/links)
+- `gc_org_info.csv` — current organization info table (GC org ID + attributes)
 
-Sometimes there are names which need to be changed from source data. For example, several entries from the FAA have been changed to better explain what those organizations are. These changes have been made in the 'combine_csvs_to_script_folder.py'
-In the FAA, the Offices of the Information and Privacy Commissioners are considered the same organization. However they are operated as separate organizations, and that real-world situation is reflected in the official list of GC organizations. This change is created in the 'combine_csvs_to_script_folder.py' script. 
-Reflecting the Officies of the Information and Privacy Commissioners requires several manual changes. 
+**Historical lookups** (e.g., old RG numbers, past mappings) are handled in the `Archives/` outputs and are not kept in the “current truth” tables.
 
-This main folder hosts the primary datasets, GC Org Info.csv and gc_concordance.csv, along with the scripts which create them. However, there are several other scripts which are important for updating source data located in this repo. 
+---
 
-Resources
-This folder contains all datasets which can be downloaded from the web, along with some documents which must be manually kept up to date. 
+## How it runs
+
+### Daily automation
+Two GitHub Actions workflows maintain the repo:
+
+- **`daily-update`**
+  - downloads/refreshes source datasets
+  - regenerates RG matching artifacts
+  - rebuilds `gc_concordance.csv` and `gc_org_info.csv`
+  - produces QA reports in `Tools/`
+
+- **`daily-archive`**
+  - runs after a successful `daily-update`
+  - generates clean, searchable archival CSVs under `Archives/`
+
+Schedule: Weekdays at **12:00 UTC** (7:00 AM EST / 8:00 AM EDT).
+
+---
+
+## Receiver General (RG) matching workflow (important)
+
+RG matching is intentionally **human-in-the-loop**.
+
+### Files
+- `Resources/rg_matched.csv`  
+  Machine-generated candidate match for each RG row (includes `MatchScore` and `CandidateCollision` flags).
+- `Resources/rg_review_queue.csv`  
+  Rows requiring human review (low confidence, missing IDs, collisions, etc.).
+- `Resources/rg_fixed.csv`  
+  **Manual-authoritative** reviewed resolutions for items in the current review queue.
+- `Resources/rg_final.csv`  
+  Resolved RG mapping used downstream. Built as:
+  - all matched rows with **no issues**, plus
+  - reviewed replacement rows from `rg_fixed.csv` for queued items.
+
+### Operational rule
+`rg_fixed.csv` is **not a historical dumping ground**. It is a reviewer-maintained response to the current `rg_review_queue.csv`.  
+Historical RG lookups belong in `Archives/`.
+
+### Review reminders
+A separate workflow can open/update an issue when `rg_review_queue.csv` changes so reviewers know when `rg_fixed.csv` needs attention.
+
+---
+
+## Unmatched records
+
+Some source records cannot be mapped to a GC org ID (e.g., a source dataset contains an org not represented in the manual mapping).
+
+- `unmatched_org_IDs.csv` captures rows that are missing `gc_orgID` after merges.
+- These rows are **not** included in `gc_concordance.csv`.
+
+---
+
+## Local run (optional)
+
+From repo root:
+
+```bash
+pip install -r requirements.txt
+python create_concordance.py
+python create_gc_org_info.py
