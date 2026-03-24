@@ -3,8 +3,7 @@ name: daily-update
 on:
   schedule:
     # Tuesday 11 AM Toronto/New York time (EST/EDT auto handled)
-    - cron: "0 11 * 3-10 1-5"
-    - cron: "0 12 * 11,12,1,2 1-5"
+    - cron: "0 12 * * 1-5"
   workflow_dispatch:
 
 permissions:
