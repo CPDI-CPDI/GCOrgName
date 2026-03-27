@@ -153,6 +153,24 @@ def main():
             faa['Original English Name'] = faa[faa_en]
         faa = faa.rename(columns={faa_en: 'Organization Legal Name English'})
 
+    # --- FIX: normalize FAA schedule column name so it survives target_cols selection ---
+    faa_sched = find_col(
+        faa,
+        [
+            "FAA_LGFP",
+            "FAA LGFP",
+            "FAA",                   # some versions
+            "LGFP",                  # some versions
+            "Schedule",              # some versions
+            "FAA Schedule",          # some versions
+            "LGFP / FAA",            # some versions
+            "FAA (LGFP)",            # some versions
+        ]
+    )
+    if faa_sched and faa_sched != "FAA_LGFP":
+        faa = faa.rename(columns={faa_sched: "FAA_LGFP"})
+    # --- end FIX ---
+
     # applied_en
     app = dfs['applied_en']
     # merge key candidates
