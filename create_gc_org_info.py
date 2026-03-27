@@ -348,7 +348,6 @@ def main():
                     final_df.at[i, "gc_orgID"] = "2281"  # OIC
                 elif "veterans" in k and "land act" in k:
                     final_df.at[i, "gc_orgID"] = "3423"  # Director, Veterans' Land Act
-    # -------------------- end surgical add --------------------
 
     # Sort (blank IDs naturally go last; but they will be filtered out for output)
     final_df["_sort_gc"] = pd.to_numeric(final_df["gc_orgID"], errors="coerce")

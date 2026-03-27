@@ -398,6 +398,11 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
             "abbreviation": "SCC",
             "abreviation": "CSC",
         },
+        "2296": {
+            "infobaseID": 350,
+            "website": "https://www.debates-debats.ca/en/",
+            "site_web": "https://www.debates-debats.ca/fr/"
+        },
     }
 
     if 'gc_orgID' not in df.columns:
@@ -512,12 +517,22 @@ def save_results(df: pd.DataFrame, unmatched_df: pd.DataFrame, script_folder: st
     unmatched_output_file = os.path.join(script_folder, 'unmatched_org_IDs.csv')
 
     try:
-        # Split mapped/unmapped based on gc_orgID (post-finalization)
+        # --- FIX: treat NaN and non-numeric gc_orgID as unmapped before enforcement ---
         df = df.copy()
-        df['gc_orgID'] = df['gc_orgID'].astype(str).str.strip()
 
-        unmapped_from_df = df[df['gc_orgID'] == ""].copy()
-        mapped_df = df[df['gc_orgID'] != ""].copy()
+        # normalize gc_orgID to string safely
+        df["gc_orgID"] = df["gc_orgID"].fillna("").astype(str).str.strip().str.split(".").str[0]
+        df.loc[df["gc_orgID"].str.lower().isin(["nan", "none"]), "gc_orgID"] = ""
+
+        # unmapped includes: blank, 0, non-numeric
+        unmapped_mask = (
+            (df["gc_orgID"] == "") |
+            (df["gc_orgID"] == "0") |
+            (~df["gc_orgID"].str.match(r"^[0-9]+$"))
+        )
+
+        unmapped_from_df = df[unmapped_mask].copy()
+        mapped_df = df[~unmapped_mask].copy()
 
         # Merge unmapped rows into unmatched output (preserve information)
         if unmatched_df is None:
