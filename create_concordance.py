@@ -9,9 +9,9 @@ import re
 def enforce_valid_gc_orgid(df: pd.DataFrame, *, context: str) -> pd.DataFrame:
     """
     Enforce output contract:
-      - no fully-empty rows
-      - every row must have a valid gc_orgID
-      - gc_orgID must be numeric and not '0'
+    - no fully-empty rows
+    - every row must have a valid gc_orgID
+    - gc_orgID must be numeric and not '0'
     If violations remain, raise to fail the workflow.
     """
     df = df.copy()
@@ -243,7 +243,7 @@ def merge_additional_data(final_joined_df: pd.DataFrame, dfs: Dict[str, pd.DataF
     right_harm = dfs['harmonized_names_df']
     harm_gc = find_col(right_harm, ['gc_orgID', 'gc orgid', 'gc_orgid'])
     harm_en = find_col(right_harm, ['harmonized_name', 'harmonized name'])
-    harm_fr = find_col(right_harm, ['nom_harmonisé', 'nom harmonisé', 'nom_harmonise'])
+    harm_fr = find_col(right_harm, ['nom_harmonisé', 'nom harmonisé', 'nom harmonise'])
     sel = [c for c in [harm_gc, harm_en, harm_fr] if c]
 
     if harm_gc:
@@ -370,6 +370,14 @@ def merge_additional_data(final_joined_df: pd.DataFrame, dfs: Dict[str, pd.DataF
 def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
     """Apply manual changes to specific entries (PRESERVED)."""
     manual_changes = {
+        # Leaders' Debates Commission (fix: InfoBase org_id=350 and websites)
+        "2296": {
+            "abbreviation": "LDC",
+            "abreviation": "LDC",
+            "infobaseID": 350,
+            "website": "https://www.debates-debats.ca/en/",
+            "site_web": "https://www.debates-debats.ca/fr/"
+        },
         # Office of the Information Commissioner
         "2281": {
             "abbreviation": "OIC",
@@ -507,6 +515,7 @@ def save_results(df: pd.DataFrame, unmatched_df: pd.DataFrame, script_folder: st
         # Split mapped/unmapped based on gc_orgID (post-finalization)
         df = df.copy()
         df['gc_orgID'] = df['gc_orgID'].astype(str).str.strip()
+
         unmapped_from_df = df[df['gc_orgID'] == ""].copy()
         mapped_df = df[df['gc_orgID'] != ""].copy()
 
@@ -531,7 +540,9 @@ def save_results(df: pd.DataFrame, unmatched_df: pd.DataFrame, script_folder: st
         # Validate unmatched data before saving
         validate_unmatched_data(combined_unmatched)
 
-        mapped_df = enforce_valid_gc_orgid(df, context="gc_concordance.csv output")
+        # ✅ FIX: enforce on mapped_df (not df)
+        mapped_df = enforce_valid_gc_orgid(mapped_df, context="gc_concordance.csv output")
+
         mapped_df.to_csv(output_file, index=False, encoding='utf-8-sig')
         combined_unmatched.to_csv(unmatched_output_file, index=False, encoding='utf-8-sig')
 

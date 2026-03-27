@@ -22,6 +22,7 @@ def _norm(s: str) -> str:
     s = re.sub(r"\s+", " ", s)
     return s.lower()
 
+
 def find_col(df: pd.DataFrame, candidates):
     """
     Find the actual column in df that matches any candidate label,
@@ -39,6 +40,7 @@ def find_col(df: pd.DataFrame, candidates):
             return lut[k]
     return None
 
+
 def standardize_text(df: pd.DataFrame) -> pd.DataFrame:
     """Standardize text values (not headers): normalize quotes/hard hyphens; strip."""
     return df.apply(
@@ -48,6 +50,7 @@ def standardize_text(df: pd.DataFrame) -> pd.DataFrame:
                    .str.strip())
         if x.dtype == "object" else x
     )
+
 
 def merge_drop_right_key(left: pd.DataFrame,
                          right: pd.DataFrame,
@@ -66,6 +69,7 @@ def merge_drop_right_key(left: pd.DataFrame,
     if right_on in out.columns:
         out = out.drop(columns=[right_on])
     return out
+
 
 def coalesce_into(df: pd.DataFrame, target: str, candidates: list) -> pd.DataFrame:
     """
@@ -86,6 +90,7 @@ def coalesce_into(df: pd.DataFrame, target: str, candidates: list) -> pd.DataFra
         if c != target and c in df.columns:
             df = df.drop(columns=[c])
     return df
+
 
 # ------------------------------ IO ------------------------------
 
@@ -109,6 +114,7 @@ def load_dataframes(script_folder: str):
             df = df.drop(columns=['Unnamed: 0'])
         dfs[key] = df
     return dfs
+
 
 # --------------------------- Business logic ---------------------------
 
@@ -181,265 +187,203 @@ def main():
     man2 = man.rename(columns={man_en: 'Organization Legal Name English', man_gc: 'gc_orgID'})
     if man_fr:
         man2 = man2.rename(columns={man_fr: 'Organization Legal Name French'})
-    # keep base-file lead columns under distinct names; DO NOT rename to lead_department here
-    if man_lead_en and man_lead_en != 'man_lead_department':
-        man2 = man2.rename(columns={man_lead_en: 'man_lead_department'})
-    if man_lead_fr and man_lead_fr != 'man_ministère_responsable':
-        man2 = man2.rename(columns={man_lead_fr: 'man_ministère_responsable'})
+    if man_lead_en:
+        man2 = man2.rename(columns={man_lead_en: 'lead_department'})
+    if man_lead_fr:
+        man2 = man2.rename(columns={man_lead_fr: 'ministère_responsable'})
 
-    joined_df = pd.merge(
-        man2,
-        faa,  # already has 'Organization Legal Name English'
-        on='Organization Legal Name English',
-        how='outer'
-    )
+    joined_df = man2.merge(faa, on='Organization Legal Name English', how='outer', suffixes=('', '_faa'))
 
-    # ---- Enrich from Applied EN (drop right key post-merge) ----
+    # ---- Applied titles merge (preferred names + abbreviations) ----
     if app_key:
-        app_cols = [c for c in [app_key, app_applied, app_titre, app_abbr_en, app_abbr_fr] if c]
-        joined_df = merge_drop_right_key(
-            joined_df, app,
-            left_on='Organization Legal Name English',
-            right_on=app_key,
-            select_cols=app_cols,
-            how='left'
-        )
-    else:
-        # Soft fallback: if app has 'Organization Legal Name English' but we couldn't resolve app_key
-        fallback_key = find_col(app, ['Organization Legal Name English'])
-        if fallback_key:
-            app_cols = [c for c in [fallback_key, app_applied, app_titre, app_abbr_en, app_abbr_fr] if c]
-            joined_df = merge_drop_right_key(
-                joined_df, app,
-                left_on='Organization Legal Name English',
-                right_on=fallback_key,
-                select_cols=app_cols,
-                how='left'
-            )
+        app_cols = [app_key]
+        if app_applied: app_cols.append(app_applied)
+        if app_titre:   app_cols.append(app_titre)
+        if app_abbr_en: app_cols.append(app_abbr_en)
+        if app_abbr_fr: app_cols.append(app_abbr_fr)
 
-    # ---- Enrich from InfoBase EN (also drop right key) ----
+        tmp = app[app_cols].copy()
+        rename_map = {}
+        if app_key != 'app_key':
+            rename_map[app_key] = 'app_key'
+        if app_applied: rename_map[app_applied] = 'preferred_name'
+        if app_titre:   rename_map[app_titre]   = 'nom_préféré'
+        if app_abbr_en: rename_map[app_abbr_en] = 'abbreviation'
+        if app_abbr_fr: rename_map[app_abbr_fr] = 'abreviation'
+        tmp = tmp.rename(columns=rename_map)
+        joined_df = merge_drop_right_key(joined_df, tmp, left_on='Organization Legal Name English', right_on='app_key')
+
+    # ---- InfoBase status + end date merge (EN) ----
     if ibe_key:
-        ibe_cols = [c for c in [ibe_key, ibe_stat, ibe_end] if c]
-        joined_df = merge_drop_right_key(
-            joined_df, ibe,
-            left_on='Organization Legal Name English',
-            right_on=ibe_key,
-            select_cols=ibe_cols,
-            how='left'
-        )
+        ibe_cols = [ibe_key]
+        if ibe_stat: ibe_cols.append(ibe_stat)
+        if ibe_end:  ibe_cols.append(ibe_end)
+        tmp = ibe[ibe_cols].copy()
+        rename_map = {}
+        rename_map[ibe_key] = 'ibe_key'
+        if ibe_stat: rename_map[ibe_stat] = 'status_statut'
+        if ibe_end:  rename_map[ibe_end]  = 'end_date_fin'
+        tmp = tmp.rename(columns=rename_map)
+        joined_df = merge_drop_right_key(joined_df, tmp, left_on='Organization Legal Name English', right_on='ibe_key')
 
-    # ---- Enrich from Harmonized Names (gc_orgID) ----
+    # ---- Harmonized names merge by gc_orgID ----
     if har_gc:
-        har_cols = [c for c in [har_gc, har_en, har_fr] if c]
-        # prefer joining on gc_orgID
-        if har_gc == 'gc_orgID':
-            joined_df = joined_df.merge(har[har_cols].drop_duplicates(), on='gc_orgID', how='left')
-        else:
-            joined_df = merge_drop_right_key(
-                joined_df, har,
-                left_on='gc_orgID',
-                right_on=har_gc,
-                select_cols=har_cols,
-                how='left'
-            )
+        cols = [har_gc]
+        if har_en: cols.append(har_en)
+        if har_fr: cols.append(har_fr)
+        tmp = har[cols].copy().rename(columns={har_gc: 'gc_orgID'})
+        if har_en: tmp = tmp.rename(columns={har_en: 'harmonized_name'})
+        if har_fr: tmp = tmp.rename(columns={har_fr: 'nom_harmonisé'})
+        joined_df = joined_df.merge(tmp.drop_duplicates(), on='gc_orgID', how='left')
 
-    # ---- Clean & rename to canonical output headers ----
-    if 'gc_orgID' in joined_df.columns:
-        joined_df['gc_orgID'] = joined_df['gc_orgID'].astype(str).str.split('.').str[0]
+    # ---- Lead manual merge by gc_orgID (authoritative) ----
+    if lead_gc:
+        cols = [lead_gc]
+        if lead_en: cols.append(lead_en)
+        if lead_fr: cols.append(lead_fr)
+        tmp = lead[cols].copy().rename(columns={lead_gc: 'gc_orgID'})
+        if lead_en: tmp = tmp.rename(columns={lead_en: 'lead_department_lead'})
+        if lead_fr: tmp = tmp.rename(columns={lead_fr: 'ministère_responsable_lead'})
+        joined_df = joined_df.merge(tmp.drop_duplicates(), on='gc_orgID', how='left')
+
+    # ---- Normalize target naming ----
+    final_df = joined_df.copy()
 
     rename_map = {}
-    # Legal titles
-    rename_map['Organization Legal Name English'] = 'legal_title'
-    if 'Organization Legal Name French' in joined_df.columns:
-        rename_map['Organization Legal Name French'] = 'appellation_légale'
+    if "Organization Legal Name English" in final_df.columns:
+        rename_map["Organization Legal Name English"] = "legal_title"
+    if "Organization Legal Name French" in final_df.columns:
+        rename_map["Organization Legal Name French"] = "appellation_légale"
+    final_df = final_df.rename(columns=rename_map)
 
-    # FAA -> FAA_LGFP if present
-    faa_col = find_col(joined_df, ['FAA', 'FAA_LGFP', 'FAA-LGFP'])
-    if faa_col:
-        rename_map[faa_col] = 'FAA_LGFP'
+    # Defaults
+    if "status_statut" in final_df.columns:
+        final_df["status_statut"] = final_df["status_statut"].fillna("a")
+    else:
+        final_df["status_statut"] = "a"
 
-    # Applied EN to preferred_name / nom_préféré
-    if app_applied: rename_map[app_applied] = 'preferred_name'
-    if app_titre:   rename_map[app_titre]   = 'nom_préféré'
-
-    # Abbreviations
-    if app_abbr_en: rename_map[app_abbr_en] = 'abbreviation'
-    if app_abbr_fr: rename_map[app_abbr_fr] = 'abreviation'
-
-    # Status / End date
-    if ibe_stat: rename_map[ibe_stat] = 'status_statut'
-    if ibe_end:  rename_map[ibe_end]  = 'end_date_fin'  # we won't include it in the final 13
-
-    # Harmonized names (FR kept accented)
-    if har_en: rename_map[har_en] = 'harmonized_name'
-    if har_fr: rename_map[har_fr] = 'nom_harmonisé'
-
-    final_df = joined_df.rename(columns=rename_map)
-
-    # ---- Defaults & coercions ----
-    if 'status_statut' in final_df.columns:
-        final_df['status_statut'] = final_df['status_statut'].fillna('a')
-
-    if 'end_date_fin' in final_df.columns:
-        def _coerce_end(x):
-            if pd.isna(x) or str(x).strip() == '':
-                return ''
-            try:
-                return str(int(float(str(x).strip())))  # tolerate "2024.0"
-            except Exception:
-                return str(x).strip()
-        final_df['end_date_fin'] = final_df['end_date_fin'].apply(_coerce_end)
-
-    # ---- Merge lead department (gc_orgID) with SAFE column names ----
-    if lead_gc:
-        lead2 = dfs['manual_lead_department'].copy()
-        lead2[lead_gc] = lead2[lead_gc].astype(str)
-
-        # Rename to *_lead names BEFORE merge to forbid _x/_y creation
-        rename_lead = {lead_gc: 'gc_orgID'}
-        if lead_en: rename_lead[lead_en] = 'lead_department_lead'
-        if lead_fr: rename_lead[lead_fr] = 'ministère_responsable_lead'
-        lead2 = lead2.rename(columns=rename_lead)
-
-        keep = [c for c in ['gc_orgID', 'lead_department_lead', 'ministère_responsable_lead'] if c in lead2.columns]
-        final_df = final_df.merge(lead2[keep].drop_duplicates(), on='gc_orgID', how='left')
-
-    # ---- FINAL: coalesce and DROP ALL lead department duplicates ----
-    # Build single 'lead_department' with strict priority
+    # ---- Coalesce lead fields (authoritative lead_manual first, then manual_org fallback) ----
     lead_candidates = [
-        'lead_department_lead',          # authoritative (lead manual)
-        'man_lead_department',           # fallback (manual_org, if present)
-        'lead_department',               # any pre-existing normalized field
-        'lead department',               # spacing variant
-        'Lead Department', 'Lead_Department',
-        'lead_department_x', 'lead_department_y'
-    ] + [c for c in final_df.columns if c.startswith('lead_department_') and c not in ('lead_department', 'lead_department_lead')]
+        "lead_department_lead",
+        "lead_department",
+        "Lead Department",
+        "Lead_Department",
+        "lead department",
+    ] + [c for c in final_df.columns if c.startswith("lead_department_") and c not in ("lead_department", "lead_department_lead")]
+    final_df = coalesce_into(final_df, "lead_department", lead_candidates)
 
-    final_df = coalesce_into(final_df, 'lead_department', lead_candidates)
-
-    # Same for French
     lead_fr_candidates = [
-        'ministère_responsable_lead',    # authoritative
-        'man_ministère_responsable',     # fallback
-        'ministère_responsable',
-        'ministere_responsable', 'ministère responsable',
-        'Ministère Responsable', 'Ministere_Responsable',
-        'ministère_responsable_x', 'ministère_responsable_y'
-    ] + [c for c in final_df.columns if c.startswith('ministère_responsable_') and c not in ('ministère_responsable', 'ministère_responsable_lead')]
+        "ministère_responsable_lead",
+        "ministère_responsable",
+        "ministere_responsable",
+        "Ministère Responsable",
+        "Ministere_Responsable",
+        "ministère responsable",
+    ] + [c for c in final_df.columns if c.startswith("ministère_responsable_") and c not in ("ministère_responsable", "ministère_responsable_lead")]
+    final_df = coalesce_into(final_df, "ministère_responsable", lead_fr_candidates)
 
-    final_df = coalesce_into(final_df, 'ministère_responsable', lead_fr_candidates)
+    # Backfill legal titles if needed
+    final_df = coalesce_into(final_df, "legal_title", ["legal_title", "Legal title", "Legal Title"])
+    final_df = coalesce_into(final_df, "appellation_légale", ["appellation_légale", "Appellation légale", "Appellation legale", "appellation_legale"])
 
-    # ---- Backfill legal titles (EN/FR) in case rename/merge missed variants ----
-    legal_en_candidates = [
-        'legal_title',                         # expected final
-        'Organization Legal Name English',     # original column
-        'Legal title', 'Legal Title'           # variant headers
-    ]
-    final_df = coalesce_into(final_df, 'legal_title', legal_en_candidates)
+    # Harmonized FR name
+    final_df = coalesce_into(final_df, "nom_harmonisé", ["nom_harmonisé", "nom harmonisé", "Nom harmonisé", "Nom_harmonisé", "nom_harmonise"])
 
-    legal_fr_candidates = [
-        'appellation_légale',                  # expected final
-        'Organization Legal Name French',      # original column
-        'Appellation légale', 'Appellation legale', 'appellation_legale'
-    ]
-    final_df = coalesce_into(final_df, 'appellation_légale', legal_fr_candidates)
-
-    # ---- Ensure there is only one 'legal_title' (safety) ----
-    legal_dupes = [c for c in final_df.columns if c != 'legal_title' and _norm(c) in {'legal title', 'legal_title'}]
-    legal_dupes += [c for c in final_df.columns if c.startswith('legal_title_')]
-    legal_dupes = list(dict.fromkeys(legal_dupes))
-    for c in legal_dupes:
-        if c in final_df.columns:
-            final_df = final_df.drop(columns=[c])
-
-    # ---- Ensure harmonized French name is present (coalesce across variants if needed) ----
-    # Some upstream drops keep "French Name" or other variants; try to harvest them.
-    fr_harm_candidates = [
-        'nom_harmonisé',
-        'nom harmonisé',
-        'Nom harmonisé',
-        'Nom_harmonisé',
-        'nom_harmonise',          # unaccented backup if present
-        'French Name'             # occasional upstream field
-    ]
-    final_df = coalesce_into(final_df, 'nom_harmonisé', fr_harm_candidates)
-
-    # ---- Apply any hard overrides (optional, example only) ----
-    overrides = {
-        '2287': {'abbreviation': 'SCC', 'abreviation': 'CSC'},  # Supreme Court of Canada example
-    }
-    if 'gc_orgID' in final_df.columns:
-        for org_id, values in overrides.items():
-            for field, value in values.items():
-                final_df.loc[final_df['gc_orgID'] == org_id, field] = value
-
-    # ---- Ensure all 13 target columns exist (create empty if missing) ----
+    # ---- Ensure all 13 target columns exist ----
     target_cols = [
-        'gc_orgID',
-        'harmonized_name',
-        'nom_harmonisé',
-        'legal_title',
-        'appellation_légale',
-        'preferred_name',
-        'nom_préféré',
-        'lead_department',
-        'ministère_responsable',
-        'abbreviation',
-        'abreviation',
-        'FAA_LGFP',
-        'status_statut',
+        "gc_orgID",
+        "harmonized_name",
+        "nom_harmonisé",
+        "legal_title",
+        "appellation_légale",
+        "preferred_name",
+        "nom_préféré",
+        "lead_department",
+        "ministère_responsable",
+        "abbreviation",
+        "abreviation",
+        "FAA_LGFP",
+        "status_statut",
     ]
     for c in target_cols:
         if c not in final_df.columns:
-            final_df[c] = ''
+            final_df[c] = ""
 
-    # ---- Keep only these 13, in order ----
     final_df = final_df[target_cols]
 
-    # ---- Sort by gc_orgID (numeric-friendly) ----
-    final_df['gc_orgID'] = final_df['gc_orgID'].astype(str).str.split('.').str[0]
-    final_df['_sort_gc'] = pd.to_numeric(final_df['gc_orgID'], errors='coerce')
-    final_df = final_df.sort_values(by=['_sort_gc', 'gc_orgID']).drop(columns=['_sort_gc'])
-
-    # normalize
+    # Normalize gc_orgID
     final_df["gc_orgID"] = final_df["gc_orgID"].astype(str).str.split(".").str[0].str.strip()
     final_df.loc[final_df["gc_orgID"].str.lower().isin(["nan", "none"]), "gc_orgID"] = ""
 
+    # -------------------- SURGICAL ADD: reattach spillover blank-ID rows --------------------
+    # Goal: if a row has blank gc_orgID but represents an existing org (name-variant spillover),
+    # assign the correct gc_orgID so it dedupes out and stops appearing as overflow.
+    def _name_key(x: str) -> str:
+        s = "" if x is None else str(x).strip()
+        s = s.replace("’", "'").replace("`", "'")
+        s = re.sub(r"\s+", " ", s)
+        return s.lower()
+
+    if "legal_title" in final_df.columns:
+        # Build lookup from normalized legal_title -> gc_orgID for rows that already have an ID
+        lut = {}
+        mapped_rows = final_df[final_df["gc_orgID"].astype(str).str.strip() != ""]
+        for _, r in mapped_rows.iterrows():
+            k = _name_key(r.get("legal_title", ""))
+            if k:
+                lut.setdefault(k, str(r.get("gc_orgID", "")).strip())
+
+        # Apply to blank-ID rows
+        blank_mask = final_df["gc_orgID"].astype(str).str.strip() == ""
+        for i, r in final_df[blank_mask].iterrows():
+            k = _name_key(r.get("legal_title", ""))
+            if k in lut:
+                final_df.at[i, "gc_orgID"] = lut[k]
+
+            # Hard fallbacks for the known 3 overflow cases
+            if not str(final_df.at[i, "gc_orgID"]).strip():
+                if "leaders" in k and "debate" in k:
+                    final_df.at[i, "gc_orgID"] = "2296"  # Leaders' Debates Commission
+                elif "information commissioner" in k:
+                    final_df.at[i, "gc_orgID"] = "2281"  # OIC
+                elif "veterans" in k and "land act" in k:
+                    final_df.at[i, "gc_orgID"] = "3423"  # Director, Veterans' Land Act
+    # -------------------- end surgical add --------------------
+
+    # Sort (blank IDs naturally go last; but they will be filtered out for output)
+    final_df["_sort_gc"] = pd.to_numeric(final_df["gc_orgID"], errors="coerce")
+    final_df = final_df.sort_values(by=["_sort_gc", "gc_orgID"]).drop(columns=["_sort_gc"])
+
     # split
     mapped = final_df[final_df["gc_orgID"] != ""].copy()
-    unmapped = final_df[final_df["gc_orgID"] == ""].copy()
 
     # clean empties
     mapped = mapped.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").fillna("")
-    unmapped = unmapped.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").fillna("")
 
     # ---- Final output contract enforcement ----
     # Normalize and drop fully empty rows
     tmp = mapped.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all")
 
-    # Separate unmapped diagnostics BEFORE enforcing (optional but useful)
     if "gc_orgID" not in tmp.columns:
         raise ValueError("gc_org_info output is missing required column: gc_orgID")
 
     gc = tmp["gc_orgID"].astype(str).str.strip().str.split(".").str[0]
     gc = gc.where(~gc.str.lower().isin(["nan", "none"]), "")
 
-    unmapped = tmp[(gc == "") | (gc == "0") | (~gc.str.match(r"^[0-9]+$"))].copy()
-    if not unmapped.empty:
-        unmapped.to_csv("org_info_unmapped_rows.csv", index=False, encoding="utf-8-sig")
+    unmapped_diag = tmp[(gc == "") | (gc == "0") | (~gc.str.match(r"^[0-9]+$"))].copy()
+    if not unmapped_diag.empty:
+        unmapped_diag.to_csv("org_info_unmapped_rows.csv", index=False, encoding="utf-8-sig")
 
-    # Enforce: ONLY valid gc_orgID rows make it into gc_org_info.csv
     valid_mask = gc.str.match(r"^[0-9]+$") & (gc != "") & (gc != "0")
     final_df = tmp[valid_mask].copy()
     final_df["gc_orgID"] = gc[valid_mask]
 
-    # Fail hard if anything invalid remains (shouldn't)
     if final_df["gc_orgID"].astype(str).str.strip().eq("").any():
         raise ValueError("Blank gc_orgID rows still present after filtering (unexpected).")
 
     final_df.to_csv("gc_org_info.csv", index=False, encoding="utf-8-sig")
 
-    # ---- Save simple documentation (aligned to final headers) ----
+    # ---- Save simple documentation ----
     documentation = {
         'gc_orgID':               'Source: Resources/create_harmonized_name.csv',
         'harmonized_name':        'Source: Resources/create_harmonized_name.csv',
@@ -447,7 +391,7 @@ def main():
         'legal_title':            'Source: Manual org ID link + Scraping/combined_FAA_names',
         'appellation_légale':     'Source: Manual org ID link (FR) and/or Resources/infobase_fr.csv',
         'preferred_name':         'Source: Resources/applied_en.csv',
-        'nom_préféré':           'Source: Resources/applied_en.csv',
+        'nom_préféré':           "Source: Resources/applied_en.csv",
         'lead_department':        'Source: Resources/lead_manual.csv (priority) or Manual org',
         'ministère_responsable':  'Source: Resources/lead_manual.csv (priority) or Manual org',
         'abbreviation':           'Source: Resources/applied_en.csv',
@@ -462,4 +406,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
