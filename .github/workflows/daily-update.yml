@@ -2,7 +2,7 @@ name: daily-update
 
 on:
   schedule:
-    # Tuesday 11 AM Toronto/New York time (EST/EDT auto handled)
+    # Weekdays at 12:00 UTC (7:00 AM EST / 8:00 AM EDT)
     - cron: "0 12 * * 1-5"
   workflow_dispatch:
 
@@ -32,7 +32,6 @@ jobs:
       # -------------------------
       # Phase A: Generate current datasets + current outputs
       # -------------------------
-
       - name: 1) Retrieve datasets
         run: python Resources/retrieve_datasets.py
 
@@ -45,7 +44,7 @@ jobs:
       - name: 4) Retrieve lead ministry data
         run: python Resources/lead_ministry_retrieve.py
 
-      - name: 5) Build RG final (current behavior for now)
+      - name: 5) Build RG final
         run: python Resources/rg_final_match.py
 
       - name: 6) Scrape FAA
@@ -66,8 +65,7 @@ jobs:
       # -------------------------
       # Phase B: Apply lead_fix using CURRENT org_info, then rebuild outputs
       # -------------------------
-
-      - name: 11) Apply lead manual fixes using current org_info
+      - name: 11) Apply lead manual fixes using current org info
         run: python Resources/lead_fix.py
 
       - name: 12) Rebuild concordance (after lead_fix)
@@ -83,13 +81,104 @@ jobs:
       - name: 15) Compare org info vs concordance
         run: python Tools/compare_org_concord.py
 
+      # -------------------------
+      # Detect changes (IMPORTANT)
+      # -------------------------
+      - name: Detect repo changes
+        id: changes
+        shell: bash
+        run: |
+          set -e
+          # Stage only the outputs you care about committing
+          git add gc_concordance.csv gc_org_info.csv || true
+
+          # If nothing staged, no changes were made to these tracked datasets
+          if git diff --cached --quiet; then
+            echo "changes_made=false" >> "$GITHUB_OUTPUT"
+            echo "concord_changed=false" >> "$GITHUB_OUTPUT"
+            echo "orginfo_changed=false" >> "$GITHUB_OUTPUT"
+            echo "No staged changes for gc_concordance.csv or gc_org_info.csv"
+            exit 0
+          fi
+
+          echo "changes_made=true" >> "$GITHUB_OUTPUT"
+
+          # Determine which of the two files changed
+          CHANGED=$(git diff --cached --name-only || true)
+          echo "$CHANGED" | grep -qx "gc_concordance.csv" && echo "concord_changed=true" >> "$GITHUB_OUTPUT" || echo "concord_changed=false" >> "$GITHUB_OUTPUT"
+          echo "$CHANGED" | grep -qx "gc_org_info.csv" && echo "orginfo_changed=true" >> "$GITHUB_OUTPUT" || echo "orginfo_changed=false" >> "$GITHUB_OUTPUT"
+
+          echo "Staged changes:"
+          echo "$CHANGED"
+
       - name: Commit and push changes
+        if: steps.changes.outputs.changes_made == 'true'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
           git commit -m "Auto-update: daily pipeline"
           git push
+
+      - name: Create issue: datasets updated
+        if: steps.changes.outputs.changes_made == 'true'
+        uses: actions/github-script@v7
+        env:
+          CONCORD_CHANGED: ${{ steps.changes.outputs.concord_changed }}
+          ORGINFO_CHANGED: ${{ steps.changes.outputs.orginfo_changed }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const concordChanged = process.env.CONCORD_CHANGED === "true";
+            const orgInfoChanged = process.env.ORGINFO_CHANGED === "true";
+
+            // Only track for concordance/org_info (you requested)
+            if (!concordChanged && !orgInfoChanged) {
+              core.notice("No concordance/org_info changes detected; skipping issue creation.");
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const changedList = [
+              concordChanged ? "- gc_concordance.csv" : null,
+              orgInfoChanged ? "- gc_org_info.csv" : null,
+            ].filter(Boolean).join("\n");
+
+            const title = "Changes made by daily update — review datasets";
+            const body =
+            `The daily-update workflow committed changes to the tracked datasets: 
+            ${changedList}
+            
+            **Workflow run:** ${runUrl}
+            
+            Please review the updated outputs for correctness (especially mapping/joins and any newly-unmatched records).`;
+
+            // Avoid spamming: if an open issue with same title exists, comment instead
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: "open", per_page: 100
+            });
+
+            const existing = issues.find(i => i.title === title && !i.pull_request);
+
+            const labels = ["data-update", "auto-generated"];
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: existing.number, body
+              });
+              // Ensure labels
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: existing.number, labels
+              }).catch(() => {});
+              core.notice(`Updated existing issue #${existing.number}`);
+            } else {
+              await github.rest.issues.create({
+                owner, repo, title, body, labels
+              });
+              core.notice("Created new dataset review issue");
+            }
 
       - name: Create GitHub Issue if Failed
         if: failure()
