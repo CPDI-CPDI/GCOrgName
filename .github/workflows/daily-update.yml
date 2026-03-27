@@ -118,8 +118,8 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git commit -m "Auto-update: daily pipeline"
           git push
-
-      - name: Create issue: datasets updated
+          
+      - name: "Create issue: datasets updated"
         if: steps.changes.outputs.changes_made == 'true'
         uses: actions/github-script@v7
         env:
@@ -131,7 +131,6 @@ jobs:
             const concordChanged = process.env.CONCORD_CHANGED === "true";
             const orgInfoChanged = process.env.ORGINFO_CHANGED === "true";
 
-            // Only track for concordance/org_info (you requested)
             if (!concordChanged && !orgInfoChanged) {
               core.notice("No concordance/org_info changes detected; skipping issue creation.");
               return;
@@ -139,36 +138,36 @@ jobs:
 
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-
             const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
             const changedList = [
               concordChanged ? "- gc_concordance.csv" : null,
               orgInfoChanged ? "- gc_org_info.csv" : null,
             ].filter(Boolean).join("\n");
 
             const title = "Changes made by daily update — review datasets";
-            const body =
-            `The daily-update workflow committed changes to the tracked datasets: 
-            ${changedList}
-            
-            **Workflow run:** ${runUrl}
-            
-            Please review the updated outputs for correctness (especially mapping/joins and any newly-unmatched records).`;
+            const body = [
+              "The daily-update workflow committed changes to the tracked datasets:",
+              "",
+              changedList,
+              "",
+              `**Workflow run:** ${runUrl}`,
+              "",
+              "Please review the updated outputs for correctness (especially mapping/joins and any newly-unmatched records)."
+            ].join("\n");
 
-            // Avoid spamming: if an open issue with same title exists, comment instead
+            const labels = ["data-update", "auto-generated"];
+
             const issues = await github.paginate(github.rest.issues.listForRepo, {
               owner, repo, state: "open", per_page: 100
             });
 
             const existing = issues.find(i => i.title === title && !i.pull_request);
 
-            const labels = ["data-update", "auto-generated"];
-
             if (existing) {
               await github.rest.issues.createComment({
                 owner, repo, issue_number: existing.number, body
               });
-              // Ensure labels
               await github.rest.issues.addLabels({
                 owner, repo, issue_number: existing.number, labels
               }).catch(() => {});
