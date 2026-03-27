@@ -1,10 +1,11 @@
 name: daily-archive
 
 on:
-  workflow_run:
-    workflows: ["daily-update"]
-    types:
-      - completed
+  push:
+    branches: [main]
+    paths:
+      - "gc_concordance.csv"
+      - "gc_org_info.csv"
   workflow_dispatch:
 
 permissions:
