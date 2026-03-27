@@ -369,11 +369,13 @@ def main():
     gc = tmp["gc_orgID"].astype(str).str.strip().str.split(".").str[0]
     gc = gc.where(~gc.str.lower().isin(["nan", "none"]), "")
 
-    unmapped_diag = tmp[(gc == "") | (gc == "0") | (~gc.str.match(r"^[0-9]+$"))].copy()
+    gc_is_numeric = gc.fillna("").astype(str).str.match(r"^[0-9]+$").fillna(False)
+    unmapped_diag = tmp[(gc == "") | (gc == "0") | (~gc_is_numeric)].copy()
     if not unmapped_diag.empty:
         unmapped_diag.to_csv("org_info_unmapped_rows.csv", index=False, encoding="utf-8-sig")
 
-    valid_mask = gc.str.match(r"^[0-9]+$") & (gc != "") & (gc != "0")
+    gc_is_numeric = gc.fillna("").astype(str).str.match(r"^[0-9]+$").fillna(False)
+    valid_mask = gc_is_numeric & (gc != "") & (gc != "0")
     final_df = tmp[valid_mask].copy()
     final_df["gc_orgID"] = gc[valid_mask]
 
