@@ -1,11 +1,10 @@
 name: daily-archive
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "gc_concordance.csv"
-      - "gc_org_info.csv"
+  workflow_run:
+    workflows: ["daily-update"]
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -21,7 +20,6 @@ jobs:
     name: Run Daily Archival Script
     runs-on: ubuntu-latest
 
-    # Only run when weekly-update succeeded (manual dispatch bypasses this)
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
@@ -32,21 +30,49 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Determine whether datasets changed in latest commit
+        id: guard
+        shell: bash
+        run: |
+          set -e
+          git checkout main
+          git pull --ff-only
+
+          # If repo only has 1 commit, avoid HEAD~1 failure
+          if ! git rev-parse HEAD~1 >/dev/null 2>&1; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CHANGED=$(git diff --name-only HEAD~1 HEAD || true)
+          echo "Changed files in latest commit:"
+          echo "$CHANGED"
+
+          if echo "$CHANGED" | grep -Eq '^(gc_concordance\.csv|gc_org_info\.csv)$'; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.guard.outputs.should_run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dependencies
+        if: steps.guard.outputs.should_run == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install pandas
 
       - name: Execute Archival Script
+        if: steps.guard.outputs.should_run == 'true'
         run: |
           python Tools/negative_concordance_commits.py
 
       - name: Commit and push changes
+        if: steps.guard.outputs.should_run == 'true'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
