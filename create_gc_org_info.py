@@ -322,6 +322,7 @@ def main():
         "abreviation",
         "FAA_LGFP",
         "status_statut",
+        "end_date_fin",
     ]
     for c in target_cols:
         if c not in final_df.columns:
@@ -417,6 +418,7 @@ def main():
         'abreviation':            'Source: Resources/applied_en.csv',
         'FAA_LGFP':               'Source: Scraping/combined_FAA_names.csv',
         'status_statut':          'Source: Resources/infobase_en.csv',
+        "end_date_fin": "Source: Resources/infobase_en.csv",
     }
     with open(os.path.join(script_folder, 'gc_org_info_documentation.txt'), 'w', encoding='utf-8') as f:
         for field, doc in documentation.items():
