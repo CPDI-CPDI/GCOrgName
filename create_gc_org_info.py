@@ -186,7 +186,7 @@ def main():
     ibe_key_candidates = ['Legal title', 'legal_title', 'Legal Title', 'Organization Legal Name English']
     ibe_key  = find_col(ibe, ibe_key_candidates)
     ibe_stat = find_col(ibe, ['Status', 'status', 'Statut'])
-    ibe_end  = find_col(ibe, ['End date', 'end_date', 'End Date'])
+    ibe_end  = find_col(ibe, ['End date', 'end_date', 'End Date', 'end_fin', 'End_fin', 'END_FIN'])
 
     # harmonized_names
     har = dfs['harmonized_names']
