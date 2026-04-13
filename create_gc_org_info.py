@@ -115,6 +115,40 @@ def load_dataframes(script_folder: str):
         dfs[key] = df
     return dfs
 
+def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
+    """Apply manual changes to specific entries (PRESERVED)."""
+    manual_changes = {
+        # Leaders' Debates Commission (fix: InfoBase org_id=350 and websites)
+        "2296": {
+            "abbreviation": "LDC",
+            "abreviation": "LDC"
+        },
+        # Office of the Information Commissioner
+        "2281": {
+            "abbreviation": "OIC",
+            "abreviation": "CI"
+        },
+        # Office of the Privacy Commissioner
+        "2282": {
+            "abbreviation": "OPC",
+            "abreviation": "CPVP"
+        },
+        "2287": {
+            "abbreviation": "SCC",
+            "abreviation": "CSC",
+        }
+    }
+
+    if 'gc_orgID' not in df.columns:
+        logger.warning("apply_manual_changes: 'gc_orgID' not found; skipping manual changes")
+        return df
+
+    for gc_orgid, changes in manual_changes.items():
+        for field, value in changes.items():
+            df.loc[df['gc_orgID'] == gc_orgid, field] = value
+
+    return df
+
 
 # --------------------------- Business logic ---------------------------
 
@@ -400,6 +434,8 @@ def main():
 
     if final_df["gc_orgID"].astype(str).str.strip().eq("").any():
         raise ValueError("Blank gc_orgID rows still present after filtering (unexpected).")
+
+    final_df = apply_manual_changes(final_df)
 
     final_df.to_csv("gc_org_info.csv", index=False, encoding="utf-8-sig")
 
