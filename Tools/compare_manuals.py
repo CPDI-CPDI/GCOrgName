@@ -8,11 +8,11 @@ def main():
     resources_folder = os.path.join(script_folder, '..', 'Resources')
     scraping_folder = os.path.join(script_folder, '..', 'Scraping')
 
-    final_rg_match_file = os.path.join(resources_folder, 'rg_final.csv')
+    final_rg_match_file = os.path.join(resources_folder, 'RG', 'rg_final.csv')
     manual_org_id_link_file = os.path.join(resources_folder, 'Manual org ID link.csv')
     manual_pop_phoenix_file = os.path.join(resources_folder, 'manual pop phoenix.csv')
     manual_lead_department_portfolio_file = os.path.join(resources_folder, 'lead_manual.csv')
-    rg_final_file = os.path.join(resources_folder, 'rg_final.csv')
+    rg_final_file = os.path.join(resources_folder, 'RG', 'rg_final.csv')
     en_applied_file = os.path.join(resources_folder, 'applied_en.csv')
     FAA_combined_file = os.path.join(scraping_folder, 'combined_FAA_names.csv')
 
