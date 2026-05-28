@@ -92,6 +92,116 @@ def coalesce_into(df: pd.DataFrame, target: str, candidates: list) -> pd.DataFra
     return df
 
 
+def apply_infobase_fields_by_id(final_df: pd.DataFrame, dfs: dict) -> pd.DataFrame:
+    """
+    Populate InfoBase-derived fields by deterministic ID mapping:
+      gc_orgID -> concordance.infobaseID -> infobase_en.org_id
+
+    This avoids brittle legal_title joins and prevents status_statut from
+    defaulting to active when no InfoBase match exists.
+    """
+    out = final_df.copy()
+
+    if "concordance" not in dfs or "infobase_en" not in dfs:
+        return out
+
+    concordance = dfs["concordance"].copy()
+    ibe = dfs["infobase_en"].copy()
+
+    if concordance.empty or ibe.empty:
+        return out
+
+    conc_gc = find_col(concordance, ["gc_orgID", "gc orgid", "gc_orgid"])
+    conc_ib = find_col(concordance, ["infobaseID", "infobase id", "org_id", "OrgID"])
+
+    ibe_id = find_col(ibe, ["org_id", "OrgID", "org id"])
+    ibe_status = find_col(ibe, ["status", "Status", "statut", "status_statut"])
+    ibe_end = find_col(ibe, ["end_fin", "End_fin", "END_FIN", "end_date", "End date", "End Date"])
+
+    if not conc_gc or not conc_ib or not ibe_id:
+        return out
+
+    conc_map = concordance[[conc_gc, conc_ib]].copy()
+    conc_map = conc_map.rename(columns={conc_gc: "gc_orgID", conc_ib: "infobaseID"})
+
+    conc_map["gc_orgID"] = (
+        conc_map["gc_orgID"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.split(".").str[0]
+    )
+    conc_map["infobaseID"] = (
+        conc_map["infobaseID"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.split(".").str[0]
+    )
+
+    conc_map = conc_map[
+        (conc_map["gc_orgID"] != "") &
+        (conc_map["infobaseID"] != "") &
+        (conc_map["infobaseID"] != "0")
+    ].drop_duplicates(subset=["gc_orgID"], keep="last")
+
+    ibe_cols = [ibe_id]
+    if ibe_status:
+        ibe_cols.append(ibe_status)
+    if ibe_end:
+        ibe_cols.append(ibe_end)
+
+    ibe_map = ibe[ibe_cols].copy()
+    rename_map = {ibe_id: "infobaseID"}
+    if ibe_status:
+        rename_map[ibe_status] = "status_statut_ib"
+    if ibe_end:
+        rename_map[ibe_end] = "end_date_fin_ib"
+
+    ibe_map = ibe_map.rename(columns=rename_map)
+
+    ibe_map["infobaseID"] = (
+        ibe_map["infobaseID"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.split(".").str[0]
+    )
+
+    ibe_map = ibe_map.drop_duplicates(subset=["infobaseID"], keep="last")
+
+    if "gc_orgID" not in out.columns:
+        return out
+
+    out["gc_orgID"] = (
+        out["gc_orgID"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.split(".").str[0]
+    )
+
+    out = out.merge(conc_map, on="gc_orgID", how="left")
+    out = out.merge(ibe_map, on="infobaseID", how="left")
+
+    if "status_statut" not in out.columns:
+        out["status_statut"] = ""
+    if "end_date_fin" not in out.columns:
+        out["end_date_fin"] = ""
+
+    if "status_statut_ib" in out.columns:
+        out["status_statut"] = out["status_statut_ib"].fillna("").astype(str).str.strip()
+
+    if "end_date_fin_ib" in out.columns:
+        out["end_date_fin"] = out["end_date_fin_ib"].fillna("").astype(str).str.strip()
+
+    out = out.drop(columns=[
+        c for c in ["infobaseID", "status_statut_ib", "end_date_fin_ib"]
+        if c in out.columns
+    ])
+
+    return out
+
 # ------------------------------ IO ------------------------------
 
 def load_dataframes(script_folder: str):
@@ -102,8 +212,9 @@ def load_dataframes(script_folder: str):
         'applied_en': 'Resources/applied_en.csv',
         'infobase_en': 'Resources/Infobase/infobase_en.csv',
         'infobase_fr': 'Resources/Infobase/infobase_fr.csv',
+        'concordance': 'gc_concordance.csv',
         'harmonized_names': 'Resources/create_harmonized_name.csv',
-        'manual_lead_department': 'Resources/lead_manual.csv',  # authoritative lead dept
+        'manual_lead_department': 'Resources/lead_manual.csv',
     }
     dfs = {}
     for key, rel_path in files.items():
@@ -265,18 +376,9 @@ def main():
         tmp = tmp.rename(columns=rename_map)
         joined_df = merge_drop_right_key(joined_df, tmp, left_on='Organization Legal Name English', right_on='app_key')
 
-    # ---- InfoBase status + end date merge (EN) ----
-    if ibe_key:
-        ibe_cols = [ibe_key]
-        if ibe_stat: ibe_cols.append(ibe_stat)
-        if ibe_end:  ibe_cols.append(ibe_end)
-        tmp = ibe[ibe_cols].copy()
-        rename_map = {}
-        rename_map[ibe_key] = 'ibe_key'
-        if ibe_stat: rename_map[ibe_stat] = 'status_statut'
-        if ibe_end:  rename_map[ibe_end]  = 'end_date_fin'
-        tmp = tmp.rename(columns=rename_map)
-        joined_df = merge_drop_right_key(joined_df, tmp, left_on='Organization Legal Name English', right_on='ibe_key')
+    # ---- InfoBase status + end date ----
+    # Populated later by deterministic gc_orgID -> concordance.infobaseID -> InfoBase.org_id mapping.
+    # Do not populate these by legal_title here; title joins are brittle and can mask missing InfoBase alignment.
 
     # ---- Harmonized names merge by gc_orgID ----
     if har_gc:
@@ -309,10 +411,12 @@ def main():
     final_df = final_df.rename(columns=rename_map)
 
     # Defaults
-    if "status_statut" in final_df.columns:
-        final_df["status_statut"] = final_df["status_statut"].fillna("a")
-    else:
-        final_df["status_statut"] = "a"
+    # InfoBase status is populated later by ID. Do not default missing values to "a",
+    # because that masks failed InfoBase linkage.
+    if "status_statut" not in final_df.columns:
+        final_df["status_statut"] = ""
+    if "end_date_fin" not in final_df.columns:
+        final_df["end_date_fin"] = ""
 
     # ---- Coalesce lead fields (authoritative lead_manual first, then manual_org fallback) ----
     lead_candidates = [
@@ -340,6 +444,9 @@ def main():
 
     # Harmonized FR name
     final_df = coalesce_into(final_df, "nom_harmonisé", ["nom_harmonisé", "nom harmonisé", "Nom harmonisé", "Nom_harmonisé", "nom_harmonise"])
+
+    # ---- Populate InfoBase-derived fields by reviewed/deterministic ID mapping ----
+    final_df = apply_infobase_fields_by_id(final_df, dfs)
 
     # ---- Ensure all 13 target columns exist ----
     target_cols = [
