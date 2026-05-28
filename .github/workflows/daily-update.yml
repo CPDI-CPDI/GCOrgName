@@ -56,29 +56,35 @@ jobs:
       - name: 8) Create harmonized names
         run: python Resources/create_harmonized_name.py
 
-      - name: 9) Build concordance
+      - name: 9) Build InfoBase match + review queue
+        run: python Resources/Infobase/infobase_match.py
+
+      - name: 10) Build InfoBase final mapping
+        run: python Resources/Infobase/infobase_final.py
+
+      - name: 11) Build concordance
         run: python create_concordance.py
 
-      - name: 10) Build org info
+      - name: 12) Build org info
         run: python create_gc_org_info.py
 
       # -------------------------
       # Phase B: Apply lead_fix using CURRENT org_info, then rebuild outputs
       # -------------------------
-      - name: 11) Apply lead manual fixes using current org info
+      - name: 13) Apply lead manual fixes using current org info
         run: python Resources/lead_fix.py
 
-      - name: 12) Rebuild concordance (after lead_fix)
+      - name: 14) Rebuild concordance (after lead_fix)
         run: python create_concordance.py
 
-      - name: 13) Rebuild org info (after lead_fix)
+      - name: 15) Rebuild org info (after lead_fix)
         run: python create_gc_org_info.py
 
       # Diagnostics/QA scripts (run after final outputs)
-      - name: 14) Compare manuals
+      - name: 16) Compare manuals
         run: python Tools/compare_manuals.py
 
-      - name: 15) Compare org info vs concordance
+      - name: 17) Compare org info vs concordance
         run: python Tools/compare_org_concord.py
 
       # -------------------------
