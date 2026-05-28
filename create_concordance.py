@@ -425,7 +425,13 @@ def apply_infobase_final_mapping(df: pd.DataFrame, dfs: Dict[str, pd.DataFrame])
         logger.warning("gc_orgID missing before InfoBase final mapping; skipping")
         return out
 
-    out["gc_orgID"] = out["gc_orgID"].fillna("").astype(str).str.strip().str.split(".").str[0]
+    out["gc_orgID"] = (
+        out["gc_orgID"]
+        .astype("string")
+        .fillna("")
+        .str.strip()
+        .str.split(".").str[0]
+    )
 
     out = out.merge(
         ib_final,
@@ -437,8 +443,8 @@ def apply_infobase_final_mapping(df: pd.DataFrame, dfs: Dict[str, pd.DataFrame])
     if "infobaseID" not in out.columns:
         out["infobaseID"] = ""
 
-    existing = out["infobaseID"].fillna("").astype(str).str.strip()
-    mapped = out["infobaseID_ibmap"].fillna("").astype(str).str.strip()
+    existing = out["infobaseID"].astype("string").fillna("").str.strip()
+    mapped = out["infobaseID_ibmap"].astype("string").fillna("").str.strip()
 
     # Use reviewed InfoBase mapping whenever available.
     out["infobaseID"] = existing.where(mapped == "", mapped)
