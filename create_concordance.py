@@ -461,7 +461,7 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
         "2296": {
             "abbreviation": "LDC",
             "abreviation": "LDC",
-            "infobaseID": 350,
+            "infobaseID": "350",
             "website": "https://www.debates-debats.ca/en/",
             "site_web": "https://www.debates-debats.ca/fr/"
         },
@@ -469,7 +469,7 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
         "2281": {
             "abbreviation": "OIC",
             "abreviation": "CI",
-            "infobaseID": 256,
+            "infobaseID": "256",
             "website": "https://www.oic-ci.gc.ca/en",
             "site_web": "https://www.oic-ci.gc.ca/fr"
         },
@@ -477,7 +477,7 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
         "2282": {
             "abbreviation": "OPC",
             "abreviation": "CPVP",
-            "infobaseID": 256,
+            "infobaseID": "256",
             "website": "https://www.priv.gc.ca/en/",
             "site_web": "https://www.priv.gc.ca/fr/"
         },
