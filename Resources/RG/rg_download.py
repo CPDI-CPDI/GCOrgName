@@ -8,7 +8,8 @@ url = 'https://donnees-data.tpsgc-pwgsc.gc.ca/ba1/min-dept/min-dept.csv'
 
 # Path to save the downloaded CSV file
 script_folder = os.path.dirname(os.path.abspath(__file__))
-output_file = os.path.join(script_folder, 'rg_data.csv')
+os.makedirs(os.path.join(script_folder,'RG'), exist_ok=True)
+output_file = os.path.join(script_folder, 'RG', 'rg_data.csv')
 temp_file = os.path.join(script_folder, 'downloaded_file.csv')
 
 print(f"Downloading from: {url}")

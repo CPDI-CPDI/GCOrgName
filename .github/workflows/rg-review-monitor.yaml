@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "Resources/rg_review_queue.csv"
+      - "Resources/RG/rg_review_queue.csv"
 
 permissions:
   contents: read

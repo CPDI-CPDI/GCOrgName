@@ -100,8 +100,8 @@ def load_dataframes(script_folder: str):
         'manual_org': 'Resources/Manual org ID link.csv',
         'combined_faa': 'Scraping/combined_FAA_names.csv',
         'applied_en': 'Resources/applied_en.csv',
-        'infobase_en': 'Resources/infobase_en.csv',
-        'infobase_fr': 'Resources/infobase_fr.csv',
+        'infobase_en': 'Resources/Infobase/infobase_en.csv',
+        'infobase_fr': 'Resources/Infobase/infobase_fr.csv',
         'harmonized_names': 'Resources/create_harmonized_name.csv',
         'manual_lead_department': 'Resources/lead_manual.csv',  # authoritative lead dept
     }
@@ -140,7 +140,7 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
     }
 
     if 'gc_orgID' not in df.columns:
-        logger.warning("apply_manual_changes: 'gc_orgID' not found; skipping manual changes")
+        print("apply_manual_changes: 'gc_orgID' not found; skipping manual changes")
         return df
 
     for gc_orgid, changes in manual_changes.items():
@@ -445,7 +445,7 @@ def main():
         'harmonized_name':        'Source: Resources/create_harmonized_name.csv',
         'nom_harmonisé':          'Source: Resources/create_harmonized_name.csv',
         'legal_title':            'Source: Manual org ID link + Scraping/combined_FAA_names',
-        'appellation_légale':     'Source: Manual org ID link (FR) and/or Resources/infobase_fr.csv',
+        'appellation_légale':     'Source: Manual org ID link (FR) and/or Resources/Infobase/infobase_fr.csv',
         'preferred_name':         'Source: Resources/applied_en.csv',
         'nom_préféré':           "Source: Resources/applied_en.csv",
         'lead_department':        'Source: Resources/lead_manual.csv (priority) or Manual org',
@@ -453,8 +453,8 @@ def main():
         'abbreviation':           'Source: Resources/applied_en.csv',
         'abreviation':            'Source: Resources/applied_en.csv',
         'FAA_LGFP':               'Source: Scraping/combined_FAA_names.csv',
-        'status_statut':          'Source: Resources/infobase_en.csv',
-        "end_date_fin": "Source: Resources/infobase_en.csv",
+        'status_statut':          'Source: Resources/Infobase/infobase_en.csv',
+        "end_date_fin": "Source: Resources/Infobase/infobase_en.csv",
     }
     with open(os.path.join(script_folder, 'gc_org_info_documentation.txt'), 'w', encoding='utf-8') as f:
         for field, doc in documentation.items():

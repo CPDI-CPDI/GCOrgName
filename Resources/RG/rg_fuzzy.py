@@ -11,11 +11,13 @@ def debug_print(message):
 
 # Paths to the CSV files
 script_folder = os.path.dirname(os.path.abspath(__file__))
-rg_data_file = os.path.join(script_folder, 'rg_data.csv')
+rg_dir = os.path.join(script_folder, 'RG')
+os.makedirs(rg_dir, exist_ok=True)
+rg_data_file = os.path.join(rg_dir, 'rg_data.csv')
 manual_org_file = os.path.join(script_folder, 'Manual org ID link.csv')
-matched_file = os.path.join(script_folder, 'rg_matched.csv')
-fixed_file = os.path.join(script_folder, 'rg_fixed.csv')  # read only in Step 2
-review_queue_file = os.path.join(script_folder, 'rg_review_queue.csv')
+matched_file = os.path.join(rg_dir, 'rg_matched.csv')
+fixed_file = os.path.join(rg_dir, 'rg_fixed.csv')  # read only in Step 2
+review_queue_file = os.path.join(rg_dir, 'rg_review_queue.csv')
 
 debug_print(f"Script folder: {script_folder}")
 debug_print(f"RG data file: {rg_data_file}")

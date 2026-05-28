@@ -1,0 +1,28 @@
+﻿gc_orgID,GCOrg_legal_title,GCOrg_abbreviation,Candidate_infobaseID,Candidate_legal_title,Candidate_status,Candidate_end_fin,MatchScore,SecondBestScore,ReviewReasons
+3633,Bank of Canada,,15,Bank of Canada,a,,100,100,collision_top2_close
+3646,Business Development Bank of Canada,,15,Bank of Canada,a,,100,100,collision_top2_close
+3561,Canadian War Museum,,81,Canadian Museum for Human Rights,a,,88,88,low_score;collision_top2_close
+2290,Civilian Review and Complaints Commission for the Royal Canadian Mounted Police,,295,Royal Canadian Mounted Police,a,,100,100,collision_top2_close
+3562,Communications Research Centre Canada,,232,NAV CANADA,a,,75,72,low_score
+3563,Competition Bureau Canada,,232,NAV CANADA,a,,75,66,low_score
+3705,Federal Public Sector Labour Relations and Employment Board,,284,Public Service Labour Relations Board,t,2014,87,66,low_score
+3605,Geological Survey of Canada,,15,Bank of Canada,a,,78,75,low_score
+3606,Geomatics Canada,,232,NAV CANADA,a,,75,72,low_score
+3572,Historic Sites and Monuments Board of Canada,,227,Parole Board of Canada,a,,81,78,low_score
+3574,Intergovernmental Affairs,,76,Canadian Intergovernmental Conference Secretariat,a,,80,54,low_score
+3409,International Lake of the Woods Control Board,,191,International Lake of the Woods Control Board,a,,100,100,collision_top2_close
+3473,Lake of the Woods Control Board,,191,International Lake of the Woods Control Board,a,,100,100,collision_top2_close
+3611,Office of the Chief Science Advisor of Canada,,254,Office of the Umpire,t,2013,78,78,low_score;collision_top2_close
+3571,Office of the Federal Ombudsperson for Victims Of Crime,,254,Office of the Umpire,t,2013,78,71,low_score
+2281,Office of the Information Commissioner of Canada,,256,Offices of the Information and Privacy Commissioners of Canada,a,,86,85,low_score;collision_top2_close
+2282,Office of the Privacy Commissioner of Canada,,241,Office of the Commissioner of Lobbying,a,,85,83,low_score
+3585,Office of the Procurement Ombudsman,,254,Office of the Umpire,t,2013,78,67,low_score
+3594,Office of the Taxpayers' Ombudsperson,,254,Office of the Umpire,t,2013,78,61,low_score
+3595,Office of the Veterans' Ombudsman,,254,Office of the Umpire,t,2013,78,66,low_score
+3612,Policy Horizons Canada,,232,NAV CANADA,a,,75,66,low_score
+2288,Royal Canadian Mounted Police,,295,Royal Canadian Mounted Police,a,,100,100,collision_top2_close
+2289,Royal Canadian Mounted Police External Review Committee,,295,Royal Canadian Mounted Police,a,,100,100,collision_top2_close
+3432,Senate,,251,Senate Ethics Officer,a,,100,100,collision_top2_close
+3431,Senate Ethics Officer,,251,Senate Ethics Officer,a,,100,100,collision_top2_close
+3591,Service Canada,,47,Canada School of Public Service,a,,100,100,collision_top2_close
+3613,Ship-source Oil Pollution Fund,,30,Canada Deposit Insurance Corporation,a,,54,50,low_score

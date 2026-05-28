@@ -36,16 +36,16 @@ jobs:
         run: python Resources/retrieve_datasets.py
 
       - name: 2) Download RG data
-        run: python Resources/rg_download.py
+        run: python Resources/RG/rg_download.py
 
       - name: 3) RG fuzzy match + review queue
-        run: python Resources/rg_fuzzy.py
+        run: python Resources/RG/rg_fuzzy.py
 
       - name: 4) Retrieve lead ministry data
         run: python Resources/lead_ministry_retrieve.py
 
       - name: 5) Build RG final
-        run: python Resources/rg_final_match.py
+        run: python Resources/RG/rg_final_match.py
 
       - name: 6) Scrape FAA
         run: python Scraping/scrapeAllFAA.py
