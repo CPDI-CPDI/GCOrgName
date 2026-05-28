@@ -78,7 +78,7 @@ gc_orgID,Parent GC OrgID,Harmonized GC Name,lead_department,ministère_responsab
 3542,2231,Measurement Canada,"Innovation, Science and Economic Development Canada","Innovation, Sciences et Développement économique Canada",2231.0,"Innovation, Science and Economic Development Canada"
 3546,2231,Industrial Technologies Office,"Innovation, Science and Economic Development Canada","Innovation, Sciences et Développement économique Canada",2231.0,"Innovation, Science and Economic Development Canada"
 3646,2231,Business Development Bank of Canada,"Innovation, Science and Economic Development Canada","Innovation, Sciences et Développement économique Canada",2231.0,"Innovation, Science and Economic Development Canada"
-3647,2231,Canadian Tourism Commission,"Innovation, Science and Economic Development Canada","Innovation, Sciences et Développement économique Canada",2231.0,"Innovation, Science and Economic Development Canada"
+3647,2231,Destination Canada,"Innovation, Science and Economic Development Canada","Innovation, Sciences et Développement économique Canada",2231.0,"Innovation, Science and Economic Development Canada"
 3648,2231,Standards Council of Canada,"Innovation, Science and Economic Development Canada","Innovation, Sciences et Développement économique Canada",2231.0,"Innovation, Science and Economic Development Canada"
 2231,2231,"Innovation, Science and Economic Development Canada","Innovation, Science and Economic Development Canada","Innovation, Sciences et Développement économique Canada",2231.0,"Innovation, Science and Economic Development Canada"
 3564,2231,Competition Tribunal,"Innovation, Science and Economic Development Canada","Innovation, Sciences et Développement économique Canada",2231.0,"Innovation, Science and Economic Development Canada"
@@ -137,19 +137,19 @@ gc_orgID,Parent GC OrgID,Harmonized GC Name,lead_department,ministère_responsab
 3544,2236,Translation Bureau,Public Services and Procurement Canada,Services publics et Approvisionnement Canada,2236.0,Public Services and Procurement Canada
 3585,2236,Office of the Procurement Ombudsman,Public Services and Procurement Canada,Services publics et Approvisionnement Canada,2236.0,Public Services and Procurement Canada
 3650,2236,Canada Lands Company Limited,Public Services and Procurement Canada,Services publics et Approvisionnement Canada,2236.0,Public Services and Procurement Canada
-3651,2236,Canada Post Corporation,Public Services and Procurement Canada,Services publics et Approvisionnement Canada,2236.0,Public Services and Procurement Canada
-3652,2236,Defence Construction (1951) Limited,Public Services and Procurement Canada,Services publics et Approvisionnement Canada,2236.0,Public Services and Procurement Canada
+3651,2236,Canada Post,Public Services and Procurement Canada,Services publics et Approvisionnement Canada,2236.0,Public Services and Procurement Canada
+3652,2236,Defence Construction Canada,Public Services and Procurement Canada,Services publics et Approvisionnement Canada,2236.0,Public Services and Procurement Canada
 3653,2236,National Capital Commission,Public Services and Procurement Canada,Services publics et Approvisionnement Canada,2236.0,Public Services and Procurement Canada
 2238,2238,Transport Canada,Transport Canada,Transports Canada,2238.0,Transport Canada
 2252,2238,Canadian Transportation Agency,Transport Canada,Transports Canada,2238.0,Transport Canada
-3654,2238,Atlantic Pilotage Authority,Transport Canada,Transports Canada,2238.0,Transport Canada
+3654,2238,Atlantic Pilotage Authority Canada,Transport Canada,Transports Canada,2238.0,Transport Canada
 3655,2238,Canadian Air Transport Security Authority,Transport Canada,Transports Canada,2238.0,Transport Canada
-3656,2238,Great Lakes Pilotage Authority,Transport Canada,Transports Canada,2238.0,Transport Canada
-3657,2238,Laurentian Pilotage Authority,Transport Canada,Transports Canada,2238.0,Transport Canada
+3656,2238,Great Lakes Pilotage Authority Canada,Transport Canada,Transports Canada,2238.0,Transport Canada
+3657,2238,Laurentian Pilotage Authority Canada,Transport Canada,Transports Canada,2238.0,Transport Canada
 3658,2238,Marine Atlantic Inc.,Transport Canada,Transports Canada,2238.0,Transport Canada
-3659,2238,Pacific Pilotage Authority,Transport Canada,Transports Canada,2238.0,Transport Canada
+3659,2238,Pacific Pilotage Authority Canada,Transport Canada,Transports Canada,2238.0,Transport Canada
 3660,2238,Ridley Terminals Inc.,Transport Canada,Transports Canada,2238.0,Transport Canada
-3661,2238,The Federal Bridge Corporation Limited,Transport Canada,Transports Canada,2238.0,Transport Canada
+3661,2238,Federal Bridge Corporation,Transport Canada,Transports Canada,2238.0,Transport Canada
 3662,2238,VIA Rail Canada Inc.,Transport Canada,Transports Canada,2238.0,Transport Canada
 3697,2238,Transportation Appeal Tribunal of Canada,Transport Canada,Transports Canada,2238.0,Transport Canada
 2242,2242,Treasury Board of Canada Secretariat,Treasury Board of Canada Secretariat,Secrétariat du Conseil du Trésor du Canada,2242.0,Treasury Board of Canada Secretariat
@@ -211,7 +211,7 @@ gc_orgID,Parent GC OrgID,Harmonized GC Name,lead_department,ministère_responsab
 3445,,Canada Games Council,,,,
 3446,,Canada Health Infoway Inc.,,,,
 3447,,Canada Media Fund,,,,
-3448,,Canada-Newfoundland and Labrador Offshore Petroleum Board,,,,
+3448,,Canada-Newfoundland and Labrador Offshore Energy Regulator,,,,
 3449,,Canada-Nova Scotia Offshore Energy Regulator,,,,
 3450,,Canadian Agency for Drugs and Technologies in Health (CADTH),,,,
 3451,,Canadian Centre on Substance Use and Addictions,,,,
@@ -231,7 +231,7 @@ gc_orgID,Parent GC OrgID,Harmonized GC Name,lead_department,ministère_responsab
 3466,,Greater Toronto Airports Authority,,,,
 3467,,Halifax International Airport Authority,,,,
 3468,,Halifax Port Authority,,,,
-3469,,Hamilton Port Authority,,,,
+3469,,Hamiton-Oshawa Port Authority (HOPA),,,,
 3470,,Institut national du sport du Québec,,,,
 3471,,Internal Trade Secretariat Corporation,,,,
 3472,,International Fisheries Commissions Pension Society,,,,
@@ -390,4 +390,7 @@ gc_orgID,Parent GC OrgID,Harmonized GC Name,lead_department,ministère_responsab
 2257,m0009,Canada Economic Development for Quebec Regions,Minister of Industry and Minister responsible for Canada Economic Development for Quebec Regions,Ministre de l’Industrie et ministre responsable de Développement économique Canada pour les régions du Québec,,
 3706,,Miscarriage of Justice Review Commission,,,,
 3707,,VIA HFR - VIA TGF Inc.,,,,
-3708,,Canada-Nova Scotia Offshore Energy Regulator,,,,
+3708,,Build Canada Homes,,,,
+3709,,Defence Investment Agency,,,,
+3710,,Major Projects Office,,,,
+3711,,Health Emergency Readiness Canada,,,,
