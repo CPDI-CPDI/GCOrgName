@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "Resources/rg_review_queue.csv"
+      - "Resources/RG/rg_review_queue.csv"
 
 permissions:
   contents: read
@@ -41,7 +41,7 @@ jobs:
           import csv
           from collections import Counter
 
-          path = "Resources/rg_review_queue.csv"
+          path = "Resources/RG/rg_review_queue.csv"
 
           summary = {
               "exists": False,
@@ -176,7 +176,7 @@ jobs:
             const body = `
             ## RG review queue updated
 
-            The automated pipeline detected an updated \`Resources/rg_review_queue.csv\` and manual review may be required before confirming \`rg_fixed.csv\`.
+            The automated pipeline detected an updated \`Resources/RG/rg_review_queue.csv\` and manual review may be required before confirming \`rg_fixed.csv\`.
 
             ### Summary
             - **Rows in review queue**: ${summary.row_count ?? 0}
@@ -188,10 +188,10 @@ jobs:
             ${reasonLines}
 
             ### What to do
-            1. Review \`Resources/rg_review_queue.csv\`
-            2. Validate/correct entries in \`Resources/rg_fixed.csv\` (manual-authoritative file)
+            1. Review \`Resources/RG/rg_review_queue.csv\`
+            2. Validate/correct entries in \`Resources/RG/rg_fixed.csv\` (manual-authoritative file)
             3. Re-run the RG / weekly update workflow if needed
-            4. Confirm \`Resources/rg_final.csv\` looks correct downstream
+            4. Confirm \`Resources/RG/rg_final.csv\` looks correct downstream
 
             ### Sample rows (first 10)
             ${sampleTableHeader}

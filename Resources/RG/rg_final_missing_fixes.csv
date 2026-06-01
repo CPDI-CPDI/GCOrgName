@@ -1,0 +1,7 @@
+﻿RGOriginalName,rgnumber,MatchedName,MatchScore,gc_orgID,CandidateCollision,ReviewReasons
+Administrative Tribunals Support Service of Canada,170,Administrative Tribunals Support Service of Canada,100.0,2297,True,CandidateCollision
+Public Service Superannuation,087,Administrative Tribunals Support Service of Canada,85.5,2297,True,LowScore;CandidateCollision
+Canada Border Services Agency - (Administered Activities),038,Canada Border Services Agency,90.0,2300,True,LowScore;CandidateCollision
+Canada Revenue Agency - (Administered Activities),122,Canada Revenue Agency,90.0,2303,True,LowScore;CandidateCollision
+Receiver General,097,Office of the Auditor General of Canada,85.5,2270,True,LowScore;CandidateCollision
+Payroll System General Ledger,079,,0.0,,False,LowScore;NoMatchedName;NoGcOrgID

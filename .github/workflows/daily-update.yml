@@ -29,23 +29,29 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests pandas rapidfuzz beautifulsoup4 lxml certifi
 
+      - name: Ensure resource subfolders exist
+        run: |
+          mkdir -p Resources/RG
+          mkdir -p Resources/Infobase
+
       # -------------------------
       # Phase A: Generate current datasets + current outputs
       # -------------------------
+
       - name: 1) Retrieve datasets
         run: python Resources/retrieve_datasets.py
 
       - name: 2) Download RG data
-        run: python Resources/rg_download.py
+        run: python Resources/RG/rg_download.py
 
       - name: 3) RG fuzzy match + review queue
-        run: python Resources/rg_fuzzy.py
+        run: python Resources/RG/rg_fuzzy.py
 
       - name: 4) Retrieve lead ministry data
         run: python Resources/lead_ministry_retrieve.py
 
       - name: 5) Build RG final
-        run: python Resources/rg_final_match.py
+        run: python Resources/RG/rg_final_match.py
 
       - name: 6) Scrape FAA
         run: python Scraping/scrapeAllFAA.py
@@ -56,60 +62,109 @@ jobs:
       - name: 8) Create harmonized names
         run: python Resources/create_harmonized_name.py
 
-      - name: 9) Build concordance
+      - name: 9) Build InfoBase match + review queue
+        run: python Resources/Infobase/infobase_match.py
+
+      - name: 10) Build InfoBase final mapping
+        run: python Resources/Infobase/infobase_final.py
+
+      - name: 11) Build concordance
         run: python create_concordance.py
 
-      - name: 10) Build org info
+      - name: 12) Build org info
         run: python create_gc_org_info.py
 
       # -------------------------
       # Phase B: Apply lead_fix using CURRENT org_info, then rebuild outputs
       # -------------------------
-      - name: 11) Apply lead manual fixes using current org info
+
+      - name: 13) Apply lead manual fixes using current org info
         run: python Resources/lead_fix.py
 
-      - name: 12) Rebuild concordance (after lead_fix)
+      - name: 14) Rebuild concordance after lead_fix
         run: python create_concordance.py
 
-      - name: 13) Rebuild org info (after lead_fix)
+      - name: 15) Rebuild org info after lead_fix
         run: python create_gc_org_info.py
 
-      # Diagnostics/QA scripts (run after final outputs)
-      - name: 14) Compare manuals
+      # -------------------------
+      # Diagnostics/QA scripts
+      # -------------------------
+
+      - name: 16) Compare manuals
         run: python Tools/compare_manuals.py
 
-      - name: 15) Compare org info vs concordance
+      - name: 17) Compare org info vs concordance
         run: python Tools/compare_org_concord.py
 
       # -------------------------
-      # Detect changes (IMPORTANT)
+      # Cleanup runtime junk before staging everything
       # -------------------------
+
+      - name: Clean non-repository runtime files
+        run: |
+          find . -type d -name "__pycache__" -prune -exec rm -rf {} +
+          find . -type f -name "*.pyc" -delete
+          find . -type f -name ".DS_Store" -delete
+
+      # -------------------------
+      # Detect and stage all repo changes
+      # -------------------------
+
       - name: Detect repo changes
         id: changes
         shell: bash
         run: |
           set -e
-          # Stage only the outputs you care about committing
-          git add gc_concordance.csv gc_org_info.csv || true
 
-          # If nothing staged, no changes were made to these tracked datasets
+          git add -A
+
           if git diff --cached --quiet; then
             echo "changes_made=false" >> "$GITHUB_OUTPUT"
-            echo "concord_changed=false" >> "$GITHUB_OUTPUT"
-            echo "orginfo_changed=false" >> "$GITHUB_OUTPUT"
-            echo "No staged changes for gc_concordance.csv or gc_org_info.csv"
+            echo "output_changed=false" >> "$GITHUB_OUTPUT"
+            echo "infobase_changed=false" >> "$GITHUB_OUTPUT"
+            echo "faa_changed=false" >> "$GITHUB_OUTPUT"
+            echo "rg_changed=false" >> "$GITHUB_OUTPUT"
+            echo "No staged changes."
             exit 0
           fi
 
           echo "changes_made=true" >> "$GITHUB_OUTPUT"
 
-          # Determine which of the two files changed
           CHANGED=$(git diff --cached --name-only || true)
-          echo "$CHANGED" | grep -qx "gc_concordance.csv" && echo "concord_changed=true" >> "$GITHUB_OUTPUT" || echo "concord_changed=false" >> "$GITHUB_OUTPUT"
-          echo "$CHANGED" | grep -qx "gc_org_info.csv" && echo "orginfo_changed=true" >> "$GITHUB_OUTPUT" || echo "orginfo_changed=false" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "changed_files<<EOF"
+            echo "$CHANGED"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
           echo "Staged changes:"
           echo "$CHANGED"
+
+          if echo "$CHANGED" | grep -Eq '^(gc_concordance\.csv|gc_org_info\.csv)$'; then
+            echo "output_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "output_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$CHANGED" | grep -Eq '^Resources/Infobase/'; then
+            echo "infobase_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "infobase_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$CHANGED" | grep -Eq '^(Scraping/combined_FAA_names\.csv|Scraping/.*FAA.*\.csv|Scraping/.*faa.*\.csv)$'; then
+            echo "faa_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "faa_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$CHANGED" | grep -Eq '^Resources/RG/'; then
+            echo "rg_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "rg_changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Commit and push changes
         if: steps.changes.outputs.changes_made == 'true'
@@ -118,65 +173,190 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git commit -m "Auto-update: daily pipeline"
           git push
-          
-      - name: "Create issue: datasets updated"
-        if: steps.changes.outputs.changes_made == 'true'
+
+      # -------------------------
+      # Selective review issue for published outputs
+      # -------------------------
+
+      - name: "Create issue: published outputs updated"
+        if: steps.changes.outputs.output_changed == 'true'
         uses: actions/github-script@v7
         env:
-          CONCORD_CHANGED: ${{ steps.changes.outputs.concord_changed }}
-          ORGINFO_CHANGED: ${{ steps.changes.outputs.orginfo_changed }}
+          CHANGED_FILES: ${{ steps.changes.outputs.changed_files }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const concordChanged = process.env.CONCORD_CHANGED === "true";
-            const orgInfoChanged = process.env.ORGINFO_CHANGED === "true";
-
-            if (!concordChanged && !orgInfoChanged) {
-              core.notice("No concordance/org_info changes detected; skipping issue creation.");
-              return;
-            }
-
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
 
-            const changedList = [
-              concordChanged ? "- gc_concordance.csv" : null,
-              orgInfoChanged ? "- gc_org_info.csv" : null,
-            ].filter(Boolean).join("\n");
+            const changedFiles = (process.env.CHANGED_FILES || "")
+              .split("\n")
+              .map(s => s.trim())
+              .filter(Boolean);
 
-            const title = "Changes made by daily update — review datasets";
+            const tracked = changedFiles.filter(f =>
+              f === "gc_concordance.csv" ||
+              f === "gc_org_info.csv"
+            );
+
+            if (!tracked.length) {
+              core.notice("No published output changes detected; skipping issue.");
+              return;
+            }
+
+            const title = "Changes made by daily update — review published datasets";
+            const labels = ["data-update", "auto-generated"];
+
             const body = [
-              "The daily-update workflow committed changes to the tracked datasets:",
+              "The daily-update workflow committed changes to the published standard outputs:",
               "",
-              changedList,
+              ...tracked.map(f => `- \`${f}\``),
               "",
               `**Workflow run:** ${runUrl}`,
               "",
-              "Please review the updated outputs for correctness (especially mapping/joins and any newly-unmatched records)."
+              "Please review the updated outputs for correctness, especially mapping joins, InfoBase IDs, FAA schedule values, and any newly-unmatched records."
             ].join("\n");
 
-            const labels = ["data-update", "auto-generated"];
-
             const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner, repo, state: "open", per_page: 100
+              owner,
+              repo,
+              state: "open",
+              per_page: 100
             });
 
             const existing = issues.find(i => i.title === title && !i.pull_request);
 
             if (existing) {
               await github.rest.issues.createComment({
-                owner, repo, issue_number: existing.number, body
+                owner,
+                repo,
+                issue_number: existing.number,
+                body
               });
+
               await github.rest.issues.addLabels({
-                owner, repo, issue_number: existing.number, labels
+                owner,
+                repo,
+                issue_number: existing.number,
+                labels
               }).catch(() => {});
+
               core.notice(`Updated existing issue #${existing.number}`);
             } else {
-              await github.rest.issues.create({
-                owner, repo, title, body, labels
+              const created = await github.rest.issues.create({
+                owner,
+                repo,
+                title,
+                body,
+                labels
               });
-              core.notice("Created new dataset review issue");
+
+              core.notice(`Created issue #${created.data.number}`);
+            }
+
+      # -------------------------
+      # Selective review issue for source/review artifacts
+      # -------------------------
+
+      - name: "Create issue: source and review artifacts updated"
+        if: steps.changes.outputs.infobase_changed == 'true' || steps.changes.outputs.faa_changed == 'true' || steps.changes.outputs.rg_changed == 'true'
+        uses: actions/github-script@v7
+        env:
+          CHANGED_FILES: ${{ steps.changes.outputs.changed_files }}
+          INFOBASE_CHANGED: ${{ steps.changes.outputs.infobase_changed }}
+          FAA_CHANGED: ${{ steps.changes.outputs.faa_changed }}
+          RG_CHANGED: ${{ steps.changes.outputs.rg_changed }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            const changedFiles = (process.env.CHANGED_FILES || "")
+              .split("\n")
+              .map(s => s.trim())
+              .filter(Boolean);
+
+            const infobaseChanged = process.env.INFOBASE_CHANGED === "true";
+            const faaChanged = process.env.FAA_CHANGED === "true";
+            const rgChanged = process.env.RG_CHANGED === "true";
+
+            const relevant = changedFiles.filter(f =>
+              f.startsWith("Resources/Infobase/") ||
+              f.startsWith("Resources/RG/") ||
+              f === "Scraping/combined_FAA_names.csv" ||
+              /^Scraping\/.*FAA.*\.csv$/.test(f) ||
+              /^Scraping\/.*faa.*\.csv$/.test(f)
+            );
+
+            if (!relevant.length) {
+              core.notice("No relevant source/review artifact changes detected; skipping issue.");
+              return;
+            }
+
+            const changedAreas = [
+              infobaseChanged ? "InfoBase" : null,
+              faaChanged ? "FAA" : null,
+              rgChanged ? "RG" : null
+            ].filter(Boolean).join(", ");
+
+            const title = "Source/review artifacts changed — review linked datasets";
+            const labels = ["source-update", "auto-generated"];
+
+            const body = [
+              "The daily-update workflow committed changes to source or review artifacts linked to the standard.",
+              "",
+              `**Changed area(s):** ${changedAreas || "Unknown"}`,
+              "",
+              "### Changed files",
+              ...relevant.map(f => `- \`${f}\``),
+              "",
+              `**Workflow run:** ${runUrl}`,
+              "",
+              "### Suggested checks",
+              "- If `Resources/Infobase/infobase_review_queue.csv` changed, review the queue and update `Resources/Infobase/infobase_fixed.csv` as needed.",
+              "- If `Resources/RG/rg_review_queue.csv` changed, review the queue and update `Resources/RG/rg_fixed.csv` as needed.",
+              "- If FAA outputs changed, confirm `FAA_LGFP` still populates correctly in `gc_org_info.csv`.",
+              "- Confirm downstream `gc_concordance.csv` and `gc_org_info.csv` remain aligned."
+            ].join("\n");
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              per_page: 100
+            });
+
+            const existing = issues.find(i => i.title === title && !i.pull_request);
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: existing.number,
+                body
+              });
+
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: existing.number,
+                labels
+              }).catch(() => {});
+
+              core.notice(`Updated existing issue #${existing.number}`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner,
+                repo,
+                title,
+                body,
+                labels
+              });
+
+              core.notice(`Created issue #${created.data.number}`);
             }
 
       - name: Create GitHub Issue if Failed
@@ -185,10 +365,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
             await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+              owner,
+              repo,
               title: "Daily Update Failed",
-              body: "The daily scheduled script run failed.\n\nPlease check the workflow logs for details.",
+              body: `The daily scheduled script run failed.\n\nPlease check the workflow logs for details:\n${runUrl}`,
               labels: ["bug", "auto-generated"]
-            })
+            });

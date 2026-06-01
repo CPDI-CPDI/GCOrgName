@@ -35,12 +35,12 @@ def _ensure_cols(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
 def main():
     repo_root = os.getcwd()
 
-    matched_path = os.path.join(repo_root, "Resources", "rg_matched.csv")
-    reviewq_path = os.path.join(repo_root, "Resources", "rg_review_queue.csv")
-    fixed_path = os.path.join(repo_root, "Resources", "rg_fixed.csv")
+    matched_path = os.path.join(repo_root, "Resources", "RG", "rg_matched.csv")
+    reviewq_path = os.path.join(repo_root, "Resources", "RG", "rg_review_queue.csv")
+    fixed_path = os.path.join(repo_root, "Resources", "RG", "rg_fixed.csv")
 
-    out_final_path = os.path.join(repo_root, "Resources", "rg_final.csv")
-    out_missing_fixes_path = os.path.join(repo_root, "Resources", "rg_final_missing_fixes.csv")
+    out_final_path = os.path.join(repo_root, "Resources", "RG", "rg_final.csv")
+    out_missing_fixes_path = os.path.join(repo_root, "Resources", "RG", "rg_final_missing_fixes.csv")
 
     # --- Load inputs ---
     if not os.path.exists(matched_path):

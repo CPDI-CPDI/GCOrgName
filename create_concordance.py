@@ -122,9 +122,10 @@ def load_dataframes(paths: Dict[str, str]) -> Dict[str, pd.DataFrame]:
         'manual_org_df': os.path.join(paths['resources'], 'Manual org ID link.csv'),
         'combined_faa_df': os.path.join(paths['scraping'], 'combined_FAA_names.csv'),
         'applied_en_df': os.path.join(paths['resources'], 'applied_en.csv'),
-        'infobase_en_df': os.path.join(paths['resources'], 'infobase_en.csv'),
-        'infobase_fr_df': os.path.join(paths['resources'], 'infobase_fr.csv'),
-        'final_rg_match_df': os.path.join(paths['resources'], 'rg_final.csv'),
+        'infobase_en_df': os.path.join(paths['resources'], 'Infobase', 'infobase_en.csv'),
+        'infobase_fr_df': os.path.join(paths['resources'], 'Infobase', 'infobase_fr.csv'),
+        'infobase_final_df': os.path.join(paths['resources'], 'Infobase', 'infobase_final.csv'),
+        'final_rg_match_df': os.path.join(paths['resources'], 'RG', 'rg_final.csv'),
         'manual_pop_phoenix_df': os.path.join(paths['resources'], 'manual pop phoenix.csv'),
         'harmonized_names_df': os.path.join(paths['resources'], 'create_harmonized_name.csv')
     }
@@ -367,6 +368,92 @@ def merge_additional_data(final_joined_df: pd.DataFrame, dfs: Dict[str, pd.DataF
 
     return final_joined_df
 
+def apply_infobase_final_mapping(df: pd.DataFrame, dfs: Dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """
+    Apply authoritative InfoBase mapping from Resources/Infobase/infobase_final.csv.
+
+    This makes gc_orgID -> infobaseID deterministic and reviewable, instead of relying
+    only on title-based InfoBase joins.
+    """
+    if "infobase_final_df" not in dfs:
+        logger.warning("infobase_final_df not loaded; skipping InfoBase final mapping")
+        return df
+
+    ib_final = dfs["infobase_final_df"].copy()
+
+    if ib_final.empty:
+        logger.warning("infobase_final_df is empty; skipping InfoBase final mapping")
+        return df
+
+    ib_gc = find_col(ib_final, ["gc_orgID", "gc orgid", "gc_orgid"])
+    ib_id = find_col(ib_final, ["infobaseID", "infobase id", "Candidate_infobaseID", "org_id", "OrgID"])
+
+    if not ib_gc or not ib_id:
+        logger.warning(
+            "infobase_final_df missing gc_orgID/infobaseID columns; skipping. Columns: %s",
+            list(ib_final.columns)
+        )
+        return df
+
+    ib_final = ib_final[[ib_gc, ib_id]].copy()
+    ib_final = ib_final.rename(columns={ib_gc: "gc_orgID_ibmap", ib_id: "infobaseID_ibmap"})
+
+    ib_final["gc_orgID_ibmap"] = (
+        ib_final["gc_orgID_ibmap"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.split(".").str[0]
+    )
+    ib_final["infobaseID_ibmap"] = (
+        ib_final["infobaseID_ibmap"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.split(".").str[0]
+    )
+
+    ib_final = ib_final[
+        (ib_final["gc_orgID_ibmap"] != "") &
+        (ib_final["infobaseID_ibmap"] != "") &
+        (ib_final["infobaseID_ibmap"] != "0")
+    ].drop_duplicates(subset=["gc_orgID_ibmap"], keep="last")
+
+    out = df.copy()
+
+    if "gc_orgID" not in out.columns:
+        logger.warning("gc_orgID missing before InfoBase final mapping; skipping")
+        return out
+
+    out["gc_orgID"] = (
+        out["gc_orgID"]
+        .astype("string")
+        .fillna("")
+        .str.strip()
+        .str.split(".").str[0]
+    )
+
+    out = out.merge(
+        ib_final,
+        left_on="gc_orgID",
+        right_on="gc_orgID_ibmap",
+        how="left"
+    )
+
+    if "infobaseID" not in out.columns:
+        out["infobaseID"] = ""
+
+    existing = out["infobaseID"].astype("string").fillna("").str.strip()
+    mapped = out["infobaseID_ibmap"].astype("string").fillna("").str.strip()
+
+    # Use reviewed InfoBase mapping whenever available.
+    out["infobaseID"] = existing.where(mapped == "", mapped)
+
+    out = out.drop(columns=[c for c in ["gc_orgID_ibmap", "infobaseID_ibmap"] if c in out.columns])
+
+    logger.info("Applied InfoBase final mapping from Resources/Infobase/infobase_final.csv")
+    return out
+
 def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
     """Apply manual changes to specific entries (PRESERVED)."""
     manual_changes = {
@@ -374,7 +461,7 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
         "2296": {
             "abbreviation": "LDC",
             "abreviation": "LDC",
-            "infobaseID": 350,
+            "infobaseID": "350",
             "website": "https://www.debates-debats.ca/en/",
             "site_web": "https://www.debates-debats.ca/fr/"
         },
@@ -382,7 +469,7 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
         "2281": {
             "abbreviation": "OIC",
             "abreviation": "CI",
-            "infobaseID": 256,
+            "infobaseID": "256",
             "website": "https://www.oic-ci.gc.ca/en",
             "site_web": "https://www.oic-ci.gc.ca/fr"
         },
@@ -390,18 +477,13 @@ def apply_manual_changes(df: pd.DataFrame) -> pd.DataFrame:
         "2282": {
             "abbreviation": "OPC",
             "abreviation": "CPVP",
-            "infobaseID": 256,
+            "infobaseID": "256",
             "website": "https://www.priv.gc.ca/en/",
             "site_web": "https://www.priv.gc.ca/fr/"
         },
         "2287": {
             "abbreviation": "SCC",
             "abreviation": "CSC",
-        },
-        "2296": {
-            "infobaseID": 350,
-            "website": "https://www.debates-debats.ca/en/",
-            "site_web": "https://www.debates-debats.ca/fr/"
         },
     }
 
@@ -578,6 +660,9 @@ def main() -> None:
         final_joined_df, unmatched_values = create_initial_merge(dfs)
         final_joined_df = merge_additional_data(final_joined_df, dfs)
 
+        # Apply reviewed/deterministic InfoBase mapping before manual overrides.
+        final_joined_df = apply_infobase_final_mapping(final_joined_df, dfs)
+        
         # PRESERVED manual overrides
         final_joined_df = apply_manual_changes(final_joined_df)
 

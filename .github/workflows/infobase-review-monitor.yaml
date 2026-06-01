@@ -1,0 +1,223 @@
+name: InfoBase Review Queue Monitor
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, infobase_correction]
+    paths:
+      - "Resources/Infobase/infobase_review_queue.csv"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: infobase-review-monitor
+  cancel-in-progress: false
+
+jobs:
+  infobase-review-queue-issue:
+    name: Monitor InfoBase review queue and open/update issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Summarize infobase_review_queue.csv
+        id: summarize
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import json
+          import csv
+          from collections import Counter
+
+          path = "Resources/Infobase/infobase_review_queue.csv"
+
+          summary = {
+              "exists": False,
+              "row_count": 0,
+              "reason_counts": {},
+              "sample_rows": [],
+              "should_open_issue": False,
+              "status": "missing"
+          }
+
+          if not os.path.exists(path):
+              summary["status"] = "missing"
+          else:
+              summary["exists"] = True
+              summary["status"] = "present"
+
+              with open(path, "r", encoding="utf-8-sig", newline="") as f:
+                  reader = csv.DictReader(f)
+                  rows = list(reader)
+
+              summary["row_count"] = len(rows)
+
+              reason_counter = Counter()
+              sample_rows = []
+
+              for r in rows:
+                  reasons = (r.get("ReviewReasons") or "").strip()
+                  if reasons:
+                      for item in reasons.split(";"):
+                          item = item.strip()
+                          if item:
+                              reason_counter[item] += 1
+
+                  if len(sample_rows) < 10:
+                      sample_rows.append({
+                          "gc_orgID": r.get("gc_orgID", ""),
+                          "GCOrg_legal_title": r.get("GCOrg_legal_title", ""),
+                          "Candidate_infobaseID": r.get("Candidate_infobaseID", ""),
+                          "Candidate_legal_title": r.get("Candidate_legal_title", ""),
+                          "MatchScore": r.get("MatchScore", ""),
+                          "ReviewReasons": reasons
+                      })
+
+              summary["reason_counts"] = dict(reason_counter)
+              summary["sample_rows"] = sample_rows
+              summary["should_open_issue"] = summary["row_count"] > 0
+              summary["status"] = "actionable" if summary["should_open_issue"] else "empty"
+
+          out = os.environ["GITHUB_OUTPUT"]
+          with open(out, "a", encoding="utf-8") as fh:
+              fh.write(f"exists={str(summary['exists']).lower()}\n")
+              fh.write(f"row_count={summary['row_count']}\n")
+              fh.write(f"status={summary['status']}\n")
+              fh.write(f"should_open_issue={str(summary['should_open_issue']).lower()}\n")
+              fh.write("summary_json<<EOF\n")
+              fh.write(json.dumps(summary, ensure_ascii=False))
+              fh.write("\nEOF\n")
+          PY
+
+      - name: Create or update InfoBase review issue
+        if: steps.summarize.outputs.should_open_issue == 'true'
+        uses: actions/github-script@v7
+        env:
+          SUMMARY_JSON: ${{ steps.summarize.outputs.summary_json }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const summary = JSON.parse(process.env.SUMMARY_JSON || "{}");
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const issueTitle = "InfoBase review required";
+            const labelNames = ["infobase-review", "auto-generated"];
+
+            const reasonEntries = Object.entries(summary.reason_counts || {});
+            const reasonLines = reasonEntries.length
+              ? reasonEntries
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([k, v]) => `- **${k}**: ${v}`)
+                  .join("\n")
+              : "- (none)";
+
+            const sampleRows = Array.isArray(summary.sample_rows) ? summary.sample_rows : [];
+
+            const esc = (s) => String(s ?? "").replace(/\|/g, "\\|");
+
+            const sampleTableHeader =
+              "| gc_orgID | GCOrg legal title | Candidate InfoBase ID | Candidate legal title | MatchScore | ReviewReasons |\n" +
+              "|---|---|---|---|---:|---|";
+
+            const sampleTableRows = sampleRows.length
+              ? sampleRows.map(r =>
+                  `| ${esc(r.gc_orgID)} | ${esc(r.GCOrg_legal_title)} | ${esc(r.Candidate_infobaseID)} | ${esc(r.Candidate_legal_title)} | ${esc(r.MatchScore)} | ${esc(r.ReviewReasons)} |`
+                ).join("\n")
+              : "| (none) | | | | | |";
+
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            const body = [
+              "## InfoBase review queue updated",
+              "",
+              "The automated pipeline detected rows in `Resources/Infobase/infobase_review_queue.csv` that may need manual review before confirming `Resources/Infobase/infobase_fixed.csv` and `Resources/Infobase/infobase_final.csv`.",
+              "",
+              "### Summary",
+              `- **Rows in review queue**: ${summary.row_count ?? 0}`,
+              `- **Workflow run**: ${runUrl}`,
+              "",
+              "### Review reasons",
+              reasonLines,
+              "",
+              "### What to do",
+              "1. Review `Resources/Infobase/infobase_review_queue.csv`.",
+              "2. Validate/correct entries in `Resources/Infobase/infobase_fixed.csv`.",
+              "3. Re-run the daily update workflow if needed.",
+              "4. Confirm `Resources/Infobase/infobase_final.csv`, `gc_concordance.csv`, and `gc_org_info.csv` look correct downstream.",
+              "",
+              "### Sample rows (first 10)",
+              sampleTableHeader,
+              sampleTableRows,
+              "",
+              "---",
+              "_This issue was created/updated automatically by the InfoBase Review Queue Monitor workflow._"
+            ].join("\n");
+
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              per_page: 100
+            });
+
+            const matching =
+              openIssues.find(i =>
+                i.title === issueTitle &&
+                !i.pull_request &&
+                (i.labels || []).some(l => (typeof l === "string" ? l : l.name) === "infobase-review")
+              ) ||
+              openIssues.find(i => i.title === issueTitle && !i.pull_request);
+
+            if (matching) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: matching.number,
+                body
+              });
+
+              const existingLabels = new Set((matching.labels || []).map(l => typeof l === "string" ? l : l.name));
+              const missingLabels = labelNames.filter(l => !existingLabels.has(l));
+
+              if (missingLabels.length) {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: matching.number,
+                  labels: missingLabels
+                });
+              }
+
+              core.notice(`Updated existing issue #${matching.number}`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner,
+                repo,
+                title: issueTitle,
+                body,
+                labels: labelNames
+              });
+
+              core.notice(`Created new issue #${created.data.number}`);
+            }
+
+      - name: No-op summary when queue is empty or missing
+        if: steps.summarize.outputs.should_open_issue != 'true'
+        run: |
+          echo "No actionable InfoBase review queue rows found (empty or missing file)."
+          echo "Status: ${{ steps.summarize.outputs.status }}"
+          echo "Row count: ${{ steps.summarize.outputs.row_count }}"

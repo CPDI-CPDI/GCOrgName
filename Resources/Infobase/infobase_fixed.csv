@@ -1,0 +1,15 @@
+gc_orgID,GCOrg_legal_title,GCOrg_abbreviation,Candidate_infobaseID,Candidate_legal_title,Candidate_status,Candidate_end_fin,MatchScore,SecondBestScore,ReviewReasons
+3448,Canada-Newfoundland and Labrador Offshore Petroleum Board,,48,Canada-Newfoundland and Labrador Offshore Energy Regulator,a,,83,53,low_score
+2290,Civilian Review and Complaints Commission for the Royal Canadian Mounted Police,,295,Royal Canadian Mounted Police,a,,100,100,collision_top2_close
+3469,Hamilton Port Authority,,168,Halifax Port Authority,a,,80,80,low_score;collision_top2_close
+3409,International Lake of the Woods Control Board,,191,International Lake of the Woods Control Board,a,,100,100,collision_top2_close
+2281,Office of the Information Commissioner of Canada,,256,Offices of the Information and Privacy Commissioners of Canada,a,,86,85,low_score;collision_top2_close
+2282,Office of the Privacy Commissioner of Canada,,256,Offices of the Information and Privacy Commissioners of Canada,a,,85,83,low_score
+2288,Royal Canadian Mounted Police,,295,Royal Canadian Mounted Police,a,,100,100,collision_top2_close
+2289,Royal Canadian Mounted Police External Review Committee,,295,Royal Canadian Mounted Police,a,,100,100,collision_top2_close
+3432,Senate,,251,Senate Ethics Officer,a,,100,100,collision_top2_close
+3431,Senate Ethics Officer,,251,Senate Ethics Officer,a,,100,100,collision_top2_close
+3646,Business Development Bank of Canada,,15,Bank of Canada,a,,100,100,collision_top2_close
+3473,Lake of the Woods Control Board,,191,International Lake of the Woods Control Board,a,,100,100,collision_top2_close
+3646,Business Development Bank of Canada,,20,Business Development Bank of Canada,a,,100,100,collision_top2_close
+3633,Bank of Canada,,15,Bank of Canada,a,,100,100,collision_top2_close
