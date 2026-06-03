@@ -1,8 +1,8 @@
-Count of GC OrgIDs in final_rg_match: 102
+Count of GC OrgIDs in final_rg_match: 103
 Count of GC OrgIDs in manual_org_id_link: 355
 Count of GC OrgIDs in manual_pop_phoenix: 389
 Count of GC OrgIDs in manual_lead_department_portfolio: 395
-Count of GC OrgIDs in rg_final: 102
+Count of GC OrgIDs in rg_final: 103
 Count of GC OrgIDs in FAA_combined: 0
 Count of GC OrgIDs in en_applied: 0
 
@@ -14,7 +14,6 @@ Missing in final_rg_match:
 2289
 2290
 2294
-2297
 2301
 2302
 3399
@@ -365,7 +364,6 @@ Missing in rg_final:
 2289
 2290
 2294
-2297
 2301
 2302
 3399

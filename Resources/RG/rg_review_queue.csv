@@ -1,5 +1,5 @@
 ﻿RGOriginalName,rgnumber,MatchedName,MatchScore,Organization Legal Name English,gc_orgID,CandidateCollision,AlreadyInFixed,Review_LowScore,Review_NoMatchedName,Review_NoGcOrgID,Review_CandidateCollision,ReviewReasons
-Administrative Tribunals Support Service of Canada,170,Administrative Tribunals Support Service of Canada,100.0,Administrative Tribunals Support Service of Canada,2297,True,False,False,False,False,True,CandidateCollision
+Administrative Tribunals Support Service of Canada,170,Administrative Tribunals Support Service of Canada,100.0,Administrative Tribunals Support Service of Canada,2297,True,True,False,False,False,True,CandidateCollision
 Public Service Superannuation,087,Administrative Tribunals Support Service of Canada,85.5,Administrative Tribunals Support Service of Canada,2297,True,False,True,False,False,True,LowScore;CandidateCollision
 Canada Border Services Agency,085,Canada Border Services Agency,100.0,Canada Border Services Agency,2300,True,True,False,False,False,True,CandidateCollision
 Canada Border Services Agency - (Administered Activities),038,Canada Border Services Agency,90.0,Canada Border Services Agency,2300,True,False,True,False,False,True,LowScore;CandidateCollision
