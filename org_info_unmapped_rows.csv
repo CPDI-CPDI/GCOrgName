@@ -1,4 +1,2 @@
-﻿gc_orgID,harmonized_name,nom_harmonisé,legal_title,appellation_légale,preferred_name,nom_préféré,lead_department,ministère_responsable,abbreviation,abreviation,FAA_LGFP,status_statut
-,,,Leaders' Debates Commission,,,,,,,,1.1,a
-,,,Office of the Information Commissioner,,,,,,,,4,a
-,,,"The Director, The Veterans' Land Act",,,,,,,,4,a
+﻿gc_orgID,harmonized_name,nom_harmonisé,legal_title,appellation_légale,preferred_name,nom_préféré,lead_department,ministère_responsable,abbreviation,abreviation,FAA_LGFP,status_statut,end_date_fin
+,,,Office of the Auditor General,,Office of the Auditor General of Canada,Bureau du vérificateur général du Canada,,,OAG,BVG,1.1,,
