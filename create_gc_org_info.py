@@ -17,6 +17,37 @@ from typing import Optional
 
 import pandas as pd
 
+def org_name_key(value: str) -> str:
+    """
+    Normalize organization names for source matching.
+
+    Handles:
+    - curly vs straight apostrophes
+    - punctuation
+    - common filler words
+    - suffix differences like 'of Canada'
+    """
+    s = "" if value is None else str(value)
+    s = unicodedata.normalize("NFKC", s)
+    s = s.replace("’", "'").replace("‘", "'").replace("`", "'")
+    s = s.lower()
+    s = re.sub(r"[^a-z0-9\s]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+
+    stopwords = {
+        "the",
+        "of",
+        "du",
+        "de",
+        "des",
+        "la",
+        "le",
+        "les",
+        "canada",
+    }
+
+    tokens = [t for t in s.split() if t not in stopwords]
+    return " ".join(sorted(tokens))
 
 def _norm(s: str) -> str:
     """Normalize header/label for tolerant matching."""
@@ -329,31 +360,59 @@ def enforce_valid_gc_orgids(final_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Da
 
 
 def final_one_row_per_gc_orgid(final_df: pd.DataFrame) -> pd.DataFrame:
-    """Enforce one row per gc_orgID by keeping the most complete row."""
+    """
+    Enforce one row per gc_orgID by coalescing duplicate rows.
+
+    This is better than simply keeping the most complete row because some
+    source-only rows may carry important fields like FAA_LGFP while the
+    manual row carries legal title, lead department, and status.
+    """
     final_df = final_df.copy()
 
-    def nonblank_count(row) -> int:
-        count = 0
-        for value in row:
-            s = "" if pd.isna(value) else str(value).strip()
-            if s and s.lower() not in {"nan", "none", "<na>"}:
-                count += 1
-        return count
+    def clean_value(value) -> str:
+        if pd.isna(value):
+            return ""
+        s = str(value).strip()
+        if s.lower() in {"", "nan", "none", "<na>"}:
+            return ""
+        return s
 
-    final_df["_completeness"] = final_df.apply(nonblank_count, axis=1)
+    def coalesce_group(group: pd.DataFrame) -> pd.Series:
+        result = {}
 
-    final_df = (
+        for col in group.columns:
+            if col == "gc_orgID":
+                result[col] = clean_value(group[col].iloc[0])
+                continue
+
+            values = [clean_value(v) for v in group[col].tolist()]
+            nonblank = [v for v in values if v]
+
+            result[col] = nonblank[0] if nonblank else ""
+
+        return pd.Series(result)
+
+    final_df["gc_orgID"] = clean_id_series(final_df["gc_orgID"])
+
+    collapsed = (
         final_df
-        .sort_values(by=["gc_orgID", "_completeness"], ascending=[True, False], kind="mergesort")
-        .drop_duplicates(subset=["gc_orgID"], keep="first")
-        .drop(columns=["_completeness"])
+        .groupby("gc_orgID", as_index=False, sort=False)
+        .apply(coalesce_group, include_groups=False)
+        .reset_index(drop=True)
     )
 
-    final_df["_sort_gc"] = pd.to_numeric(final_df["gc_orgID"], errors="coerce")
-    final_df = final_df.sort_values(by=["_sort_gc", "gc_orgID"], kind="mergesort").drop(columns=["_sort_gc"])
+    # groupby/apply with include_groups=False may drop gc_orgID depending on pandas version,
+    # so restore defensively if needed.
+    if "gc_orgID" not in collapsed.columns:
+        collapsed["gc_orgID"] = final_df["gc_orgID"].drop_duplicates().tolist()
 
-    return final_df
+    collapsed["_sort_gc"] = pd.to_numeric(collapsed["gc_orgID"], errors="coerce")
+    collapsed = collapsed.sort_values(
+        by=["_sort_gc", "gc_orgID"],
+        kind="mergesort"
+    ).drop(columns=["_sort_gc"])
 
+    return collapsed
 
 def main() -> None:
     """Create gc_org_info.csv."""
@@ -424,12 +483,27 @@ def main() -> None:
 
     manual2["gc_orgID"] = clean_id_series(manual2["gc_orgID"])
 
+    manual2["_faa_match_key"] = manual2["Organization Legal Name English"].map(org_name_key)
+    faa["_faa_match_key"] = faa["Organization Legal Name English"].map(org_name_key)
+
+    # Avoid multiplying rows if FAA has repeated/variant names with the same normalized key.
+    faa = (
+        faa
+        .sort_values(
+            by=["_faa_match_key"],
+            kind="mergesort"
+        )
+        .drop_duplicates(subset=["_faa_match_key"], keep="first")
+    )
+
     joined_df = manual2.merge(
-        faa,
-        on="Organization Legal Name English",
-        how="outer",
+        faa.drop(columns=["Organization Legal Name English"], errors="ignore"),
+        on="_faa_match_key",
+        how="left",
         suffixes=("", "_faa"),
     )
+
+    joined_df = joined_df.drop(columns=["_faa_match_key"], errors="ignore")
 
     if app_key:
         app_cols = [app_key]
