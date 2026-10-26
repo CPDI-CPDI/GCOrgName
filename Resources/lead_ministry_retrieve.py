@@ -9,8 +9,8 @@ import requests
 from bs4 import BeautifulSoup
 
 # URLs
-url_en_csv = "https://www.ourcommons.ca/members/en/ministries/csv"
-url_fr_csv = "https://www.ourcommons.ca/members/fr/ministries/csv"
+url_en_csv = "https://www.ourcommons.ca/Members/en/ministries/csv"
+url_fr_csv = "https://www.ourcommons.ca/Members/fr/ministries/csv"
 url_en_scrape = "https://www.pm.gc.ca/en/cabinet"
 url_fr_scrape = "https://www.pm.gc.ca/fr/cabinet"
 
