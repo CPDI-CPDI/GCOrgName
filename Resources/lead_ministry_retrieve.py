@@ -9,8 +9,11 @@ import requests
 from bs4 import BeautifulSoup
 
 # URLs
-url_en_csv = "https://www.ourcommons.ca/Members/en/ministries/csv"
-url_fr_csv = "https://www.ourcommons.ca/Members/fr/ministries/csv"
+url_en_csv = "https://www.ourcommons.ca/members/en/ministries/csv"
+url_fr_csv = "https://www.ourcommons.ca/members/fr/ministries/csv"
+# The House of Commons Open Data page documents only the XML export for ministries.
+url_en_xml = "https://www.ourcommons.ca/Members/en/ministries/XML"
+url_fr_xml = "https://www.ourcommons.ca/Members/fr/ministries/XML"
 url_en_scrape = "https://www.pm.gc.ca/en/cabinet"
 url_fr_scrape = "https://www.pm.gc.ca/fr/cabinet"
 
@@ -66,34 +69,64 @@ def fail(message):
     sys.exit(1)
 
 
-def fetch_csv(url, headers, renames, required):
-    """Download a CSV, check it really is the CSV, and normalise header names."""
-    try:
-        r = requests.get(url, headers=headers, timeout=60)
-    except requests.RequestException as e:
-        fail(f"could not reach {url}: {e}")
+def xml_field_to_header(name, lang):
+    """Best-effort mapping of an XML element name onto the CSV header it corresponds to."""
+    n = re.sub(r"[^a-z]", "", str(name).lower())
+    if lang == "en":
+        rules = [("honorific", "Honorific Title"), ("personid", "Person ID"), ("precedence", "Precedence"),
+                 ("firstname", "First Name"), ("lastname", "Last Name"), ("province", "Province / Territory"),
+                 ("start", "Start Date"), ("end", "End Date"), ("title", "Title")]
+    else:
+        rules = [("honorific", "Titre honorifique"), ("personid", "ID de la personne"), ("precedence", "Precedence"),
+                 ("firstname", "Prénom"), ("lastname", "Nom de famille"), ("province", "Province / Territoire"),
+                 ("start", "Date de début"), ("end", "Date de fin"), ("title", "Titre")]
+    for key, header in rules:
+        if key in n:
+            return header
+    return str(name)
 
-    ctype = r.headers.get("Content-Type", "")
-    text = r.content.decode("utf-8-sig", errors="replace")
-    if r.status_code != 200:
-        fail(f"{url} returned HTTP {r.status_code}. Content-Type={ctype!r}. Body starts: {text[:300]!r}")
 
-    try:
-        df = pd.read_csv(StringIO(text))
-    except Exception as e:
-        fail(f"{url} did not parse as CSV ({e}). Content-Type={ctype!r}. Body starts: {text[:300]!r}")
+def fetch_table(csv_url, xml_url, headers, renames, required, lang):
+    """
+    Get the ministries table. Tries the CSV first, then the documented XML export.
+    Checks the response really is the data and normalises header names.
+    """
+    problems = []
+    for kind, url in (("csv", csv_url), ("xml", xml_url)):
+        try:
+            r = requests.get(url, headers=headers, timeout=60)
+        except requests.RequestException as e:
+            problems.append(f"{kind} {url}: could not connect ({e})")
+            continue
 
-    # Strip stray whitespace / BOM / non-breaking spaces, then fix case and spelling variants.
-    cleaned = [re.sub(r"\s+", " ", str(c).replace("﻿", "").replace("\xa0", " ")).strip() for c in df.columns]
-    df.columns = [renames.get(c.lower(), c) for c in cleaned]
+        ctype = r.headers.get("Content-Type", "")
+        text = r.content.decode("utf-8-sig", errors="replace")
+        if r.status_code != 200:
+            problems.append(f"{kind} {r.url}: HTTP {r.status_code}, Content-Type={ctype!r}, body starts {text[:200]!r}")
+            continue
 
-    missing = [c for c in required if c not in df.columns]
-    if missing:
-        fail(
-            f"{url} is missing expected column(s) {missing}. Columns received: {list(df.columns)}. "
-            f"Content-Type={ctype!r}. Body starts: {text[:300]!r}"
-        )
-    return df
+        try:
+            df = pd.read_csv(StringIO(text)) if kind == "csv" else pd.read_xml(StringIO(text))
+        except Exception as e:
+            problems.append(f"{kind} {url}: did not parse ({e}), Content-Type={ctype!r}, body starts {text[:200]!r}")
+            continue
+
+        if kind == "csv":
+            # Strip stray whitespace / BOM / non-breaking spaces, then fix case and spelling variants.
+            cleaned = [re.sub(r"\s+", " ", str(c).replace("﻿", "").replace("\xa0", " ")).strip() for c in df.columns]
+            df.columns = [renames.get(c.lower(), c) for c in cleaned]
+        else:
+            df.columns = [xml_field_to_header(c, lang) for c in df.columns]
+
+        missing = [c for c in required if c not in df.columns]
+        if missing:
+            problems.append(f"{kind} {url}: missing column(s) {missing}; columns received {list(df.columns)}")
+            continue
+
+        print(f"Loaded {len(df)} rows from the {kind.upper()} export: {url}")
+        return df
+
+    fail("could not load ministries data. " + " | ".join(problems))
 
 
 def parse_en_dates(series):
@@ -105,8 +138,8 @@ def parse_en_dates(series):
 
 
 # Download CSVs
-df_en = fetch_csv(url_en_csv, HEADERS_EN, EN_RENAMES, required=["Title", "Start Date"])
-df_fr = fetch_csv(url_fr_csv, HEADERS_FR, FR_RENAMES, required=["Titre"])
+df_en = fetch_table(url_en_csv, url_en_xml, HEADERS_EN, EN_RENAMES, required=["Title", "Start Date"], lang="en")
+df_fr = fetch_table(url_fr_csv, url_fr_xml, HEADERS_FR, FR_RENAMES, required=["Titre"], lang="fr")
 
 # Save base files (only reached when both downloads passed the checks above,
 # so a blocked or changed response can never overwrite the good copies)
